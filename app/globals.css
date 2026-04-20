@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
+/* ── GetFittWithMohit Design Tokens ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand colours */
+  --gfm-primary:       #1a1f3a;
+  --gfm-accent:        #00d4d4;
+  --gfm-accent-hover:  #00bcbc;
+  --gfm-blue:          #4a7fd4;
+  --gfm-success:       #22c55e;
+  --gfm-warning:       #f59e0b;
+  --gfm-danger:        #ef4444;
+  --gfm-purple:        #a855f7;
+
+  /* Surfaces */
+  --gfm-bg:            #f8fafc;
+  --gfm-card:          #ffffff;
+  --gfm-border:        #e2e8f0;
+  --gfm-border-focus:  #00d4d4;
+
+  /* Typography */
+  --gfm-text-primary:   #0f172a;
+  --gfm-text-secondary: #64748b;
+  --gfm-text-tertiary:  #94a3b8;
+
+  /* Spacing */
+  --gfm-radius-sm:   8px;
+  --gfm-radius-md:   12px;
+  --gfm-radius-lg:   16px;
+  --gfm-radius-full: 9999px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Base ── */
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--gfm-bg);
+  color: var(--gfm-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* ── Form input base ── */
+.gfm-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--gfm-border);
+  border-radius: var(--gfm-radius-sm);
+  font-size: 14px;
+  color: var(--gfm-text-primary);
+  background: var(--gfm-card);
+  transition: border-color 0.15s ease;
+  outline: none;
+}
+
+.gfm-input:focus {
+  border-color: var(--gfm-border-focus);
+}
+
+.gfm-input::placeholder {
+  color: var(--gfm-text-tertiary);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gfm-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gfm-text-tertiary); }
