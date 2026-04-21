@@ -12,16 +12,23 @@ import {
 } from '@/lib/constants/assessment'
 import { TestResult } from '@/lib/types/forms'
 import { supabase } from '@/lib/supabase/client'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
+import { PageLoader } from '@/components/ui/PageLoader'
 
 type Screen = 'environment' | 'test' | 'results'
 
 export default function AssessmentPage() {
+  const { checking } = useAuthGuard()
+  
+
   const { data, setEnvironment, setTestIndex, updateResult, reset } =
     useAssessmentStore()
 
   const [screen, setScreen] = useState<Screen>('environment')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+
+  if (checking) return <PageLoader />
 
   const protocol =
     data.environment
@@ -59,60 +66,70 @@ export default function AssessmentPage() {
   }
 
   const handleSubmit = async () => {
-    setSubmitting(true)
-    try {
-      const params = new URLSearchParams(window.location.search)
-      const clientId = params.get('client')
+  setSubmitting(true)
+  try {
+    // Get current client automatically from auth
+    const { data: { user } } = await supabase.auth.getUser()
 
-      // Get primary result values
-      const endurance = data.results.find((r) =>
-        r.parameter === 'Endurance'
-      )
-      const strength = data.results.find((r) =>
-        r.parameter === 'Strength'
-      )
-      const flexibility = data.results.find((r) =>
-        r.parameter === 'Flexibility'
-      )
-      const mobility = data.results.find((r) =>
-        r.parameter === 'Mobility'
-      )
-
-      const getFirstField = (result: TestResult | undefined) => {
-        if (!result) return null
-        const val = Object.values(result.fields)[0]
-        return parseFloat(val) || null
-      }
-
-      await supabase.from('assessments').insert({
-        client_id: clientId || null,
-        environment: data.environment,
-        endurance_result: getFirstField(endurance),
-        endurance_unit: endurance
-          ? Object.keys(endurance.fields)[0]
-          : null,
-        strength_reps: getFirstField(strength),
-        flexibility_result: getFirstField(flexibility),
-        mobility_result: getFirstField(mobility),
-        endurance_effort: endurance?.effort || null,
-        strength_effort: strength?.effort || null,
-        flexibility_effort: flexibility?.effort || null,
-        mobility_effort: mobility?.effort || null,
-        endurance_pain: endurance?.pain || null,
-        strength_pain: strength?.pain || null,
-        flexibility_pain: flexibility?.pain || null,
-        mobility_pain: mobility?.pain || null,
-      })
-
-      reset()
-      setSubmitted(true)
-    } catch (error: any) {
-      console.error('Assessment error:', error)
-      window.alert('Something went wrong. Please try again.')
-    } finally {
-      setSubmitting(false)
+    let clientId = null
+    if (user) {
+      const { data: client } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('auth_user_id', user.id)
+        .single()
+      clientId = client?.id || null
     }
+
+    const endurance = data.results.find((r) => r.parameter === 'Endurance')
+    const strength = data.results.find((r) => r.parameter === 'Strength')
+    const flexibility = data.results.find((r) => r.parameter === 'Flexibility')
+    const mobility = data.results.find((r) => r.parameter === 'Mobility')
+
+    const getFirstField = (result: TestResult | undefined) => {
+      if (!result) return null
+      const val = Object.values(result.fields)[0]
+      return parseFloat(val) || null
+    }
+    // Count existing assessments
+let assessmentNumber = 1
+if (clientId) {
+  const { count } = await supabase
+    .from('assessments')
+    .select('id', { count: 'exact' })
+    .eq('client_id', clientId)
+
+  assessmentNumber = (count || 0) + 1
+}
+
+    await supabase.from('assessments').insert({
+      client_id: clientId,
+      assessment_number: assessmentNumber,
+      environment: data.environment,
+      endurance_result: getFirstField(endurance),
+      endurance_unit: endurance ? Object.keys(endurance.fields)[0] : null,
+      strength_reps: getFirstField(strength),
+      flexibility_result: getFirstField(flexibility),
+      mobility_result: getFirstField(mobility),
+      endurance_effort: endurance?.effort || null,
+      strength_effort: strength?.effort || null,
+      flexibility_effort: flexibility?.effort || null,
+      mobility_effort: mobility?.effort || null,
+      endurance_pain: endurance?.pain || null,
+      strength_pain: strength?.pain || null,
+      flexibility_pain: flexibility?.pain || null,
+      mobility_pain: mobility?.pain || null,
+    })
+
+    reset()
+    setSubmitted(true)
+  } catch (error: any) {
+    console.error('Assessment error:', error)
+    window.alert('Something went wrong. Please try again.')
+  } finally {
+    setSubmitting(false)
   }
+}
 
   if (submitted) {
     return (
@@ -133,17 +150,20 @@ export default function AssessmentPage() {
 
       {/* Header */}
       <div className="bg-[#1a1f3a] text-center py-8 px-4">
-        <h1 className="text-[#00d4d4] text-lg font-medium tracking-widest">
-          GETFITTWITHMOHIT
-        </h1>
-        <p className="text-white/40 text-xs mt-1">Transform to Inspire</p>
-        <h2 className="text-white text-xl font-medium mt-3">
-          Bi-Weekly Assessment
-        </h2>
-        <p className="text-white/60 text-sm mt-1 max-w-md mx-auto leading-relaxed">
-          Self-administered · Takes 20–30 minutes · Do this every 2 weeks
-        </p>
-      </div>
+  <div className="flex flex-col items-center gap-3">
+    <img
+      src="/logo.png"
+      alt="GetFittWithMohit"
+      className="w-20 h-20 object-contain"
+    />
+    <h2 className="text-white text-xl font-medium">
+      Bi-Weekly Assessment
+    </h2>
+    <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed">
+      Self-administered · Takes 20–30 minutes · Do this every 2 weeks
+    </p>
+  </div>
+</div>
 
       {/* Progress bar — only during tests */}
       {screen === 'test' && (

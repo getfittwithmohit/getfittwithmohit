@@ -1,6 +1,7 @@
 interface SuccessScreenProps {
   name: string
   message?: string
+  clientId?: string
 }
 
 export function SuccessScreen({

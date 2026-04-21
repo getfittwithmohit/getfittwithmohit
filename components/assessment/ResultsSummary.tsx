@@ -6,6 +6,7 @@ import {
   Parameter,
   AssessmentTest,
 } from '@/lib/constants/assessment'
+import { Button } from '@/components/ui/Button'
 
 interface Props {
   results: TestResult[]
@@ -118,13 +119,13 @@ export function ResultsSummary({
         >
           ← Back
         </button>
-        <button
-          onClick={onSubmit}
-          disabled={submitting}
-          className="bg-[#1a1f3a] text-[#00d4d4] px-8 py-2.5 rounded-lg text-sm font-medium hover:bg-[#141930] transition-colors disabled:opacity-50"
-        >
-          {submitting ? 'Submitting...' : 'Submit to Coach Mohit →'}
-        </button>
+        <Button
+  variant="secondary"
+  onClick={onSubmit}
+  loading={submitting}
+>
+  Submit to Coach Mohit →
+</Button>
       </div>
     </div>
   )

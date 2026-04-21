@@ -1,18 +1,17 @@
 'use client'
 
-import { useRef } from 'react'
-import { useOnboardingStore } from '@/store/onboardingStore'
-import {
-  RadioGroup,
-  SectionCard,
-  NavButtons,
-} from '@/components/ui'
+import { useRef, useState } from 'react'
+import { RadioGroup } from '@/components/ui/RadioGroup'
+import { SectionCard } from '@/components/ui/SectionCard'
+import { NavButtons } from '@/components/ui/NavButtons'
 import { BLOOD_WORK_STATUS } from '@/lib/constants/options'
-import { useState } from 'react'
 
 interface Props {
   onNext: () => void
   onBack: () => void
+  onBloodWorkFile: (file: File | null) => void
+  onBloodWorkStatus: (status: string) => void
+  submitting?: boolean
 }
 
 const RECOMMENDED_TESTS = [
@@ -29,15 +28,22 @@ const RECOMMENDED_TESTS = [
   'CRP (C-Reactive Protein)',
 ]
 
-export function Step11BloodWork({ onNext, onBack }: Props) {
+export function Step11BloodWork({
+  onNext,
+  onBack,
+  onBloodWorkFile,
+  onBloodWorkStatus,
+  submitting = false,
+}: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [bloodStatus, setBloodStatus] = useState('')
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
   return (
     <SectionCard
       section={11}
       title="Blood Work"
-      subtitle="Strongly recommended but not mandatory. Blood reports allow Coach Mohit to design a programme that works with your body's actual biology — not guesswork."
+      subtitle="Strongly recommended but not mandatory. Get tested at any lab of your choice."
     >
       {/* Recommended tests */}
       <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg p-4">
@@ -46,23 +52,29 @@ export function Step11BloodWork({ onNext, onBack }: Props) {
         </p>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1">
           {RECOMMENDED_TESTS.map((test) => (
-            <p key={test} className="text-xs text-[#64748b] flex items-center gap-1.5">
+            <p
+              key={test}
+              className="text-xs text-[#64748b] flex items-center gap-1.5"
+            >
               <span className="w-1 h-1 rounded-full bg-[#00d4d4] flex-shrink-0" />
               {test}
             </p>
           ))}
         </div>
         <p className="text-xs text-[#94a3b8] mt-3">
-          Get tested at any lab — Thyrocare, 1mg, SRL, or your local diagnostic centre.
+          Get tested at Thyrocare, 1mg, SRL, or your local diagnostic centre.
         </p>
       </div>
 
-      {/* Blood work status */}
+      {/* Status */}
       <RadioGroup
         label="Have you had blood work done recently?"
         options={BLOOD_WORK_STATUS}
         value={bloodStatus}
-        onChange={setBloodStatus}
+        onChange={(v) => {
+          setBloodStatus(v)
+          onBloodWorkStatus(v)
+        }}
       />
 
       {/* Upload */}
@@ -73,15 +85,41 @@ export function Step11BloodWork({ onNext, onBack }: Props) {
         </label>
         <div
           onClick={() => inputRef.current?.click()}
-          className="border border-dashed border-[#e2e8f0] rounded-lg p-6 text-center cursor-pointer hover:border-[#00d4d4] transition-colors duration-150"
+          className={`
+            border border-dashed rounded-lg p-5 text-center cursor-pointer
+            transition-colors duration-150
+            ${selectedFile
+              ? 'border-[#00d4d4] bg-[#00d4d4]/5'
+              : 'border-[#e2e8f0] hover:border-[#00d4d4]'
+            }
+          `}
         >
-          <div className="text-2xl text-[#00d4d4] mb-1">+</div>
-          <p className="text-xs text-[#94a3b8]">PDF or image — tap to upload</p>
+          {selectedFile ? (
+            <div>
+              <div className="text-xl mb-1">✅</div>
+              <p className="text-xs text-[#00d4d4] font-medium">
+                {selectedFile.name}
+              </p>
+              <p className="text-xs text-[#94a3b8] mt-0.5">
+                {(selectedFile.size / 1024).toFixed(0)} KB · tap to change
+              </p>
+            </div>
+          ) : (
+            <div>
+              <div className="text-xl text-[#00d4d4] mb-1">+</div>
+              <p className="text-xs text-[#94a3b8]">PDF or image</p>
+            </div>
+          )}
           <input
             ref={inputRef}
             type="file"
             accept=".pdf,image/*"
             className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0] || null
+              setSelectedFile(file)
+              onBloodWorkFile(file)
+            }}
           />
         </div>
         <p className="text-xs text-[#94a3b8]">
@@ -90,10 +128,12 @@ export function Step11BloodWork({ onNext, onBack }: Props) {
       </div>
 
       <NavButtons
-        onBack={onBack}
-        onNext={onNext}
-        nextLabel="Submit Profile →"
-      />
+  onBack={onBack}
+  onNext={onNext}
+  nextLabel={submitting ? 'Submitting...' : 'Submit Profile →'}
+  loading={submitting}
+/>
     </SectionCard>
   )
 }
+

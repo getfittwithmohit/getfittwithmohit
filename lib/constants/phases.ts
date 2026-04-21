@@ -1,4 +1,12 @@
 export const PHASES = {
+  Onboarding: {
+    label: 'Onboarding',
+    emoji: '📋',
+    weeks: '0',
+    description: 'Getting started',
+    color: '#f59e0b',
+    retentionRiskWeeks: [],
+  },
   Adaptation: {
     label: 'Adaptation',
     emoji: '🌱',

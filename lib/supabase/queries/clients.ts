@@ -24,6 +24,16 @@ export async function getAllClients() {
         target_weight_kg,
         primary_goal,
         recorded_at
+      ),
+      weekly_checkins (
+        id,
+        submitted_at,
+        weight_kg,
+        workouts_completed,
+        nutrition_adherence,
+        energy_level,
+        mood,
+        week_number
       )
     `)
     .eq('status', 'active')
@@ -122,12 +132,35 @@ export async function addClient(payload: {
 
 // Calculate week number from start date
 export function calcCurrentWeek(startDate: string): number {
+  if (!startDate) return 0
   const start = new Date(startDate)
   const today = new Date()
   const diff = Math.floor(
     (today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7)
   )
-  return Math.max(1, diff + 1)
+  // Week 0 = onboarding, Week 1+ = programme
+  return Math.max(0, diff)
+}
+
+export async function updateClientPhase(
+  id: string,
+  phase: string,
+  programmeStartDate?: string
+) {
+  const updates: any = { phase }
+
+  // When moving from Onboarding to Adaptation — set programme start date
+  if (phase === 'Adaptation' && programmeStartDate) {
+    updates.start_date = programmeStartDate
+    updates.current_week = 1
+  }
+
+  const { error } = await supabase
+    .from('clients')
+    .update(updates)
+    .eq('id', id)
+
+  if (error) throw error
 }
 
 // Get retention alert message

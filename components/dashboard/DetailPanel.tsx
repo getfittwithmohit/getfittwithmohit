@@ -7,8 +7,12 @@ import { AlertBanner } from './AlertBanner'
 import { ProgressBars } from './ProgressBars'
 import { QuickActions } from './QuickActions'
 import { getRetentionAlert as calcAlert } from '@/lib/supabase/queries/clients'
+import { Button } from '@/components/ui/Button'
+import { updateClientPhase } from '@/lib/supabase/queries/clients'
+import { supabase } from '@/lib/supabase/client'
 
 const PHASE_COLORS: Record<string, string> = {
+  Onboarding: '#f59e0b',
   Adaptation: '#4a7fd4',
   Building: '#00d4d4',
   Performance: '#22c55e',
@@ -16,6 +20,7 @@ const PHASE_COLORS: Record<string, string> = {
 }
 
 const PHASE_EMOJI: Record<string, string> = {
+  Onboarding: '📋',
   Adaptation: '🌱',
   Building: '💪',
   Performance: '🔥',
@@ -44,11 +49,26 @@ export function DetailPanel({
 }: DetailPanelProps) {
   const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState(false)
+  const [pledge, setPledge] = useState<any>(null)
 
   useEffect(() => {
     if (client) {
       setNotes(client.coach_notes || '')
     }
+  }, [client?.id])
+
+  useEffect(() => {
+    if (!client) return
+    async function fetchPledge() {
+      const { data } = await supabase
+        .from('commitment_pledges')
+        .select('*')
+        .eq('client_id', client!.id)
+        .single()
+      if (data) setPledge(data)
+      else setPledge(null)
+    }
+    fetchPledge()
   }, [client?.id])
 
   if (!client) {
@@ -64,7 +84,7 @@ export function DetailPanel({
 
   const phaseColor = PHASE_COLORS[client.phase] || '#64748b'
   const phaseEmoji = PHASE_EMOJI[client.phase] || ''
-const alertInfo = calcAlert(
+  const alertInfo = calcAlert(
     client.current_week,
     null,
     client.risk_status
@@ -81,11 +101,46 @@ const alertInfo = calcAlert(
   }
 
   const handleReengage = () => {
-    alert(`Re-engagement triggered for ${client.full_name}.\n\nIn production: WhatsApp message sent with their Identity Card.`)
+    if (pledge) {
+      window.alert(
+        `Re-engagement message for ${client.full_name}:\n\n` +
+        `"Hey ${client.full_name.split(' ')[0]}, Coach Mohit here.\n\n` +
+        `You signed your pledge because: "${pledge.why_transform}"\n\n` +
+        `You said you're doing this for: "${pledge.doing_this_for}"\n\n` +
+        `That reason hasn't changed. You have. Let's get back on track together."\n\n` +
+        `(Copy and send via WhatsApp)`
+      )
+    } else {
+      window.alert(
+        `Re-engagement message for ${client.full_name}:\n\n` +
+        `"Hey ${client.full_name.split(' ')[0]}, Coach Mohit here. ` +
+        `Just checking in — remember why you started this journey. ` +
+        `You've already come this far. Let's talk."\n\n` +
+        `(Copy and send via WhatsApp)`
+      )
+    }
   }
 
   const handleViewProfile = () => {
-    alert(`Viewing full profile for ${client.full_name}.\n\nFull profile view — coming in next build.`)
+    window.alert(
+      `Viewing full profile for ${client.full_name}.\n\nFull profile view — coming in next build.`
+    )
+  }
+
+  const handleStartProgramme = async () => {
+    const today = new Date().toISOString().split('T')[0]
+    await updateClientPhase(client.id, 'Adaptation', today)
+    window.alert(
+      `Programme started for ${client.full_name}! They are now in Week 1 — Adaptation Phase.`
+    )
+    window.location.reload()
+  }
+
+  const handleSendPledge = () => {
+    const pledgeUrl = `${window.location.origin}/pledge`
+    window.alert(
+      `Send this link to ${client.full_name} via WhatsApp:\n\n${pledgeUrl}\n\nAsk them to sign their Commitment Pledge before starting Week 1.`
+    )
   }
 
   return (
@@ -112,7 +167,14 @@ const alertInfo = calcAlert(
               )}
             </div>
             <p className="text-xs text-[#94a3b8] mt-0.5">
-              Week {client.current_week} · Last check-in: –
+              Week {client.current_week} · Last check-in:{' '}
+              {client.last_checkin_date
+                ? new Date(client.last_checkin_date).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                  })
+                : 'Never'
+              }
             </p>
           </div>
         </div>
@@ -130,11 +192,11 @@ const alertInfo = calcAlert(
       </div>
 
       {/* Alert banner */}
-     {alertInfo ? (
-  <div className="mb-4">
-    <AlertBanner message={alertInfo.message} level={alertInfo.level} />
-  </div>
-) : (
+      {alertInfo ? (
+        <div className="mb-4">
+          <AlertBanner message={alertInfo.message} level={alertInfo.level} />
+        </div>
+      ) : (
         <div className="mb-4">
           <AlertBanner
             message="On track — no retention flags"
@@ -145,33 +207,61 @@ const alertInfo = calcAlert(
 
       {/* Stat cards */}
       <div className="grid grid-cols-4 gap-2 mb-4">
-        <StatCard
-          label="Week"
-          value={`Wk ${client.current_week}`}
-        />
+        <StatCard label="Week" value={`Wk ${client.current_week}`} />
         <StatCard
           label="Streak"
-          value="–"
+          value={client.checkin_streak || 0}
           sub="check-ins"
         />
         <StatCard
           label="Adherence"
-          value="–"
+          value={client.avg_nutrition_adherence
+            ? `${client.avg_nutrition_adherence}/10`
+            : '–'
+          }
           color="#00d4d4"
         />
         <StatCard
           label="Lost"
-          value={`${weightLost} kg`}
+          value={weightLost !== '–' ? `${weightLost} kg` : '–'}
           color="#22c55e"
         />
       </div>
 
       {/* Progress bars */}
       <div className="mb-4">
-        <ProgressBars workout={0} nutrition={0} overall={0} />
+        <ProgressBars
+          workout={client.avg_nutrition_adherence * 10 || 0}
+          nutrition={client.avg_nutrition_adherence * 10 || 0}
+          overall={Math.round((client.current_week / 24) * 100)}
+        />
       </div>
 
-      {/* Goal */}
+      {/* Energy trend */}
+      {client.recent_energy.length > 0 && (
+        <div className="mb-4">
+          <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-2">
+            Energy trend (last {client.recent_energy.length} check-ins)
+          </p>
+          <div className="flex gap-2">
+            {client.recent_energy.map((e, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                <div
+                  className="w-full rounded-md"
+                  style={{
+                    height: `${Math.max(e * 4, 8)}px`,
+                    background: e >= 7 ? '#22c55e' : e >= 5 ? '#f59e0b' : '#ef4444',
+                    opacity: 0.8,
+                  }}
+                />
+                <span className="text-xs text-[#94a3b8]">{e}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Primary goal */}
       {client.primary_goal && (
         <div className="mb-4 px-3 py-2.5 bg-[#f8fafc] border border-[#e2e8f0] rounded-lg">
           <span className="text-xs text-[#94a3b8]">Primary goal · </span>
@@ -190,8 +280,53 @@ const alertInfo = calcAlert(
           onReengage={handleReengage}
           onFlag={() => onFlag(client.id, 'red')}
           onViewProfile={handleViewProfile}
+          onStartProgramme={handleStartProgramme}
+          showStartProgramme={client.phase === 'Onboarding'}
+          onSendPledge={handleSendPledge}
         />
       </div>
+
+      {/* Pledge section */}
+      {pledge && (
+        <div className="mb-4">
+          <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-2">
+            Commitment Pledge
+          </p>
+          <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4">
+            <p className="text-xs text-[#94a3b8] mb-3">
+              Signed {new Date(pledge.signed_at).toLocaleDateString('en-IN', {
+                day: 'numeric', month: 'short', year: 'numeric',
+              })}
+            </p>
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="text-xs font-medium text-[#64748b] mb-0.5">
+                  Doing this for
+                </p>
+                <p className="text-xs text-[#0f172a] italic">
+                  "{pledge.doing_this_for}"
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-[#64748b] mb-0.5">
+                  Why they started
+                </p>
+                <p className="text-xs text-[#0f172a] italic">
+                  "{pledge.why_transform}"
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-[#64748b] mb-0.5">
+                  Cost of inconsistency
+                </p>
+                <p className="text-xs text-[#0f172a] italic">
+                  "{pledge.cost_of_inconsistency}"
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Coach notes */}
       <div>
@@ -206,13 +341,14 @@ const alertInfo = calcAlert(
           className="w-full px-3 py-2.5 text-sm border border-[#e2e8f0] rounded-lg text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#00d4d4] resize-none transition-colors duration-150"
         />
         <div className="flex justify-end mt-2">
-          <button
+          <Button
+            variant="secondary"
             onClick={handleSaveNotes}
-            disabled={saving}
-            className="text-xs px-4 py-2 bg-[#1a1f3a] text-[#00d4d4] rounded-lg hover:bg-[#141930] transition-colors disabled:opacity-50"
+            loading={saving}
+            className="text-xs px-4 py-2"
           >
-            {saving ? 'Saving...' : 'Save notes'}
-          </button>
+            Save notes
+          </Button>
         </div>
       </div>
 

@@ -6,6 +6,7 @@ import { ClientSummary } from '@/hooks/useClients'
 type Filter = 'all' | 'red' | 'amber' | 'green'
 
 const PHASE_COLORS: Record<string, string> = {
+  Onboarding: '#f59e0b',
   Adaptation: '#4a7fd4',
   Building: '#00d4d4',
   Performance: '#22c55e',
@@ -13,6 +14,7 @@ const PHASE_COLORS: Record<string, string> = {
 }
 
 const PHASE_EMOJI: Record<string, string> = {
+  Onboarding: '📋',
   Adaptation: '🌱',
   Building: '💪',
   Performance: '🔥',

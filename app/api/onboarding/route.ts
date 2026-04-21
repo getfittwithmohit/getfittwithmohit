@@ -1,18 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase/client'
 import { OnboardingFormData } from '@/lib/types/forms'
+import { notifyCoach, sendEmail } from '@/lib/email/send'
+import {
+  coachNotificationEmail,
+  clientConfirmationEmail,
+} from '@/lib/email/templates'
 
 export async function POST(req: NextRequest) {
   try {
-    const body: OnboardingFormData = await req.json()
-    const { personal, metrics, medical, fitness, lifestyle, nutrition, hormonal, psychology, expectations } = body
+    // Get auth token
+    const authHeader = req.headers.get('authorization')
+    const authToken = authHeader ? authHeader.replace('Bearer ', '') : null
 
-    // 1. Create client
+    let authUser = null
+    if (authToken) {
+      const { data } = await supabase.auth.getUser(authToken)
+      authUser = data?.user
+    }
+
+    const body: OnboardingFormData = await req.json()
+    const {
+      personal,
+      metrics,
+      medical,
+      fitness,
+      lifestyle,
+      nutrition,
+      hormonal,
+      psychology,
+      expectations,
+    } = body
+
+    // Check if client already exists with this email
+    const { data: existingClient } = await supabase
+      .from('clients')
+      .select('id')
+      .eq('email', personal.email)
+      .single()
+
+    if (existingClient) {
+      // Update auth_user_id if not set
+      await supabase
+        .from('clients')
+        .update({ auth_user_id: authUser?.id || null })
+        .eq('id', existingClient.id)
+
+      return NextResponse.json({
+        success: true,
+        clientId: existingClient.id,
+        existing: true,
+      })
+    }
+
+    // 1. Create new client
     const { data: client, error: clientError } = await supabase
       .from('clients')
       .insert({
         full_name: `${personal.first_name} ${personal.last_name}`.trim(),
-        email: personal.email,
+       // Use auth user email as source of truth
+        email: authUser?.email || personal.email,
         phone: personal.phone,
         date_of_birth: personal.date_of_birth || null,
         gender: personal.gender,
@@ -20,10 +67,11 @@ export async function POST(req: NextRequest) {
         occupation: personal.occupation,
         start_date: new Date().toISOString().split('T')[0],
         current_week: 1,
-        phase: 'Adaptation',
+        phase: 'Onboarding',
         risk_status: 'green',
         client_type: 'new',
         status: 'active',
+        auth_user_id: authUser?.id || null,
       })
       .select()
       .single()
@@ -117,7 +165,31 @@ export async function POST(req: NextRequest) {
       anything_else: expectations.anything_else,
     })
 
-    return NextResponse.json({ success: true, clientId: cid })
+   // Send notifications — fire and forget (don't block the response)
+const coachEmail = coachNotificationEmail({
+  full_name: `${personal.first_name} ${personal.last_name}`.trim(),
+  email: personal.email,
+  phone: personal.phone,
+  city: personal.city,
+  primary_goal: metrics.primary_goal,
+  readiness_score: psychology.readiness_score,
+  fitness_level: fitness.fitness_level,
+})
+
+const clientEmail = clientConfirmationEmail(personal.first_name)
+
+// Send both emails in parallel — don't await to keep response fast
+Promise.all([
+  notifyCoach(coachEmail.subject, coachEmail.html),
+  sendEmail({
+    to: authUser?.email || personal.email,
+    subject: clientEmail.subject,
+    html: clientEmail.html,
+  }),
+]).catch(console.error)
+
+return NextResponse.json({ success: true, clientId: cid })
+
   } catch (error: any) {
     console.error('Onboarding error:', error)
     return NextResponse.json(

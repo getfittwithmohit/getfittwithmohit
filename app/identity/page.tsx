@@ -15,6 +15,9 @@ import { Step07IdentityStatement } from '@/components/forms/identity/Step07Ident
 import { Step08Anchor } from '@/components/forms/identity/Step08Anchor'
 import { Step09Commitment } from '@/components/forms/identity/Step09Commitment'
 import { supabase } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/Button'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
+import { PageLoader } from '@/components/ui/PageLoader'
 
 const TOTAL_STEPS = 9
 
@@ -32,11 +35,16 @@ const PHASE_LABELS: Record<number, { phase: string; color: string }> = {
 }
 
 export default function IdentityPage() {
+  const { checking } = useAuthGuard()
+  
+
   const { currentStep, setStep, data, reset } = useIdentityStore()
   const [showCard, setShowCard] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [coachNotes, setCoachNotes] = useState('')
+
+  if (checking) return <PageLoader />
 
   const next = () => {
     if (currentStep === TOTAL_STEPS) {
@@ -58,11 +66,21 @@ export default function IdentityPage() {
     setSubmitting(true)
     try {
       // Get client_id from URL param e.g. /identity?client=uuid
-const params = new URLSearchParams(window.location.search)
-const clientId = params.get('client')
+// Get current client automatically from auth
+const { data: { user } } = await supabase.auth.getUser()
+
+let clientId = null
+if (user) {
+  const { data: client } = await supabase
+    .from('clients')
+    .select('id')
+    .eq('auth_user_id', user.id)
+    .single()
+  clientId = client?.id || null
+}
 
 await supabase.from('identity_cards').insert({
-  client_id: clientId || null,
+  client_id: clientId,
   surface_goal: data.surface_goal,
   deep_why: data.deep_why,
   life_vision: data.life_vision,
@@ -100,35 +118,38 @@ await supabase.from('identity_cards').insert({
     <div className="min-h-screen bg-[#f8fafc]">
 
       {/* Header */}
-      <div className="bg-[#1a1f3a] text-center py-8 px-4">
-        <h1 className="text-[#00d4d4] text-lg font-medium tracking-widest">
-          GETFITTWITHMOHIT
-        </h1>
-        <p className="text-white/40 text-xs mt-1">Transform to Inspire</p>
-        <h2 className="text-white text-xl font-medium mt-3">
-          Purpose & Identity
-        </h2>
-        <p className="text-white/60 text-sm mt-1 max-w-md mx-auto leading-relaxed">
-          This is not a form. This is a conversation with yourself.
-          Take your time — your honest answers here become your anchor.
-        </p>
+     <div className="bg-[#1a1f3a] text-center py-8 px-4">
+  <div className="flex flex-col items-center gap-3">
+    <img
+      src="/logo.png"
+      alt="GetFittWithMohit"
+      className="w-20 h-20 object-contain"
+    />
+    <h2 className="text-white text-xl font-medium">
+      Purpose & Identity
+    </h2>
+    <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed">
+      This is not a form. This is a conversation with yourself.
+      Take your time — your honest answers here become your anchor.
+    </p>
 
-        {/* Phase badge */}
-        {!showCard && (
-          <div className="mt-3">
-            <span
-              className="inline-block text-xs font-medium px-3 py-1 rounded-full"
-              style={{
-                background: `${phaseInfo.color}20`,
-                color: phaseInfo.color,
-                border: `1px solid ${phaseInfo.color}40`,
-              }}
-            >
-              Phase: {phaseInfo.phase}
-            </span>
-          </div>
-        )}
+    {/* Phase badge */}
+    {!showCard && (
+      <div>
+        <span
+          className="inline-block text-xs font-medium px-3 py-1 rounded-full"
+          style={{
+            background: `${phaseInfo.color}20`,
+            color: phaseInfo.color,
+            border: `1px solid ${phaseInfo.color}40`,
+          }}
+        >
+          Phase: {phaseInfo.phase}
+        </span>
       </div>
+    )}
+  </div>
+</div>
 
       {/* Progress */}
       {!showCard && (
@@ -184,13 +205,13 @@ await supabase.from('identity_cards').insert({
               >
                 ← Back
               </button>
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="px-8 py-2.5 bg-[#1a1f3a] text-[#00d4d4] rounded-lg text-sm font-medium hover:bg-[#141930] transition-colors disabled:opacity-50"
-              >
-                {submitting ? 'Saving...' : 'Submit & Complete →'}
-              </button>
+              <Button
+  variant="secondary"
+  onClick={handleSubmit}
+  loading={submitting}
+>
+  Submit & Complete →
+</Button>
             </div>
           </div>
         )}

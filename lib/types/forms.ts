@@ -346,3 +346,21 @@ export const MIDJOURNEY_CLIENT_DEFAULTS: MidJourneyClientData = {
   next_4_weeks: '',
   anything_else: '',
 }
+
+export interface PledgeFormData {
+  full_name: string
+  why_transform: string
+  cost_of_inconsistency: string
+  person_becoming: string
+  doing_this_for: string
+  agreements: string[]
+}
+
+export const PLEDGE_DEFAULTS: PledgeFormData = {
+  full_name: '',
+  why_transform: '',
+  cost_of_inconsistency: '',
+  person_becoming: '',
+  doing_this_for: '',
+  agreements: [],
+}

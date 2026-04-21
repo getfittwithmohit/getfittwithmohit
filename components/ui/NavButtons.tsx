@@ -14,9 +14,14 @@ export function NavButtons({
   loading = false,
 }: NavButtonsProps) {
   return (
-    <div className="flex justify-between items-center pt-2">
+    <div className="flex justify-between items-center pt-4 mt-2 border-t border-[#e2e8f0]">
       {onBack ? (
-        <Button variant="back" onClick={onBack}>
+        <Button
+          variant="back"
+          type="button"
+          onClick={onBack}
+          disabled={loading}
+        >
           ← Back
         </Button>
       ) : (
@@ -24,6 +29,7 @@ export function NavButtons({
       )}
       <Button
         variant="primary"
+        type="button"
         onClick={onNext}
         loading={loading}
       >

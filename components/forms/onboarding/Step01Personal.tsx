@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+import { supabase } from '@/lib/supabase/client'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { personalSchema } from '@/lib/validations/onboarding'
@@ -42,6 +44,16 @@ export function Step01Personal({ onNext }: Props) {
     onNext()
   }
 
+  useEffect(() => {
+  async function prefillEmail() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user?.email) {
+      setValue('email', user.email)
+      updatePersonal({ email: user.email })
+    }
+  }
+  prefillEmail()
+}, [])
   return (
     <SectionCard
       section={1}
@@ -98,13 +110,15 @@ export function Step01Personal({ onNext }: Props) {
           {...register('phone')}
         />
         <Input
-          label="Email"
-          required
-          type="email"
-          placeholder="rahul@email.com"
-          error={errors.email?.message}
-          {...register('email')}
-        />
+  label="Email"
+  required
+  type="email"
+  placeholder="rahul@email.com"
+  error={errors.email?.message}
+  readOnly
+  style={{ background: '#f8fafc', color: '#64748b', cursor: 'not-allowed' }}
+  {...register('email')}
+/>
       </div>
 
       {/* City */}

@@ -11,10 +11,15 @@ import { ClientStep02 } from '@/components/forms/midjourney/ClientStep02'
 import { ClientStep03 } from '@/components/forms/midjourney/ClientStep03'
 import { ClientStep04 } from '@/components/forms/midjourney/ClientStep04'
 import { supabase } from '@/lib/supabase/client'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
+import { PageLoader } from '@/components/ui/PageLoader'
 
 const TOTAL_CLIENT_STEPS = 4
 
 export default function MidJourneyPage() {
+  const { checking } = useAuthGuard()
+  
+
   const {
     mode,
     setMode,
@@ -27,6 +32,8 @@ export default function MidJourneyPage() {
 
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+
+  if (checking) return <PageLoader />
 
   const next = () => setClientStep(clientStep + 1)
   const back = () => setClientStep(clientStep - 1)
@@ -79,37 +86,67 @@ export default function MidJourneyPage() {
   }
 
   if (submitted) {
-    return (
-      <SuccessScreen
-        name={coach.full_name.split(' ')[0] || 'you'}
-        message="You're in the system. Coach Mohit now has everything he needs to personalise your programme. Your profile is live and your Identity Card is next."
-      />
-    )
-  }
+  return (
+    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4">
+      <div className="bg-white rounded-2xl p-8 shadow-sm border border-[#e2e8f0] max-w-md w-full text-center">
+        <div className="w-16 h-16 bg-[#a855f7] rounded-full flex items-center justify-center mx-auto mb-5">
+          <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+            <path d="M8 16l5 5 11-11" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <h2 className="text-xl font-medium text-[#0f172a] mb-2">
+          You're in the system ✓
+        </h2>
+        <p className="text-sm text-[#64748b] leading-relaxed mb-6">
+          Coach Mohit now has everything he needs to personalise your programme.
+          Your profile is live and your Identity Card is next.
+        </p>
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => window.location.href = '/identity'}
+            className="w-full py-3 bg-[#1a1f3a] text-[#00d4d4] rounded-xl text-sm font-medium hover:bg-[#141930] transition-colors"
+          >
+            Complete Purpose & Identity Form →
+          </button>
+          <button
+            onClick={() => window.location.href = '/home'}
+            className="w-full py-3 border border-[#e2e8f0] text-[#64748b] rounded-xl text-sm hover:bg-[#f8fafc] transition-colors"
+          >
+            Go to my dashboard
+          </button>
+        </div>
+        <div className="mt-6 bg-[#1a1f3a] rounded-xl py-3 px-6 inline-block">
+          <p className="text-[#00d4d4] text-xs font-medium tracking-widest">
+            TRANSFORM TO INSPIRE
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
 
       {/* Header */}
       <div className="bg-[#1a1f3a] text-center py-8 px-4">
-        <h1 className="text-[#00d4d4] text-lg font-medium tracking-widest">
-          GETFITTWITHMOHIT
-        </h1>
-        <p className="text-white/40 text-xs mt-1">Transform to Inspire</p>
-        <h2 className="text-white text-xl font-medium mt-3">
-          Mid-Journey Onboarding
-        </h2>
-        <p className="text-white/60 text-sm mt-1 max-w-md mx-auto leading-relaxed">
-          For existing clients transitioning into the premium system.
-        </p>
-
-        {/* Transferred badge */}
-        <div className="mt-3">
-          <span className="inline-block text-xs font-medium px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-            Transferred Client · Existing Journey
-          </span>
-        </div>
-      </div>
+  <div className="flex flex-col items-center gap-3">
+    <img
+      src="/logo.png"
+      alt="GetFittWithMohit"
+      className="w-20 h-20 object-contain"
+    />
+    <h2 className="text-white text-xl font-medium">
+      Mid-Journey Onboarding
+    </h2>
+    <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed">
+      For existing clients transitioning into the premium system.
+    </p>
+    <span className="inline-block text-xs font-medium px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+      Transferred Client · Existing Journey
+    </span>
+  </div>
+</div>
 
       {/* Mode toggle */}
       <div className="max-w-2xl mx-auto px-4 mt-6">
