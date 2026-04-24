@@ -72,6 +72,12 @@ if (user) {
       week_number: weekNumber,
       weight_kg: parseFloat(data.weight_kg) || null,
       waist_inches: parseFloat(data.waist_inches) || null,
+      chest_inches: parseFloat(data.chest_inches) || null,   // ← ADD
+      hip_inches: parseFloat(data.hip_inches) || null,       // ← ADD
+      lower_belly_inches: parseFloat(data.lower_belly_inches) || null,
+      thigh_inches: parseFloat(data.thigh_inches) || null,
+      daily_steps: parseInt(data.daily_steps) || null,
+      health_issues: data.health_issues || null,
       workouts_completed: parseInt(data.workouts_completed) || null,
       workout_intensity: data.workout_intensity,
       nutrition_adherence: parseInt(data.nutrition_adherence) || null,

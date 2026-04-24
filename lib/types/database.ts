@@ -168,6 +168,10 @@ export interface Database {
           submitted_at: string
           weight_kg: number | null
           waist_inches: number | null
+          lower_belly_inches: number | null
+          thigh_inches: number | null
+          daily_steps: number | null
+          health_issues: string | null
           workouts_completed: number | null
           workout_intensity: string | null
           nutrition_adherence: number | null

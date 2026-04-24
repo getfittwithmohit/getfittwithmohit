@@ -50,7 +50,12 @@ export function Step05Mindset({ onNext, onBack }: Props) {
   }
 
   const onSubmit = (values: any) => {
-    updateData({ ...values, needs_from_coach: needsFromCoach })
+    updateData({
+      ...values,
+      why_connection: whyConnection,
+      week_rating: weekRating,
+      needs_from_coach: needsFromCoach,
+    })
     onNext()
   }
 
@@ -117,7 +122,7 @@ export function Step05Mindset({ onNext, onBack }: Props) {
         highLabel="Best week yet"
       />
 
-      <NavButtons onBack={onBack} onNext={handleSubmit(onSubmit)} />
+      <NavButtons onBack={onBack} onNext={() => handleSubmit(onSubmit)()} />
     </SectionCard>
   )
 }

@@ -66,6 +66,10 @@ export function Step01Metrics({ onNext }: Props) {
       chest_inches: data.chest_inches,
       hip_inches: data.hip_inches,
       other_measurement: data.other_measurement,
+      lower_belly_inches: data.lower_belly_inches,
+      thigh_inches: data.thigh_inches,
+      daily_steps: data.daily_steps,
+      health_issues: data.health_issues,
     },
   })
 
@@ -134,6 +138,34 @@ export function Step01Metrics({ onNext }: Props) {
           {...register('hip_inches')}
         />
       </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <Input
+          label="Lower belly (inches)"
+          type="number"
+          placeholder="e.g. 35"
+          {...register('lower_belly_inches')}
+        />
+        <Input
+          label="Thigh (inches)"
+          type="number"
+          placeholder="e.g. 22"
+          {...register('thigh_inches')}
+        />
+      </div>
+
+      <Input
+        label="Daily steps this week (average)"
+        type="number"
+        placeholder="e.g. 7500"
+        {...register('daily_steps')}
+      />
+
+      <Input
+        label="Any health issues this week?"
+        placeholder="e.g. back pain, headache, feeling off..."
+        {...register('health_issues')}
+      />
 
       <Input
         label="Any other measurement"

@@ -20,7 +20,7 @@ interface Props {
 export function Step03Wellbeing({ onNext, onBack }: Props) {
   const { data, updateData } = useCheckinStore()
 
-  const { handleSubmit, setValue, watch } = useForm({
+  const { setValue, handleSubmit,watch } = useForm({
     defaultValues: {
       mood: data.mood,
       energy_level: data.energy_level,
@@ -36,8 +36,15 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
   const sleepQuality = watch('sleep_quality')
   const stressLevel = watch('stress_level')
 
-  const onSubmit = (values: any) => {
-    updateData(values)
+ const onSubmit = (values: any) => {
+    updateData({
+      ...values,
+      mood,
+      energy_level: energyLevel,
+      sleep_duration: sleepDuration,
+      sleep_quality: sleepQuality,
+      stress_level: stressLevel,
+    })
     onNext()
   }
 
@@ -110,7 +117,7 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
         highLabel="Extremely high"
       />
 
-      <NavButtons onBack={onBack} onNext={handleSubmit(onSubmit)} />
+      <NavButtons onBack={onBack} onNext={() => handleSubmit(onSubmit)()} />
     </SectionCard>
   )
 }

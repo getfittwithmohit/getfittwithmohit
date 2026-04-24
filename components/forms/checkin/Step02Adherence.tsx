@@ -23,7 +23,7 @@ const WORKOUT_DAYS = ['0', '1', '2', '3', '4', '5', '6'] as const
 export function Step02Adherence({ onNext, onBack }: Props) {
   const { data, updateData } = useCheckinStore()
 
-  const { register, handleSubmit, setValue, watch } = useForm({
+  const { register,handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       workouts_completed: data.workouts_completed,
       workout_intensity: data.workout_intensity,
@@ -41,9 +41,16 @@ export function Step02Adherence({ onNext, onBack }: Props) {
   const mealsFollowed = watch('meals_followed')
 
   const onSubmit = (values: any) => {
-    updateData(values)
-    onNext()
-  }
+  updateData({
+    ...values,                          // gets registered fields (register())
+    workouts_completed: workoutsCompleted,  // gets setValue fields (watch())
+    workout_intensity: workoutIntensity,
+    nutrition_adherence: nutritionAdherence,
+    water_intake: waterIntake,
+    meals_followed: mealsFollowed,
+  })
+  onNext()
+}
 
   return (
     <SectionCard
@@ -125,7 +132,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
         {...register('off_plan_foods')}
       />
 
-      <NavButtons onBack={onBack} onNext={handleSubmit(onSubmit)} />
+      <NavButtons onBack={onBack} onNext={() => handleSubmit(onSubmit)()} />
     </SectionCard>
   )
 }

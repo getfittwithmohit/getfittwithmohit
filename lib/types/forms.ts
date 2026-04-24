@@ -184,6 +184,10 @@ export interface CheckinFormData {
   waist_inches: string
   chest_inches: string
   hip_inches: string
+  lower_belly_inches: string
+  thigh_inches: string
+  daily_steps: string
+  health_issues: string
   other_measurement: string
 
   // Section 2 — Adherence
@@ -224,6 +228,10 @@ export const CHECKIN_DEFAULTS: CheckinFormData = {
   waist_inches: '',
   chest_inches: '',
   hip_inches: '',
+  lower_belly_inches: '',
+  thigh_inches: '',
+  daily_steps: '',
+  health_issues: '',
   other_measurement: '',
   workouts_completed: '',
   workout_intensity: '',
