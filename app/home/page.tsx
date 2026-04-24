@@ -199,6 +199,12 @@ if (!client) {
   href: '/pledge',
   emoji: '✊',
   color: '#1a1f3a',
+},{
+  label: 'My Progress',
+  description: 'View your transformation journey',
+  href: '/home/progress',
+  emoji: '📊',
+  color: '#22c55e',
 },
           ].map((item) => (
             <button

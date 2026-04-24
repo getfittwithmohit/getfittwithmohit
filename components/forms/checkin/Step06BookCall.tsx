@@ -106,7 +106,7 @@ export function Step06BookCall({ onNext, onBack, submitting }: Props) {
         
          <button
           type="button"
-          onClick={() => window.open('https://cal.com/mohit/weekly-review', '_blank')}
+          onClick={() => window.open('https://cal.com/fittnesscoach/weekly-review-call-for-1-1-clients-only?overlayCalendar=true', '_blank')}
           className="inline-block bg-[#00d4d4] text-[#1a1f3a] px-8 py-3 rounded-xl text-sm font-medium hover:bg-[#00bcbc] transition-colors"
         >
           Open Booking Calendar

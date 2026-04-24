@@ -122,9 +122,7 @@ export function DetailPanel({
   }
 
   const handleViewProfile = () => {
-    window.alert(
-      `Viewing full profile for ${client.full_name}.\n\nFull profile view — coming in next build.`
-    )
+    window.open(`/coach/dashboard/client/${client.id}`, '_blank')
   }
 
   const handleStartProgramme = async () => {

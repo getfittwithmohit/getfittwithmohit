@@ -210,3 +210,106 @@ export function getRetentionAlert(
 
   return null
 }
+
+// Fetch client progress — all checkins + identity + pledge status
+export async function getClientProgress(clientId: string) {
+  const [checkinsRes, identityRes, pledgeRes, clientRes] = await Promise.all([
+    supabase
+      .from('weekly_checkins')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('week_number', { ascending: true }),
+
+    supabase
+      .from('identity_cards')
+      .select('id, created_at')
+      .eq('client_id', clientId)
+      .single(),
+
+    supabase
+      .from('commitment_pledges')
+      .select('id, signed_at, doing_this_for')
+      .eq('client_id', clientId)
+      .single(),
+
+    supabase
+      .from('clients')
+      .select('*, body_metrics(*)')
+      .eq('id', clientId)
+      .single(),
+  ])
+
+  return {
+    client: clientRes.data,
+    checkins: checkinsRes.data || [],
+    identity: identityRes.data || null,
+    pledge: pledgeRes.data || null,
+  }
+}
+
+// Check this week's checkin status
+export function getThisWeekCheckinStatus(
+  checkins: any[],
+  currentWeek: number
+): 'submitted' | 'pending' {
+  const thisWeek = checkins.find((c) => c.week_number === currentWeek)
+  return thisWeek ? 'submitted' : 'pending'
+}
+
+// Calculate check-in streak
+export function calcCheckinStreak(checkins: any[]): number {
+  if (!checkins.length) return 0
+  const sorted = [...checkins].sort((a, b) => b.week_number - a.week_number)
+  let streak = 0
+  let expected = sorted[0].week_number
+  for (const c of sorted) {
+    if (c.week_number === expected) {
+      streak++
+      expected--
+    } else {
+      break
+    }
+  }
+  return streak
+}
+
+// Calculate workout streak (weeks where workouts_completed >= 3)
+export function calcWorkoutStreak(checkins: any[]): number {
+  if (!checkins.length) return 0
+  const sorted = [...checkins].sort((a, b) => b.week_number - a.week_number)
+  let streak = 0
+  let expected = sorted[0].week_number
+  for (const c of sorted) {
+    if (c.week_number === expected && (c.workouts_completed || 0) >= 3) {
+      streak++
+      expected--
+    } else {
+      break
+    }
+  }
+  return streak
+}
+
+// Calculate total weight lost and measurements lost
+export function calcTransformation(client: any, checkins: any[]) {
+  const startWeight = client?.body_metrics?.[0]?.weight_kg || null
+  const sorted = [...checkins].sort((a, b) => b.week_number - a.week_number)
+  const latest = sorted[0] || null
+
+  const currentWeight = latest?.weight_kg || null
+  const weightLost = startWeight && currentWeight
+    ? parseFloat((startWeight - currentWeight).toFixed(1))
+    : null
+
+  // Best week — highest week rating
+  const bestWeek = checkins.reduce((best, c) => {
+    if (!best || (c.week_rating || 0) > (best.week_rating || 0)) return c
+    return best
+  }, null)
+
+  // Personal bests
+  const maxEnergy = Math.max(...checkins.map((c) => c.energy_level || 0))
+  const maxSteps = Math.max(...checkins.map((c) => c.daily_steps || 0))
+
+  return { startWeight, currentWeight, weightLost, bestWeek, maxEnergy, maxSteps }
+}
