@@ -88,8 +88,15 @@ if (user) {
       sleep_duration: data.sleep_duration,
       sleep_quality: data.sleep_quality,
       stress_level: parseInt(data.stress_level) || null,
-      biggest_win: data.wins_description,
-      biggest_challenge: data.challenges_description,
+      biggest_win: [
+  ...(data.wins || []),
+  data.wins_description
+].filter(Boolean).join(' | '),
+
+biggest_challenge: [
+  ...(data.challenges || []),
+  data.challenges_description
+].filter(Boolean).join(' | '),
       real_life_context: data.real_life_context,
       mindset_answer: data.mindset_answer,
       why_connection: parseInt(data.why_connection) || null,
