@@ -17,7 +17,7 @@ const PHASE_COLORS: Record<string, string> = {
 
 export default function DashboardPage() {
 
-  const { checking } = useAuthGuard('/login')
+  const { checking } = useAuthGuard('coach')
   
 
   const { clients, loading, error, flagClient, saveNotes } = useClients()

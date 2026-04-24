@@ -103,6 +103,7 @@ await supabase.from('identity_cards').insert({
   }
 
   // Success screen
+  
   if (submitted) {
     return (
       <SuccessScreen

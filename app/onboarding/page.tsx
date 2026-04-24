@@ -156,11 +156,12 @@ useEffect(() => {
   }
 
   // Success screen
-  if (submitted) {
+ if (submitted) {
     return (
       <SuccessScreen
         name={data.personal.first_name || 'there'}
-        clientId={clientId}
+        title="Welcome to the programme!"
+        message="Coach Mohit will review your profile within 24 hours and reach out to schedule your first consultation call."
       />
     )
   }

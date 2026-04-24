@@ -143,7 +143,8 @@ fetch('/api/checkin', {
     return (
       <SuccessScreen
         name="you"
-        message="Check-in submitted! Coach Mohit will review it before your call. Show up ready — he'll have everything he needs to make your session count."
+        message="Coach Mohit will review everything before your call. Show up ready — he'll have everything he needs to make your session count."
+        showBooking={true}
       />
     )
   }
