@@ -54,17 +54,23 @@ if (user) {
     .single()
 
   if (client) {
-    clientId = client.id
-    // Calculate week number
-    if (client.start_date) {
-      const start = new Date(client.start_date)
-      const today = new Date()
-      const diff = Math.floor(
-        (today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7)
-      )
-      weekNumber = Math.max(1, diff + 1)
-    }
+  clientId = client.id
+  if (client.start_date) {
+    const start = new Date(client.start_date)
+    const today = new Date()
+    const diff = Math.floor(
+      (today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7)
+    )
+    weekNumber = Math.max(1, diff + 1)
+  } else {
+    // Fallback — count existing checkins + 1
+    const { count } = await supabase
+      .from('weekly_checkins')
+      .select('*', { count: 'exact', head: true })
+      .eq('client_id', client.id)
+    weekNumber = (count || 0) + 1
   }
+}
 }
 
     await supabase.from('weekly_checkins').insert({
@@ -77,6 +83,7 @@ if (user) {
       lower_belly_inches: parseFloat(data.lower_belly_inches) || null,
       thigh_inches: parseFloat(data.thigh_inches) || null,
       daily_steps: parseInt(data.daily_steps) || null,
+      saver_days: parseInt(data.saver_days) || 0,
       health_issues: data.health_issues || null,
       workouts_completed: parseInt(data.workouts_completed) || null,
       workout_intensity: data.workout_intensity,
@@ -145,20 +152,28 @@ fetch('/api/checkin', {
     <div className="min-h-screen bg-[#f8fafc]">
 
       {/* Header */}
-      <div className="bg-[#1a1f3a] text-center py-8 px-4">
-  <div className="flex flex-col items-center gap-3">
-    <img
-      src="/logo.png"
-      alt="GetFittWithMohit"
-      className="w-20 h-20 object-contain"
-    />
-    <h2 className="text-white text-xl font-medium">
-      Weekly Check-In
-    </h2>
-    <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed">
-      {getDayGreeting()} · Friday evening · Takes 8–10 minutes ·
-      Be honest — this is your time
-    </p>
+<div className="bg-[#1a1f3a] px-6 py-5">
+  <div className="max-w-2xl mx-auto">
+    <button
+      onClick={() => window.location.href = '/home'}
+      className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
+    >
+      ← Home
+    </button>
+    <div className="flex flex-col items-center gap-3">
+      <img
+        src="/logo.png"
+        alt="GetFittWithMohit"
+        className="w-16 h-16 object-contain"
+      />
+      <h2 className="text-white text-xl font-medium">
+        Weekly Check-In
+      </h2>
+      <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed text-center">
+        {getDayGreeting()} · Friday evening · Takes 8–10 minutes ·
+        Be honest — this is your time
+      </p>
+    </div>
   </div>
 </div>
 

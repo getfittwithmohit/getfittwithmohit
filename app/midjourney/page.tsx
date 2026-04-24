@@ -129,22 +129,30 @@ export default function MidJourneyPage() {
     <div className="min-h-screen bg-[#f8fafc]">
 
       {/* Header */}
-      <div className="bg-[#1a1f3a] text-center py-8 px-4">
-  <div className="flex flex-col items-center gap-3">
-    <img
-      src="/logo.png"
-      alt="GetFittWithMohit"
-      className="w-20 h-20 object-contain"
-    />
-    <h2 className="text-white text-xl font-medium">
-      Mid-Journey Onboarding
-    </h2>
-    <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed">
-      For existing clients transitioning into the premium system.
-    </p>
-    <span className="inline-block text-xs font-medium px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-      Transferred Client · Existing Journey
-    </span>
+      <div className="bg-[#1a1f3a] px-6 py-5">
+  <div className="max-w-2xl mx-auto">
+    <button
+      onClick={() => window.location.href = '/home'}
+      className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
+    >
+      ← Home
+    </button>
+    <div className="flex flex-col items-center gap-3">
+      <img
+        src="/logo.png"
+        alt="GetFittWithMohit"
+        className="w-16 h-16 object-contain"
+      />
+      <h2 className="text-white text-xl font-medium">
+        Mid-Journey Onboarding
+      </h2>
+      <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed text-center">
+        For existing clients transitioning into the premium system.
+      </p>
+      <span className="inline-block text-xs font-medium px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+        Transferred Client · Existing Journey
+      </span>
+    </div>
   </div>
 </div>
 

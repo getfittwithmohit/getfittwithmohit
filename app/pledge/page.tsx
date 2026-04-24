@@ -364,17 +364,25 @@ if (pledgeSigned && existingPledge) {
     <div className="min-h-screen bg-[#f8fafc]">
 
       {/* Header */}
-      <div className="bg-[#1a1f3a] text-center py-8 px-4">
-        <div className="flex flex-col items-center gap-3">
-          <img src="/logo.png" alt="GetFittWithMohit" className="w-16 h-16 object-contain" />
-          <h2 className="text-white text-lg font-medium">
-            Commitment Pledge
-          </h2>
-          <p className="text-white/50 text-sm max-w-md mx-auto">
-            Read this in silence. Read it with full heart. This is the moment everything changes.
-          </p>
-        </div>
-      </div>
+      <div className="bg-[#1a1f3a] px-6 py-5">
+  <div className="max-w-2xl mx-auto">
+    <button
+      onClick={() => window.location.href = '/home'}
+      className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
+    >
+      ← Home
+    </button>
+    <div className="flex flex-col items-center gap-3">
+      <img src="/logo.png" alt="GetFittWithMohit" className="w-16 h-16 object-contain" />
+      <h2 className="text-white text-lg font-medium">
+        Commitment Pledge
+      </h2>
+      <p className="text-white/50 text-sm max-w-md mx-auto text-center">
+        Read this in silence. Read it with full heart. This is the moment everything changes.
+      </p>
+    </div>
+  </div>
+</div>
 
       {/* Progress dots */}
       <div className="flex justify-center gap-2 py-5">

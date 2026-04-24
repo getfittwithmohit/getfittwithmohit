@@ -3,22 +3,31 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 
-export function useAuthGuard(redirectTo: string = '/login') {
+export function useAuthGuard(role?: 'coach') {
   const [checking, setChecking] = useState(true)
   const [authenticated, setAuthenticated] = useState(false)
 
   useEffect(() => {
-    async function check() {
-      const { data: { session } } = await supabase.auth.getSession()
+    // getSession is instant if session is cached
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        window.location.href = redirectTo
+        window.location.href = '/login'
         return
       }
+
+      // Coach guard
+      if (role === 'coach') {
+        const coachEmail = process.env.NEXT_PUBLIC_COACH_EMAIL
+        if (session.user.email?.toLowerCase() !== coachEmail?.toLowerCase()) {
+          window.location.href = '/home'
+          return
+        }
+      }
+
       setAuthenticated(true)
       setChecking(false)
-    }
-    check()
-  }, [redirectTo])
+    })
+  }, [role])
 
   return { checking, authenticated }
 }

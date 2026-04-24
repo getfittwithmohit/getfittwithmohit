@@ -197,6 +197,7 @@ export interface CheckinFormData {
   water_intake: string
   meals_followed: string
   off_plan_foods: string
+  saver_days: string
 
   // Section 3 — Wellbeing
   mood: string
@@ -239,6 +240,7 @@ export const CHECKIN_DEFAULTS: CheckinFormData = {
   water_intake: '',
   meals_followed: '',
   off_plan_foods: '',
+  saver_days: '',
   mood: '',
   energy_level: '',
   sleep_duration: '',

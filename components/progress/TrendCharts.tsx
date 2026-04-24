@@ -39,6 +39,7 @@ export function TrendCharts({ checkins }: TrendChartsProps) {
       Nutrition: c.nutrition_adherence || null,
       Rating: c.week_rating || null,
       Mood: c.mood || null,
+      SAVER: c.saver_days || null,
     }))
 
   if (!data.length) {
@@ -105,12 +106,14 @@ export function TrendCharts({ checkins }: TrendChartsProps) {
             <Tooltip {...tooltipStyle} />
             <Bar dataKey="Workout" fill="#00d4d4" radius={[4, 4, 0, 0]} />
             <Bar dataKey="Nutrition" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="SAVER" fill="#a855f7" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
         <div className="flex gap-4 mt-2">
-          <span className="text-xs flex items-center gap-1"><span className="w-3 h-2 bg-[#00d4d4] inline-block rounded" /> Workouts</span>
-          <span className="text-xs flex items-center gap-1"><span className="w-3 h-2 bg-[#f59e0b] inline-block rounded" /> Nutrition /10</span>
-        </div>
+  <span className="text-xs flex items-center gap-1"><span className="w-3 h-2 bg-[#00d4d4] inline-block rounded" /> Workouts</span>
+  <span className="text-xs flex items-center gap-1"><span className="w-3 h-2 bg-[#f59e0b] inline-block rounded" /> Nutrition /10</span>
+  <span className="text-xs flex items-center gap-1"><span className="w-3 h-2 bg-[#a855f7] inline-block rounded" /> SAVER days</span>
+</div>
       </TrendCard>
 
       {/* Week Rating */}

@@ -19,6 +19,7 @@ interface Props {
 }
 
 const WORKOUT_DAYS = ['0', '1', '2', '3', '4', '5', '6'] as const
+const SAVER_DAYS = ['0', '1', '2', '3', '4', '5', '6', '7'] as const
 
 export function Step02Adherence({ onNext, onBack }: Props) {
   const { data, updateData } = useCheckinStore()
@@ -31,6 +32,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
       water_intake: data.water_intake,
       meals_followed: data.meals_followed,
       off_plan_foods: data.off_plan_foods,
+      saver_days: data.saver_days,
     },
   })
 
@@ -39,6 +41,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
   const nutritionAdherence = watch('nutrition_adherence')
   const waterIntake = watch('water_intake')
   const mealsFollowed = watch('meals_followed')
+  const saverDays = watch('saver_days')
 
   const onSubmit = (values: any) => {
   updateData({
@@ -48,6 +51,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
     nutrition_adherence: nutritionAdherence,
     water_intake: waterIntake,
     meals_followed: mealsFollowed,
+    saver_days: saverDays,
   })
   onNext()
 }
@@ -123,6 +127,37 @@ export function Step02Adherence({ onNext, onBack }: Props) {
         value={mealsFollowed}
         onChange={(v) => setValue('meals_followed', v)}
       />
+
+{/* SAVER days */}
+      <div>
+        <p className="text-xs font-medium text-[#64748b] mb-2">
+          How many days did you complete your SAVER routine?
+          <span className="text-[#00d4d4] ml-0.5">*</span>
+        </p>
+        <div className="flex gap-2">
+          {SAVER_DAYS.map((day) => (
+            <button
+              key={day}
+              type="button"
+              onClick={() => setValue('saver_days', day)}
+              className={`
+                w-10 h-10 rounded-lg text-sm font-medium border
+                transition-all duration-150
+                ${saverDays === day
+                  ? 'bg-[#1a1f3a] text-[#00d4d4] border-[#00d4d4]'
+                  : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00d4d4]'
+                }
+              `}
+            >
+              {day}
+            </button>
+          ))}
+        </div>
+        <div className="flex justify-between text-xs text-[#94a3b8] mt-1.5 px-1">
+          <span>None</span>
+          <span>Every day</span>
+        </div>
+      </div>
 
       {/* Off plan */}
       <Textarea
