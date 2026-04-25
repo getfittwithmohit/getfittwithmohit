@@ -54,12 +54,12 @@ export default function ClientHomePage() {
           .from('commitment_pledges')
           .select('doing_this_for, signed_at')
           .eq('client_id', client.id)
-          .single(),
+          .maybeSingle(),
         supabase
           .from('identity_cards')
           .select('id')
           .eq('client_id', client.id)
-          .single(),
+          .maybeSingle(),
       ])
 
       if (pledgeRes.data) setPledge(pledgeRes.data)
@@ -73,7 +73,7 @@ export default function ClientHomePage() {
           .select('id')
           .eq('client_id', client.id)
           .eq('week_number', client.current_week)
-          .single()
+          .maybeSingle()
         setCheckinDone(!!checkinData)
       }
 
