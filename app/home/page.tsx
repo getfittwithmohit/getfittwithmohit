@@ -48,14 +48,6 @@ export default function ClientHomePage() {
 
   useEffect(() => {
     async function fetchData() {
-      // Check if coach first — before anything else
-      const { data: { user } } = await supabase.auth.getUser()
-      const coachEmail = process.env.NEXT_PUBLIC_COACH_EMAIL
-      if (user?.email?.toLowerCase() === coachEmail?.toLowerCase()) {
-        window.location.href = '/coach/dashboard'
-        return
-      }
-
       if (!client) {
         setDataLoading(false)
         return
@@ -92,11 +84,8 @@ export default function ClientHomePage() {
       setDataLoading(false)
     }
 
-    // Only run once user+client state is resolved
-    if (!loading && !checking) {
-      fetchData()
-    }
-  }, [client, loading, checking])
+    if (!checking) fetchData()
+  }, [client, checking])
 
   if (checking || loading || dataLoading) return <PageLoader />
 

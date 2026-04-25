@@ -5,29 +5,33 @@ import { supabase } from '@/lib/supabase/client'
 
 export function useAuthGuard(role?: 'coach') {
   const [checking, setChecking] = useState(true)
-  const [authenticated, setAuthenticated] = useState(false)
 
   useEffect(() => {
-    // getSession is instant if session is cached
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         window.location.href = '/login'
         return
       }
 
-      // Coach guard
-      if (role === 'coach') {
-        const coachEmail = process.env.NEXT_PUBLIC_COACH_EMAIL
-        if (session.user.email?.toLowerCase() !== coachEmail?.toLowerCase()) {
-          window.location.href = '/home'
-          return
-        }
+      const email = session.user.email?.toLowerCase()
+      const coachEmail = process.env.NEXT_PUBLIC_COACH_EMAIL?.toLowerCase()
+      const isCoach = email === coachEmail
+
+      if (role === 'coach' && !isCoach) {
+        // Non-coach trying to access coach page
+        window.location.href = '/home'
+        return
       }
 
-      setAuthenticated(true)
+      if (!role && isCoach) {
+        // Coach trying to access client page
+        window.location.href = '/coach/dashboard'
+        return
+      }
+
       setChecking(false)
     })
   }, [role])
 
-  return { checking, authenticated }
+  return { checking }
 }
