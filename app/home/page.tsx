@@ -44,10 +44,22 @@ export default function ClientHomePage() {
   const [checkinDone, setCheckinDone] = useState<boolean>(true)
   const [dataLoading, setDataLoading] = useState(true)
   const [saverOpen, setSaverOpen] = useState(false)
+  const [isCoach, setIsCoach] = useState(false)
 
   useEffect(() => {
     async function fetchData() {
-      if (!client) return
+      // Check if coach and redirect
+      const { data: { user } } = await supabase.auth.getUser()
+      const coachEmail = process.env.NEXT_PUBLIC_COACH_EMAIL
+      if (user?.email?.toLowerCase() === coachEmail?.toLowerCase()) {
+        window.location.href = '/coach/dashboard'
+        return
+      }
+
+      if (!client) {
+        setDataLoading(false)
+        return
+      }
 
       const [pledgeRes, identityRes] = await Promise.all([
         supabase
@@ -111,8 +123,7 @@ export default function ClientHomePage() {
   const quote = DAILY_QUOTES[today.getDay()]
   const firstName = client?.full_name?.split(' ')[0] || 'there'
 
-  // All pending items
-  const pendingItems = []
+  const pendingItems: any[] = []
   if (!checkinDone) pendingItems.push({
     emoji: '📋',
     label: `Week ${client?.current_week || ''} Check-in`,
@@ -138,7 +149,7 @@ export default function ClientHomePage() {
   return (
     <div className="min-h-screen bg-[#f8fafc]">
 
-      {/* Header — same as every other page */}
+      {/* Header */}
       <div className="bg-[#1a1f3a] px-6 py-5">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -175,7 +186,6 @@ export default function ClientHomePage() {
         {/* Phase + motivation card */}
         <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-5">
 
-          {/* Phase row */}
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-xs text-[#94a3b8] uppercase tracking-wide mb-0.5">
@@ -195,10 +205,8 @@ export default function ClientHomePage() {
             )}
           </div>
 
-          {/* Divider */}
           <div className="border-t border-[#e2e8f0] mb-4" />
 
-          {/* Pledge */}
           {pledge?.doing_this_for && (
             <div className="mb-4">
               <p className="text-xs text-[#94a3b8] mb-1">Doing this for</p>
@@ -208,14 +216,12 @@ export default function ClientHomePage() {
             </div>
           )}
 
-          {/* Quote */}
           <div className="border-l-2 border-[#00d4d4]/30 pl-3 mb-4">
             <p className="text-xs text-[#64748b] italic leading-relaxed">
               "{quote}"
             </p>
           </div>
 
-          {/* SAVER nudge */}
           <button
             onClick={() => setSaverOpen(true)}
             className="flex items-center gap-2 text-left hover:opacity-80 transition-opacity w-full"
@@ -253,12 +259,8 @@ export default function ClientHomePage() {
                     {item.emoji}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-[#0f172a]">
-                      {item.label}
-                    </p>
-                    <p className="text-xs text-[#94a3b8] mt-0.5">
-                      {item.description}
-                    </p>
+                    <p className="text-sm font-medium text-[#0f172a]">{item.label}</p>
+                    <p className="text-xs text-[#94a3b8] mt-0.5">{item.description}</p>
                   </div>
                   <span
                     className="text-xs px-2.5 py-1 rounded-full font-medium flex-shrink-0"
@@ -305,6 +307,7 @@ export default function ClientHomePage() {
         </div>
 
       </div>
+
       {/* Floating SAVER button */}
       <button
         onClick={() => setSaverOpen(true)}
@@ -320,20 +323,15 @@ export default function ClientHomePage() {
           onClick={() => setSaverOpen(false)}
         >
           <div
-            className="bg-white rounded-t-3xl w-full max-w-2xl p-6 pb-10"
+            className="bg-white rounded-t-3xl w-full max-w-2xl p-6 pb-10 overflow-y-auto max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Handle */}
             <div className="w-10 h-1 bg-[#e2e8f0] rounded-full mx-auto mb-6" />
 
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-lg font-medium text-[#0f172a]">
-                  Your SAVER Routine
-                </h3>
-                <p className="text-xs text-[#94a3b8] mt-0.5">
-                  Do this every morning · Takes 45–60 mins total
-                </p>
+                <h3 className="text-lg font-medium text-[#0f172a]">Your SAVER Routine</h3>
+                <p className="text-xs text-[#94a3b8] mt-0.5">Do this every morning · Takes 45–60 mins total</p>
               </div>
               <button
                 onClick={() => setSaverOpen(false)}
@@ -346,10 +344,7 @@ export default function ClientHomePage() {
             <div className="flex flex-col gap-4">
               {[
                 {
-                  letter: 'S',
-                  word: 'Silence',
-                  duration: '5–10 mins',
-                  color: '#4a7fd4',
+                  letter: 'S', word: 'Silence', duration: '5–10 mins', color: '#4a7fd4',
                   steps: [
                     'Find a quiet spot — no phone, no noise',
                     'Sit comfortably and breathe slowly',
@@ -358,10 +353,7 @@ export default function ClientHomePage() {
                   ],
                 },
                 {
-                  letter: 'A',
-                  word: 'Affirmations',
-                  duration: '5 mins',
-                  color: '#00d4d4',
+                  letter: 'A', word: 'Affirmations', duration: '5 mins', color: '#00d4d4',
                   steps: [
                     'Write or speak 5–10 statements about who you are becoming',
                     'Use present tense: "I am strong. I am consistent."',
@@ -369,10 +361,7 @@ export default function ClientHomePage() {
                   ],
                 },
                 {
-                  letter: 'V',
-                  word: 'Visualisation',
-                  duration: '5 mins',
-                  color: '#a855f7',
+                  letter: 'V', word: 'Visualisation', duration: '5 mins', color: '#a855f7',
                   steps: [
                     'Close your eyes and see your 6-month goal clearly',
                     'Then see your 1-year self — how do you look, feel, move?',
@@ -381,10 +370,7 @@ export default function ClientHomePage() {
                   ],
                 },
                 {
-                  letter: 'E',
-                  word: 'Exercise',
-                  duration: '20–60 mins',
-                  color: '#f59e0b',
+                  letter: 'E', word: 'Exercise', duration: '20–60 mins', color: '#f59e0b',
                   steps: [
                     'Follow your Coach Mohit programme',
                     'Even on rest days — walk, stretch, move',
@@ -392,10 +378,7 @@ export default function ClientHomePage() {
                   ],
                 },
                 {
-                  letter: 'R',
-                  word: 'Reading',
-                  duration: '10+ mins',
-                  color: '#22c55e',
+                  letter: 'R', word: 'Reading', duration: '10+ mins', color: '#22c55e',
                   steps: [
                     'Read a book that grows your mind',
                     'Minimum 10 pages every morning',
@@ -439,6 +422,7 @@ export default function ClientHomePage() {
           </div>
         </div>
       )}
+
     </div>
   )
 }
