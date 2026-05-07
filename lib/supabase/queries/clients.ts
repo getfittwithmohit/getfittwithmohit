@@ -213,30 +213,91 @@ export function getRetentionAlert(
 
 // Fetch client progress — all checkins + identity + pledge status
 export async function getClientProgress(clientId: string) {
-  const [checkinsRes, identityRes, pledgeRes, clientRes] = await Promise.all([
-    supabase
-      .from('weekly_checkins')
-      .select('*')
-      .eq('client_id', clientId)
-      .order('week_number', { ascending: true }),
-
-    supabase
-      .from('identity_cards')
-      .select('id, created_at')
-      .eq('client_id', clientId)
-      .single(),
-
-    supabase
-      .from('commitment_pledges')
-      .select('id, signed_at, doing_this_for')
-      .eq('client_id', clientId)
-      .single(),
-
+  const [
+    clientRes,
+    checkinsRes,
+    identityRes,
+    pledgeRes,
+    medicalRes,
+    fitnessRes,
+    lifestyleRes,
+    nutritionRes,
+    psychologyRes,
+    expectationsRes,
+    assessmentsRes,
+    hormonalRes,
+  ] = await Promise.all([
     supabase
       .from('clients')
       .select('*, body_metrics(*)')
       .eq('id', clientId)
       .single(),
+
+    supabase
+      .from('weekly_checkins')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('submitted_at', { ascending: true }),
+
+    supabase
+      .from('identity_cards')
+      .select('*')
+      .eq('client_id', clientId)
+      .maybeSingle(),
+
+    supabase
+      .from('commitment_pledges')
+      .select('*')
+      .eq('client_id', clientId)
+      .maybeSingle(),
+
+    supabase
+      .from('medical_history')
+      .select('*')
+      .eq('client_id', clientId)
+      .maybeSingle(),
+
+    supabase
+      .from('fitness_background')
+      .select('*')
+      .eq('client_id', clientId)
+      .maybeSingle(),
+
+    supabase
+      .from('lifestyle')
+      .select('*')
+      .eq('client_id', clientId)
+      .maybeSingle(),
+
+    supabase
+      .from('nutrition')
+      .select('*')
+      .eq('client_id', clientId)
+      .maybeSingle(),
+
+    supabase
+      .from('psychology')
+      .select('*')
+      .eq('client_id', clientId)
+      .maybeSingle(),
+
+    supabase
+      .from('expectations')
+      .select('*')
+      .eq('client_id', clientId)
+      .maybeSingle(),
+
+    supabase
+      .from('assessments')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false }),
+
+    supabase
+      .from('hormonal_health')
+      .select('*')
+      .eq('client_id', clientId)
+      .maybeSingle(),
   ])
 
   return {
@@ -244,6 +305,14 @@ export async function getClientProgress(clientId: string) {
     checkins: checkinsRes.data || [],
     identity: identityRes.data || null,
     pledge: pledgeRes.data || null,
+    medical: medicalRes.data || null,
+    fitness: fitnessRes.data || null,
+    lifestyle: lifestyleRes.data || null,
+    nutrition: nutritionRes.data || null,
+    psychology: psychologyRes.data || null,
+    expectations: expectationsRes.data || null,
+    assessments: assessmentsRes.data || [],
+    hormonal: hormonalRes.data || null,
   }
 }
 

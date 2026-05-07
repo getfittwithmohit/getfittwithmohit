@@ -26,6 +26,35 @@ const RISK_OPTIONS = [
   { value: 'red', label: '🔴 At Risk' },
 ]
 
+function InfoSection({ title, data }: { title: string; data: Record<string, any> }) {
+  const entries = Object.entries(data).filter(
+    ([k, v]) => v !== null && v !== undefined && v !== '' && k !== 'id' && k !== 'client_id' && k !== 'created_at' && k !== 'updated_at'
+  )
+  if (!entries.length) return null
+  return (
+    <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 mb-4">
+      <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">{title}</p>
+      <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+        {entries.map(([key, value]) => (
+          <div key={key}>
+            <p className="text-xs text-[#94a3b8] mb-0.5 capitalize">
+              {key.replace(/_/g, ' ')}
+            </p>
+            <p className="text-sm text-[#0f172a] leading-relaxed">
+              {Array.isArray(value)
+                ? value.join(', ') || '—'
+                : typeof value === 'boolean'
+                  ? value ? 'Yes' : 'No'
+                  : String(value) || '—'
+              }
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function ClientProgressPage() {
   const { checking } = useAuthGuard('coach')
   const params = useParams()
@@ -78,7 +107,11 @@ export default function ClientProgressPage() {
 
   if (checking || loading) return <PageLoader />
 
-  const { client, checkins, identity, pledge } = progressData
+  const {
+  client, checkins, identity, pledge,
+  medical, fitness, lifestyle, nutrition,
+  psychology, expectations, assessments, hormonal,
+} = progressData
   const currentWeek = client?.current_week || 1
   const checkinStatus = getThisWeekCheckinStatus(checkins, currentWeek)
   const checkinStreak = calcCheckinStreak(checkins)
@@ -402,6 +435,143 @@ export default function ClientProgressPage() {
                       </div>
                     </div>
                   ))}
+              </div>
+            </div>
+          )}
+
+          {/* Commitment Pledge */}
+          {pledge && (
+            <InfoSection title="Commitment Pledge" data={{
+              signed_at: new Date(pledge.signed_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+              doing_this_for: pledge.doing_this_for,
+              why_transform: pledge.why_transform,
+              cost_of_inconsistency: pledge.cost_of_inconsistency,
+              person_becoming: pledge.person_becoming,
+              agreements: pledge.agreements,
+            }} />
+          )}
+
+          {/* Purpose & Identity */}
+          {identity && (
+            <InfoSection title="Purpose & Identity" data={{
+              submitted: new Date(identity.created_at).toLocaleDateString('en-IN'),
+              why: identity.why,
+              identity_statement: identity.identity_statement,
+              core_values: identity.core_values,
+              personal_commitment: identity.personal_commitment,
+              vision_6_months: identity.vision_6_months,
+              vision_1_year: identity.vision_1_year,
+              vision_5_years: identity.vision_5_years,
+            }} />
+          )}
+
+          {/* Medical History */}
+          {medical && (
+            <InfoSection title="Medical History" data={{
+              conditions: medical.conditions,
+              injuries: medical.injuries,
+              medications: medical.medications,
+              recent_surgery: medical.recent_surgery,
+              doctors_care: medical.doctors_care,
+            }} />
+          )}
+
+          {/* Fitness Background */}
+          {fitness && (
+            <InfoSection title="Fitness Background" data={{
+              fitness_level: fitness.fitness_level,
+              environments: fitness.environments,
+              training_days: fitness.training_days,
+              session_duration: fitness.session_duration,
+              current_activities: fitness.current_activities,
+            }} />
+          )}
+
+          {/* Lifestyle */}
+          {lifestyle && (
+            <InfoSection title="Lifestyle" data={{
+              sleep_duration: lifestyle.sleep_duration,
+              sleep_quality: lifestyle.sleep_quality,
+              stress_level: lifestyle.stress_level,
+              stress_sources: lifestyle.stress_sources,
+              daily_steps: lifestyle.daily_steps,
+              day_in_life: lifestyle.day_in_life,
+            }} />
+          )}
+
+          {/* Nutrition */}
+          {nutrition && (
+            <InfoSection title="Nutrition" data={{
+              diet_preference: nutrition.diet_preference,
+              allergies: nutrition.allergies,
+              disliked_foods: nutrition.disliked_foods,
+              meals_per_day: nutrition.meals_per_day,
+              eating_out_frequency: nutrition.eating_out_frequency,
+              digestion_issues: nutrition.digestion_issues,
+              water_intake: nutrition.water_intake,
+            }} />
+          )}
+
+          {/* Hormonal Health */}
+          {hormonal && (
+            <InfoSection title="Hormonal Health" data={{
+              cycle_regularity: hormonal.cycle_regularity,
+              mood_fluctuations: hormonal.mood_fluctuations,
+              hormonal_conditions: hormonal.hormonal_conditions,
+              additional_context: hormonal.additional_context,
+            }} />
+          )}
+
+          {/* Psychology */}
+          {psychology && (
+            <InfoSection title="Psychology & Mindset" data={{
+              previous_attempts: psychology.previous_attempts,
+              why_didnt_last: psychology.why_didnt_last,
+              readiness_score: psychology.readiness_score ? `${psychology.readiness_score}/10` : null,
+              willingness_score: psychology.willingness_score ? `${psychology.willingness_score}/10` : null,
+              biggest_fear: psychology.biggest_fear,
+              support_system: psychology.support_system,
+            }} />
+          )}
+
+          {/* Expectations */}
+          {expectations && (
+            <InfoSection title="Goals & Expectations" data={{
+              success_3_months: expectations.success_3_months,
+              success_12_months: expectations.success_12_months,
+              referral_source: expectations.referral_source,
+              anything_else: expectations.anything_else,
+            }} />
+          )}
+
+          {/* Assessments */}
+          {assessments.length > 0 && (
+            <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 mb-4">
+              <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">
+                Assessments ({assessments.length} total)
+              </p>
+              <div className="flex flex-col gap-3">
+                {assessments.map((a: any, i: number) => (
+                  <div key={i} className="p-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm font-medium text-[#0f172a]">
+                        Assessment #{assessments.length - i}
+                      </p>
+                      <p className="text-xs text-[#94a3b8]">
+                        {new Date(a.created_at).toLocaleDateString('en-IN', {
+                          day: 'numeric', month: 'short', year: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      {a.environment && <span className="text-[#64748b]">🏋️ {a.environment}</span>}
+                      {a.endurance_result && <span className="text-[#64748b]">🏃 Endurance: {a.endurance_result}</span>}
+                      {a.strength_reps && <span className="text-[#64748b]">💪 Strength: {a.strength_reps} reps</span>}
+                      {a.flexibility_result && <span className="text-[#64748b]">🧘 Flexibility: {a.flexibility_result}</span>}
+                      {a.mobility_result && <span className="text-[#64748b]">⚡ Mobility: {a.mobility_result}</span>}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
