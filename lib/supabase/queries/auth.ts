@@ -1,19 +1,41 @@
 import { supabase } from '@/lib/supabase/client'
 
+function calcLiveWeek(startDate: string): number {
+  const start = new Date(startDate)
+  const today = new Date()
+  const diff = Math.floor(
+    (today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7)
+  )
+  return Math.max(1, diff + 1)
+}
+
+async function refreshCurrentWeek(client: any) {
+  // Only auto-correct active programme phases, never Onboarding
+  if (!client?.start_date || client.phase === 'Onboarding') return client
+
+  const liveWeek = calcLiveWeek(client.start_date)
+  if (liveWeek !== client.current_week) {
+    await supabase
+      .from('clients')
+      .update({ current_week: liveWeek })
+      .eq('id', client.id)
+    return { ...client, current_week: liveWeek }
+  }
+  return client
+}
+
 export async function getCurrentClient() {
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) return null
 
-  // Find by auth_user_id
   const { data: client } = await supabase
     .from('clients')
     .select('*')
     .eq('auth_user_id', user.id)
     .maybeSingle()
 
-  if (client) return client
+  if (client) return await refreshCurrentWeek(client)
 
-  // Fallback — find by email
   const { data: clientByEmail } = await supabase
     .from('clients')
     .select('*')
@@ -21,13 +43,12 @@ export async function getCurrentClient() {
     .maybeSingle()
 
   if (clientByEmail) {
-    // Link auth_user_id
     await supabase
       .from('clients')
       .update({ auth_user_id: user.id })
       .eq('id', clientByEmail.id)
 
-    return clientByEmail
+    return await refreshCurrentWeek(clientByEmail)
   }
 
   return null

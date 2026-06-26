@@ -142,14 +142,13 @@ export async function addClient(payload: {
 
 // Calculate week number from start date
 export function calcCurrentWeek(startDate: string): number {
-  if (!startDate) return 0
+  if (!startDate) return 1
   const start = new Date(startDate)
   const today = new Date()
   const diff = Math.floor(
     (today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7)
   )
-  // Week 0 = onboarding, Week 1+ = programme
-  return Math.max(0, diff)
+  return Math.max(1, diff + 1)
 }
 
 export async function updateClientPhase(

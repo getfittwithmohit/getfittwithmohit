@@ -95,12 +95,13 @@ setStoryDone(hasStory)
         setCheckinDone(!!checkinData)
       }
 
-      const { data: codexData } = await supabase
+      const { data: codexFullData } = await supabase
   .from('codex_data')
-  .select('id')
+  .select('battle_cry, deepest_reason')
   .eq('client_id', client.id)
   .maybeSingle()
-setCodex(!!codexData)
+const hasSetup = !!(codexFullData?.battle_cry && codexFullData?.deepest_reason)
+setCodex(hasSetup)
 
 
 
@@ -161,18 +162,18 @@ setCodex(!!codexData)
     href: '/identity',
     color: '#a855f7',
   })
-  if (!codex) pendingItems.push({
-  emoji: '📖',
-  label: 'Build Your Codex',
-  description: 'Your personal transformation document',
-  href: '/codex',
-  color: '#4a7fd4',
-})
-if (!storyDone) pendingItems.push({
+  if (!storyDone) pendingItems.push({
   emoji: '📖',
   label: 'Your Story',
   description: 'Tell us where you came from — builds your Codex',
   href: '/codex/story',
+  color: '#4a7fd4',
+})
+if (!codex) pendingItems.push({
+  emoji: '📖',
+  label: 'Build Your Codex',
+  description: 'Your personal transformation document',
+  href: '/codex',
   color: '#4a7fd4',
 })
 
