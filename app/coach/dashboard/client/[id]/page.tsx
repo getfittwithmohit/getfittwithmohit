@@ -17,7 +17,7 @@ import { BodyChart } from '@/components/progress/BodyChart'
 import { TrendCharts } from '@/components/progress/TrendCharts'
 import { supabase } from '@/lib/supabase/client'
 
-type Tab = 'progress' | 'edit'
+type Tab = 'progress' | 'edit' | 'calls'
 
 const PHASES = ['Onboarding', 'Adaptation', 'Building', 'Performance', 'Maintenance']
 const RISK_OPTIONS = [
@@ -70,6 +70,18 @@ export default function ClientProgressPage() {
   const [saving, setSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
 
+  // Weekly Calls tab state
+  const [calls, setCalls] = useState<any[]>([])
+  const [callsLoading, setCallsLoading] = useState(false)
+  const [editingWeek, setEditingWeek] = useState<number | null>(null)
+  const [callForm, setCallForm] = useState({
+    status: 'completed' as 'completed' | 'missed' | 'rescheduled' | 'pending',
+    discussed: '',
+    changes: '',
+    next_focus: '',
+  })
+  const [savingCall, setSavingCall] = useState(false)
+
   useEffect(() => {
     if (!clientId) return
     getClientProgress(clientId).then((data) => {
@@ -89,6 +101,7 @@ export default function ClientProgressPage() {
         risk_status: data.client?.risk_status || 'green',
         start_date: data.client?.start_date || '',
         current_week: data.client?.current_week || 1,
+        program_duration_weeks: data.client?.program_duration_weeks || 12,
       })
 
       // Pre-fill body metrics
@@ -105,13 +118,61 @@ export default function ClientProgressPage() {
     })
   }, [clientId])
 
+  const loadCalls = async () => {
+    setCallsLoading(true)
+    try {
+      const res = await fetch(`/api/review-calls/list?clientId=${clientId}`)
+      const data = await res.json()
+      setCalls(data.calls || [])
+    } catch (err) {
+      console.error('Failed to load calls:', err)
+    } finally {
+      setCallsLoading(false)
+    }
+  }
+
+  const startEditCall = (call: any) => {
+    setEditingWeek(call.week_number)
+    setCallForm({
+      status: call.status || 'pending',
+      discussed: call.discussed || '',
+      changes: call.changes || '',
+      next_focus: call.next_focus || '',
+    })
+  }
+
+  const saveCall = async (weekNumber: number) => {
+    setSavingCall(true)
+    try {
+      await fetch('/api/review-calls/mark', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId,
+          weekNumber,
+          status: callForm.status,
+          discussed: callForm.discussed || null,
+          changes: callForm.changes || null,
+          next_focus: callForm.next_focus || null,
+        }),
+      })
+      setEditingWeek(null)
+      await loadCalls()
+    } catch (err) {
+      console.error('Save call error:', err)
+      window.alert('Something went wrong.')
+    } finally {
+      setSavingCall(false)
+    }
+  }
+
   if (checking || loading) return <PageLoader />
 
   const {
-  client, checkins, identity, pledge,
-  medical, fitness, lifestyle, nutrition,
-  psychology, expectations, assessments, hormonal,
-} = progressData
+    client, checkins, identity, pledge,
+    medical, fitness, lifestyle, nutrition,
+    psychology, expectations, assessments, hormonal,
+  } = progressData
   const currentWeek = client?.current_week || 1
   const checkinStatus = getThisWeekCheckinStatus(checkins, currentWeek)
   const checkinStreak = calcCheckinStreak(checkins)
@@ -127,7 +188,6 @@ export default function ClientProgressPage() {
     setSaving(true)
     setSaveSuccess(false)
     try {
-      // Calculate week from start_date if changed
       let currentWeekCalc = editData.current_week
       if (editData.start_date) {
         const start = new Date(editData.start_date)
@@ -138,7 +198,6 @@ export default function ClientProgressPage() {
         currentWeekCalc = Math.max(1, diff + 1)
       }
 
-      // Update client record
       await supabase
         .from('clients')
         .update({
@@ -153,10 +212,10 @@ export default function ClientProgressPage() {
           risk_status: editData.risk_status,
           start_date: editData.start_date || null,
           current_week: currentWeekCalc,
+          program_duration_weeks: parseInt(editData.program_duration_weeks) || 12,
         })
         .eq('id', clientId)
 
-      // Update body metrics — upsert latest
       if (client?.body_metrics?.[0]?.id) {
         await supabase
           .from('body_metrics')
@@ -250,10 +309,14 @@ export default function ClientProgressPage() {
           {[
             { key: 'progress', label: '📊 Progress' },
             { key: 'edit', label: '✏️ Edit Profile' },
+            { key: 'calls', label: '📞 Weekly Calls' },
           ].map((t) => (
             <button
               key={t.key}
-              onClick={() => setTab(t.key as Tab)}
+              onClick={() => {
+                setTab(t.key as Tab)
+                if (t.key === 'calls' && calls.length === 0) loadCalls()
+              }}
               className={`px-6 py-3.5 text-sm font-medium border-b-2 transition-colors ${
                 tab === t.key
                   ? 'border-[#00d4d4] text-[#0f172a]'
@@ -377,6 +440,18 @@ export default function ClientProgressPage() {
                 <div className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm bg-[#f8fafc] text-[#64748b]">
                   Week {editData.current_week}
                 </div>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+                  Programme duration (weeks)
+                </label>
+                <input
+                  type="number"
+                  value={editData.program_duration_weeks || ''}
+                  onChange={(e) => setEditData((p: any) => ({ ...p, program_duration_weeks: e.target.value }))}
+                  placeholder="12"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                />
               </div>
             </div>
           </div>
@@ -591,6 +666,191 @@ export default function ClientProgressPage() {
             >
               {saving ? 'Saving...' : 'Save changes →'}
             </button>
+          </div>
+
+        </div>
+      )}
+
+      {/* Weekly Calls Tab */}
+      {tab === 'calls' && (
+        <div className="max-w-3xl mx-auto px-4 py-6">
+
+          {/* Programme summary */}
+          <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-[#94a3b8] uppercase tracking-wide mb-1">Programme</p>
+                <p className="text-lg font-semibold text-[#0f172a]">
+                  Week {currentWeek} of {editData?.program_duration_weeks || client?.program_duration_weeks || 12}
+                </p>
+              </div>
+              <div className="flex gap-4">
+                <div className="text-center">
+                  <p className="text-xl font-bold text-emerald-600">
+                    {calls.filter((c) => c.status === 'completed').length}
+                  </p>
+                  <p className="text-xs text-[#94a3b8]">Completed</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xl font-bold text-red-500">
+                    {calls.filter((c) => c.status === 'missed').length}
+                  </p>
+                  <p className="text-xs text-[#94a3b8]">Missed</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xl font-bold text-amber-500">
+                    {calls.filter((c) => c.status === 'pending').length}
+                  </p>
+                  <p className="text-xs text-[#94a3b8]">Pending</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Program duration setting */}
+          <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-5">
+            <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+              Programme duration (weeks)
+            </label>
+            <div className="flex gap-3 items-center">
+              <input
+                type="number"
+                value={editData?.program_duration_weeks || ''}
+                onChange={(e) => setEditData((p: any) => ({ ...p, program_duration_weeks: e.target.value }))}
+                placeholder="12"
+                className="w-32 px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+              />
+              <button
+                onClick={async () => {
+                  await supabase
+                    .from('clients')
+                    .update({ program_duration_weeks: parseInt(editData.program_duration_weeks) || 12 })
+                    .eq('id', clientId)
+                  window.alert('Programme duration updated')
+                }}
+                className="bg-[#1a1f3a] text-[#00d4d4] px-5 py-2.5 rounded-lg text-xs font-medium hover:bg-[#141930] transition-colors"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+
+          {/* Call history */}
+          {callsLoading && (
+            <div className="text-center py-12 text-sm text-[#94a3b8]">Loading call history...</div>
+          )}
+
+          {!callsLoading && calls.length === 0 && (
+            <div className="text-center py-12 text-sm text-[#94a3b8]">
+              No review calls yet. They'll appear here as weeks progress.
+            </div>
+          )}
+
+          <div className="flex flex-col gap-2">
+            {calls.map((call) => {
+              const statusConfig: Record<string, { emoji: string; color: string; bg: string }> = {
+                completed: { emoji: '✅', color: '#22c55e', bg: '#f0fdf4' },
+                missed: { emoji: '❌', color: '#ef4444', bg: '#fef2f2' },
+                rescheduled: { emoji: '🔄', color: '#4a7fd4', bg: '#eff6ff' },
+                pending: { emoji: '⏳', color: '#f59e0b', bg: '#fffbeb' },
+              }
+              const cfg = statusConfig[call.status] || statusConfig.pending
+              const isEditing = editingWeek === call.week_number
+
+              return (
+                <div
+                  key={call.week_number}
+                  className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden"
+                >
+                  <div
+                    className="flex items-center justify-between px-4 py-3 cursor-pointer"
+                    onClick={() => isEditing ? setEditingWeek(null) : startEditCall(call)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="text-xs font-medium px-2.5 py-1 rounded-full"
+                        style={{ background: cfg.bg, color: cfg.color }}
+                      >
+                        {cfg.emoji} Week {call.week_number}
+                      </span>
+                      {call.status === 'completed' && call.discussed && (
+                        <p className="text-xs text-[#64748b] truncate max-w-xs">
+                          {call.discussed}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-xs text-[#94a3b8]">
+                      {isEditing ? 'Close ▲' : 'Edit ▼'}
+                    </span>
+                  </div>
+
+                  {isEditing && (
+                    <div className="px-4 pb-4 border-t border-[#e2e8f0] pt-4">
+                      <div className="flex gap-2 mb-3">
+                        {[
+                          { value: 'completed', label: '✅ Completed' },
+                          { value: 'missed', label: '❌ Missed' },
+                          { value: 'rescheduled', label: '🔄 Rescheduled' },
+                          { value: 'pending', label: '⏳ Pending' },
+                        ].map((opt) => (
+                          <button
+                            key={opt.value}
+                            onClick={() => setCallForm((p) => ({ ...p, status: opt.value as any }))}
+                            className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-colors ${
+                              callForm.status === opt.value
+                                ? 'bg-[#1a1f3a] text-[#00d4d4] border-[#1a1f3a]'
+                                : 'bg-white text-[#64748b] border-[#e2e8f0]'
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {callForm.status === 'completed' && (
+                        <div className="flex flex-col gap-2 mb-3">
+                          <div>
+                            <label className="text-xs text-[#94a3b8] mb-1 block">What we discussed</label>
+                            <textarea
+                              value={callForm.discussed}
+                              onChange={(e) => setCallForm((p) => ({ ...p, discussed: e.target.value }))}
+                              rows={2}
+                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00d4d4] resize-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs text-[#94a3b8] mb-1 block">What we're changing</label>
+                            <textarea
+                              value={callForm.changes}
+                              onChange={(e) => setCallForm((p) => ({ ...p, changes: e.target.value }))}
+                              rows={2}
+                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00d4d4] resize-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs text-[#94a3b8] mb-1 block">Next week's focus</label>
+                            <textarea
+                              value={callForm.next_focus}
+                              onChange={(e) => setCallForm((p) => ({ ...p, next_focus: e.target.value }))}
+                              rows={2}
+                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00d4d4] resize-none"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      <button
+                        onClick={() => saveCall(call.week_number)}
+                        disabled={savingCall}
+                        className="w-full bg-[#1a1f3a] text-[#00d4d4] py-2.5 rounded-lg text-xs font-medium disabled:opacity-50"
+                      >
+                        {savingCall ? 'Saving...' : 'Save'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
 
         </div>

@@ -33,6 +33,8 @@ const QUICK_LINKS = [
   { emoji: '🎯', label: 'Identity', href: '/identity' },
   { emoji: '📊', label: 'Progress', href: '/home/progress' },
   { emoji: '✊', label: 'Pledge', href: '/pledge' },
+  { emoji: '📖', label: 'My Codex', href: '/codex/view' },
+  { emoji: '🌅', label: 'Ritual', href: '/ritual' },
 ]
 
 export default function ClientHomePage() {
@@ -45,6 +47,8 @@ export default function ClientHomePage() {
   const [dataLoading, setDataLoading] = useState(true)
   const [saverOpen, setSaverOpen] = useState(false)
   const [isCoach, setIsCoach] = useState(false)
+  const [codex, setCodex] = useState<boolean>(false)
+  const [storyDone, setStoryDone] = useState<boolean>(true)
 
   useEffect(() => {
     async function fetchData() {
@@ -66,6 +70,16 @@ export default function ClientHomePage() {
           .maybeSingle(),
       ])
 
+      // Check codex story
+const { data: codexStoryData } = await supabase
+  .from('codex_data')
+  .select('origin_story, turning_point, generated_codex')
+  .eq('client_id', client.id)
+  .maybeSingle()
+
+const hasStory = !!(codexStoryData?.origin_story && codexStoryData?.turning_point)
+setStoryDone(hasStory)
+
       if (pledgeRes.data) setPledge(pledgeRes.data)
       if (identityRes.data) setIdentity(identityRes.data)
 
@@ -80,6 +94,15 @@ export default function ClientHomePage() {
           .maybeSingle()
         setCheckinDone(!!checkinData)
       }
+
+      const { data: codexData } = await supabase
+  .from('codex_data')
+  .select('id')
+  .eq('client_id', client.id)
+  .maybeSingle()
+setCodex(!!codexData)
+
+
 
       setDataLoading(false)
     }
@@ -138,6 +161,20 @@ export default function ClientHomePage() {
     href: '/identity',
     color: '#a855f7',
   })
+  if (!codex) pendingItems.push({
+  emoji: '📖',
+  label: 'Build Your Codex',
+  description: 'Your personal transformation document',
+  href: '/codex',
+  color: '#4a7fd4',
+})
+if (!storyDone) pendingItems.push({
+  emoji: '📖',
+  label: 'Your Story',
+  description: 'Tell us where you came from — builds your Codex',
+  href: '/codex/story',
+  color: '#4a7fd4',
+})
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
@@ -175,6 +212,20 @@ export default function ClientHomePage() {
             {client?.phase !== 'Onboarding' && ` · Week ${client?.current_week || 1}`}
           </p>
         </div>
+        {/* Daily ritual card */}
+        <button
+          onClick={() => window.location.href = '/ritual'}
+          className="w-full bg-[#1a1f3a] rounded-2xl p-5 mb-5 text-left hover:bg-[#141930] transition-colors"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[#00d4d4] text-xs tracking-widest uppercase mb-1">Daily Ritual</p>
+              <p className="text-white text-base font-medium">Begin your morning ritual</p>
+              <p className="text-white/40 text-xs mt-0.5">Strangest Secret · Goals · Affirmations · Codex</p>
+            </div>
+            <div className="text-3xl">🌅</div>
+          </div>
+        </button>
 
         {/* Phase + motivation card */}
         <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-5">

@@ -36,7 +36,6 @@ export async function getAllClients() {
         week_number
       )
     `)
-    .eq('status', 'active')
     .order('created_at', { ascending: false })
 
   if (error) throw error
@@ -93,6 +92,17 @@ export async function updateClientRisk(
     .update({ risk_status })
     .eq('id', id)
 
+  if (error) throw error
+}
+
+export async function updateClientStatus(
+  clientId: string,
+  status: 'active' | 'paused' | 'inactive'
+) {
+  const { error } = await supabase
+    .from('clients')
+    .update({ status })
+    .eq('id', clientId)
   if (error) throw error
 }
 

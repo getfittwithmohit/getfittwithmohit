@@ -5,6 +5,7 @@ import {
   getAllClients,
   updateClientRisk,
   updateCoachNotes,
+  updateClientStatus,
   calcCurrentWeek,
 } from '@/lib/supabase/queries/clients'
 
@@ -18,6 +19,7 @@ export type ClientSummary = {
   current_week: number
   phase: string
   risk_status: string
+  status: 'active' | 'paused' | 'inactive'
   client_type: string
   coach_notes: string | null
   created_at: string
@@ -25,7 +27,6 @@ export type ClientSummary = {
   current_weight: number | null
   target_weight: number | null
   primary_goal: string | null
-  // Real check-in data
   checkin_streak: number
   last_checkin_date: string | null
   avg_nutrition_adherence: number
@@ -51,14 +52,12 @@ export function useClients() {
           ? calcCurrentWeek(c.start_date)
           : c.current_week
 
-        // Sort checkins by date
         const checkins = (c.weekly_checkins || []).sort(
           (a: any, b: any) =>
             new Date(b.submitted_at).getTime() -
             new Date(a.submitted_at).getTime()
         )
 
-        // Calculate streak — consecutive weeks with check-ins
         let streak = 0
         for (let i = 0; i < checkins.length; i++) {
           const daysSince = Math.floor(
@@ -77,7 +76,6 @@ export function useClients() {
           }
         }
 
-        // Average nutrition adherence
         const nutritionScores = checkins
           .map((ci: any) => ci.nutrition_adherence)
           .filter(Boolean)
@@ -89,7 +87,6 @@ export function useClients() {
               )
             : 0
 
-        // Average energy
         const energyScores = checkins
           .map((ci: any) => ci.energy_level)
           .filter(Boolean)
@@ -101,19 +98,16 @@ export function useClients() {
               )
             : 0
 
-        // Recent moods (last 5)
         const recentMoods = checkins
           .slice(0, 5)
           .map((ci: any) => ci.mood)
           .filter(Boolean)
 
-        // Recent energy (last 5)
         const recentEnergy = checkins
           .slice(0, 5)
           .map((ci: any) => ci.energy_level)
           .filter(Boolean)
 
-        // Last check-in date
         const lastCheckin =
           checkins.length > 0 ? checkins[0].submitted_at : null
 
@@ -127,6 +121,7 @@ export function useClients() {
           current_week: week,
           phase: c.phase,
           risk_status: c.risk_status,
+          status: c.status || 'active',
           client_type: c.client_type,
           coach_notes: c.coach_notes,
           created_at: c.created_at,
@@ -171,6 +166,16 @@ export function useClients() {
     )
   }
 
+const setClientStatus = async (
+    id: string,
+    status: 'active' | 'paused' | 'inactive'
+  ) => {
+    await updateClientStatus(id, status)
+    setClients((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, status } : c))
+    )
+  }
+
   return {
     clients,
     loading,
@@ -178,5 +183,6 @@ export function useClients() {
     refetch: fetchClients,
     flagClient,
     saveNotes,
+    setClientStatus,
   }
 }
