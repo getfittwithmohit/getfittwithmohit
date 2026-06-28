@@ -32,8 +32,9 @@ const QUICK_LINKS = [
   { emoji: '💪', label: 'Assessment', href: '/assessment' },
   { emoji: '🎯', label: 'Identity', href: '/identity' },
   { emoji: '📊', label: 'Progress', href: '/home/progress' },
+  { emoji: '📑', label: 'My Report', href: '/home/report' },
   { emoji: '✊', label: 'Pledge', href: '/pledge' },
-  { emoji: '📖', label: 'My Codex', href: '/codex/view' },
+  //{ emoji: '📖', label: 'My Codex', href: '/codex/view' },
   { emoji: '🌅', label: 'Ritual', href: '/ritual' },
 ]
 

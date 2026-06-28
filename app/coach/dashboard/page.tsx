@@ -84,11 +84,19 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {atRisk > 0 && (
-          <div className="bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-medium px-3 py-1.5 rounded-full">
-            ⚠ {atRisk} At-Risk
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => window.location.href = '/coach/dashboard/blueprint-calculator'}
+            className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors"
+          >
+            🧮 Blueprint Calculator
+          </button>
+          {atRisk > 0 && (
+            <div className="bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-medium px-3 py-1.5 rounded-full">
+              ⚠ {atRisk} At-Risk
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Summary bar */}

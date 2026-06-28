@@ -16,8 +16,30 @@ import { StreaksPanel } from '@/components/progress/StreaksPanel'
 import { BodyChart } from '@/components/progress/BodyChart'
 import { TrendCharts } from '@/components/progress/TrendCharts'
 import { supabase } from '@/lib/supabase/client'
+import { getTransformationReport, TransformationReportData } from '@/lib/supabase/queries/transformationReport'
+import { TransformationReport } from '@/components/reports/TransformationReport'
+import { BlueprintCard } from '@/components/blueprint/BlueprintCard'
+import { generateBlueprint, parseHeightToInches, isHeightPlausible } from '@/lib/utils/blueprint'
 
-type Tab = 'progress' | 'edit' | 'calls'
+type Tab = 'progress' | 'edit' | 'calls' | 'report'
+
+function calcAge(dob: string): number {
+  const birth = new Date(dob)
+  const today = new Date()
+  let age = today.getFullYear() - birth.getFullYear()
+  const monthDiff = today.getMonth() - birth.getMonth()
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--
+  }
+  return age
+}
+
+function formatVal(v: any): string {
+  if (v === null || v === undefined || v === '') return '—'
+  if (Array.isArray(v)) return v.join(', ') || '—'
+  if (typeof v === 'boolean') return v ? 'Yes' : 'No'
+  return String(v)
+}
 
 const PHASES = ['Onboarding', 'Adaptation', 'Building', 'Performance', 'Maintenance']
 const RISK_OPTIONS = [
@@ -82,13 +104,31 @@ export default function ClientProgressPage() {
   })
   const [savingCall, setSavingCall] = useState(false)
 
+  // Report tab state
+  const [reportData, setReportData] = useState<TransformationReportData | null>(null)
+  const [reportLoading, setReportLoading] = useState(false)
+
+  // Export modal state
+  const [exportOpen, setExportOpen] = useState(false)
+
+  const loadReport = async () => {
+    setReportLoading(true)
+    try {
+      const data = await getTransformationReport(clientId)
+      setReportData(data)
+    } catch (err) {
+      console.error('Failed to load report:', err)
+    } finally {
+      setReportLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (!clientId) return
     getClientProgress(clientId).then((data) => {
       setProgressData(data)
       setLoading(false)
 
-      // Pre-fill edit form
       setEditData({
         full_name: data.client?.full_name || '',
         email: data.client?.email || '',
@@ -104,7 +144,6 @@ export default function ClientProgressPage() {
         program_duration_weeks: data.client?.program_duration_weeks || 12,
       })
 
-      // Pre-fill body metrics
       const metrics = data.client?.body_metrics?.[0] || {}
       setBodyMetrics({
         weight_kg: metrics.weight_kg || '',
@@ -275,6 +314,176 @@ export default function ClientProgressPage() {
     )
   }
 
+  // ── Export helpers — top-level, not nested inside any render loop ──
+  const buildExportText = () => {
+    const lines: string[] = []
+    const age = client?.date_of_birth ? calcAge(client.date_of_birth) : null
+
+    lines.push(`# Client Profile — ${client?.full_name || ''}`)
+    lines.push('')
+    lines.push(`Generated: ${new Date().toLocaleDateString('en-IN')}`)
+    lines.push('')
+
+    lines.push('## Personal Information')
+    lines.push(`- Full name: ${formatVal(client?.full_name)}`)
+    lines.push(`- Age: ${age !== null ? age + ' years' : '—'}`)
+    lines.push(`- Gender: ${formatVal(client?.gender)}`)
+    lines.push(`- City: ${formatVal(client?.city)}`)
+    lines.push(`- Occupation: ${formatVal(client?.occupation)}`)
+    lines.push(`- Phase: ${formatVal(client?.phase)} · Week ${formatVal(client?.current_week)}`)
+    lines.push('')
+
+    lines.push('## Body Metrics')
+    lines.push(`- Starting weight: ${formatVal(bodyMetrics?.weight_kg)} kg`)
+    lines.push(`- Target weight: ${formatVal(bodyMetrics?.target_weight_kg)} kg`)
+    lines.push(`- Height: ${formatVal(bodyMetrics?.height_inches)} inches`)
+    lines.push(`- Waist: ${formatVal(bodyMetrics?.waist_inches)} inches`)
+    lines.push(`- Chest: ${formatVal(bodyMetrics?.chest_inches)} inches`)
+    lines.push(`- Hip: ${formatVal(bodyMetrics?.hip_inches)} inches`)
+    lines.push(`- Primary goal: ${formatVal(bodyMetrics?.primary_goal)}`)
+    lines.push('')
+
+    if (medical) {
+      lines.push('## Medical History')
+      lines.push(`- Conditions: ${formatVal(medical.conditions)}`)
+      lines.push(`- Injuries: ${formatVal(medical.injuries)}`)
+      lines.push(`- Medications: ${formatVal(medical.medications)}`)
+      lines.push(`- Recent surgery: ${formatVal(medical.recent_surgery)}`)
+      lines.push(`- Under doctor's care: ${formatVal(medical.doctors_care)}`)
+      lines.push('')
+    }
+
+    if (fitness) {
+      lines.push('## Fitness Background')
+      lines.push(`- Fitness level: ${formatVal(fitness.fitness_level)}`)
+      lines.push(`- Training environments: ${formatVal(fitness.environments)}`)
+      lines.push(`- Training days/week: ${formatVal(fitness.training_days)}`)
+      lines.push(`- Session duration: ${formatVal(fitness.session_duration)}`)
+      lines.push(`- Current activities: ${formatVal(fitness.current_activities)}`)
+      lines.push('')
+    }
+
+    if (lifestyle) {
+      lines.push('## Lifestyle')
+      lines.push(`- Sleep duration: ${formatVal(lifestyle.sleep_duration)}`)
+      lines.push(`- Sleep quality: ${formatVal(lifestyle.sleep_quality)}`)
+      lines.push(`- Stress level: ${formatVal(lifestyle.stress_level)}`)
+      lines.push(`- Stress sources: ${formatVal(lifestyle.stress_sources)}`)
+      lines.push(`- Daily steps: ${formatVal(lifestyle.daily_steps)}`)
+      lines.push(`- Typical day: ${formatVal(lifestyle.day_in_life)}`)
+      lines.push('')
+    }
+
+    if (nutrition) {
+      lines.push('## Nutrition')
+      lines.push(`- Diet preference: ${formatVal(nutrition.diet_preference)}`)
+      lines.push(`- Allergies: ${formatVal(nutrition.allergies)}`)
+      lines.push(`- Disliked foods: ${formatVal(nutrition.disliked_foods)}`)
+      lines.push(`- Meals per day: ${formatVal(nutrition.meals_per_day)}`)
+      lines.push(`- Eating out frequency: ${formatVal(nutrition.eating_out_frequency)}`)
+      lines.push(`- Digestion issues: ${formatVal(nutrition.digestion_issues)}`)
+      lines.push(`- Water intake: ${formatVal(nutrition.water_intake)}`)
+      lines.push('')
+    }
+
+    if (hormonal) {
+      lines.push('## Hormonal Health')
+      lines.push(`- Cycle regularity: ${formatVal(hormonal.cycle_regularity)}`)
+      lines.push(`- Mood fluctuations: ${formatVal(hormonal.mood_fluctuations)}`)
+      lines.push(`- Hormonal conditions: ${formatVal(hormonal.hormonal_conditions)}`)
+      lines.push(`- Additional context: ${formatVal(hormonal.additional_context)}`)
+      lines.push('')
+    }
+
+    if (psychology) {
+      lines.push('## Psychology & Mindset')
+      lines.push(`- Previous attempts: ${formatVal(psychology.previous_attempts)}`)
+      lines.push(`- Why didn't last: ${formatVal(psychology.why_didnt_last)}`)
+      lines.push(`- Readiness score: ${formatVal(psychology.readiness_score)}/10`)
+      lines.push(`- Willingness score: ${formatVal(psychology.willingness_score)}/10`)
+      lines.push(`- Biggest fear: ${formatVal(psychology.biggest_fear)}`)
+      lines.push(`- Support system: ${formatVal(psychology.support_system)}`)
+      lines.push('')
+    }
+
+    if (expectations) {
+      lines.push('## Goals & Expectations')
+      lines.push(`- Success in 3 months: ${formatVal(expectations.success_3_months)}`)
+      lines.push(`- Success in 12 months: ${formatVal(expectations.success_12_months)}`)
+      lines.push(`- Anything else: ${formatVal(expectations.anything_else)}`)
+      lines.push('')
+    }
+
+    if (pledge) {
+      lines.push('## Commitment Pledge')
+      lines.push(`- Why transform: ${formatVal(pledge.why_transform)}`)
+      lines.push(`- Doing this for: ${formatVal(pledge.doing_this_for)}`)
+      lines.push(`- Cost of inconsistency: ${formatVal(pledge.cost_of_inconsistency)}`)
+      lines.push(`- Person becoming: ${formatVal(pledge.person_becoming)}`)
+      lines.push('')
+    }
+
+    if (identity) {
+      lines.push('## Purpose & Identity')
+      lines.push(`- Identity statement: ${formatVal(identity.identity_statement)}`)
+      lines.push(`- Core values: ${formatVal(identity.core_values)}`)
+      lines.push(`- Vision 6 months: ${formatVal(identity.vision_6_months)}`)
+      lines.push(`- Vision 1 year: ${formatVal(identity.vision_1_year)}`)
+      lines.push(`- Vision 5 years: ${formatVal(identity.vision_5_years)}`)
+      lines.push('')
+    }
+
+    if (checkins?.length) {
+      lines.push('## Recent Check-ins (most recent 5)')
+      const recent = [...checkins]
+        .sort((a, b) => (b.week_number || 0) - (a.week_number || 0))
+        .slice(0, 5)
+      recent.forEach((c: any) => {
+        lines.push(`### Week ${formatVal(c.week_number)}`)
+        lines.push(`- Weight: ${formatVal(c.weight_kg)} kg`)
+        lines.push(`- Workouts completed: ${formatVal(c.workouts_completed)}`)
+        lines.push(`- Nutrition adherence: ${formatVal(c.nutrition_adherence)}/10`)
+        lines.push(`- Energy level: ${formatVal(c.energy_level)}/10`)
+        lines.push(`- Sleep quality: ${formatVal(c.sleep_quality)}`)
+        lines.push(`- Stress level: ${formatVal(c.stress_level)}`)
+        lines.push(`- Biggest win: ${formatVal(c.biggest_win)}`)
+        lines.push(`- Biggest challenge: ${formatVal(c.biggest_challenge)}`)
+        lines.push('')
+      })
+    }
+
+    if (assessments?.length) {
+      const a = assessments[0]
+      lines.push('## Latest Assessment')
+      lines.push(`- Environment: ${formatVal(a.environment)}`)
+      lines.push(`- Endurance: ${formatVal(a.endurance_result)}`)
+      lines.push(`- Strength reps: ${formatVal(a.strength_reps)}`)
+      lines.push(`- Flexibility: ${formatVal(a.flexibility_result)}`)
+      lines.push(`- Mobility: ${formatVal(a.mobility_result)}`)
+      lines.push('')
+    }
+
+    lines.push('---')
+    lines.push('Use the information above to create a personalised workout plan, nutrition plan, or lifestyle/wellbeing plan for this client, tailored to their goals, constraints, and routine.')
+
+    return lines.join('\n')
+  }
+
+  const handleCopyExport = () => {
+    navigator.clipboard.writeText(buildExportText())
+    window.alert('Copied to clipboard! Paste it into ChatGPT or any AI tool.')
+  }
+
+  const handleDownloadExport = () => {
+    const blob = new Blob([buildExportText()], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${(client?.full_name || 'client').replace(/\s+/g, '_')}_profile.md`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="min-h-screen bg-[#f8fafc]">
 
@@ -296,9 +505,17 @@ export default function ClientProgressPage() {
               </p>
             </div>
           </div>
-          <div className="text-right">
-            <p className="text-[#00d4d4] text-xs font-medium tracking-wide">GETFITTWITHMOHIT</p>
-            <p className="text-white/40 text-xs">Transform to Inspire</p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setExportOpen(true)}
+              className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors"
+            >
+              📤 Export Data
+            </button>
+            <div className="text-right">
+              <p className="text-[#00d4d4] text-xs font-medium tracking-wide">GETFITTWITHMOHIT</p>
+              <p className="text-white/40 text-xs">Transform to Inspire</p>
+            </div>
           </div>
         </div>
       </div>
@@ -310,12 +527,14 @@ export default function ClientProgressPage() {
             { key: 'progress', label: '📊 Progress' },
             { key: 'edit', label: '✏️ Edit Profile' },
             { key: 'calls', label: '📞 Weekly Calls' },
+            { key: 'report', label: '📑 Report' },
           ].map((t) => (
             <button
               key={t.key}
               onClick={() => {
                 setTab(t.key as Tab)
                 if (t.key === 'calls' && calls.length === 0) loadCalls()
+                if (t.key === 'report' && !reportData) loadReport()
               }}
               className={`px-6 py-3.5 text-sm font-medium border-b-2 transition-colors ${
                 tab === t.key
@@ -389,6 +608,12 @@ export default function ClientProgressPage() {
               {field('City', 'city')}
               {field('Occupation', 'occupation')}
               {field('Date of birth', 'date_of_birth', 'date')}
+              <div>
+                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">Age</label>
+                <div className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm bg-[#f8fafc] text-[#64748b]">
+                  {editData.date_of_birth ? `${calcAge(editData.date_of_birth)} years` : '—'}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -528,17 +753,19 @@ export default function ClientProgressPage() {
 
           {/* Purpose & Identity */}
           {identity && (
-            <InfoSection title="Purpose & Identity" data={{
-              submitted: new Date(identity.created_at).toLocaleDateString('en-IN'),
-              why: identity.why,
-              identity_statement: identity.identity_statement,
-              core_values: identity.core_values,
-              personal_commitment: identity.personal_commitment,
-              vision_6_months: identity.vision_6_months,
-              vision_1_year: identity.vision_1_year,
-              vision_5_years: identity.vision_5_years,
-            }} />
-          )}
+  <InfoSection title="Purpose & Identity" data={{
+    submitted: new Date(identity.created_at).toLocaleDateString('en-IN'),
+    surface_goal: identity.surface_goal,
+    deep_why: identity.deep_why,
+    identity_statement: identity.identity_statement,
+    identity_person: identity.identity_person,
+    values: identity.values,
+    obstacle: identity.obstacle,
+    personal_commitment: identity.personal_commitment,
+    life_vision: identity.life_vision,
+    reengagement_anchor: identity.reengagement_anchor,
+  }} />
+)}
 
           {/* Medical History */}
           {medical && (
@@ -853,6 +1080,111 @@ export default function ClientProgressPage() {
             })}
           </div>
 
+        </div>
+      )}
+
+      {/* Report Tab */}
+      {tab === 'report' && (
+        <div>
+          {reportLoading && (
+            <div className="text-center py-16 text-sm text-[#94a3b8]">
+              Generating transformation report...
+            </div>
+          )}
+          {!reportLoading && !reportData && (
+            <div className="text-center py-16 text-sm text-[#94a3b8]">
+              Not enough check-in data yet to generate a report.
+            </div>
+          )}
+          {!reportLoading && reportData && (
+            <>
+              <TransformationReport data={reportData} />
+              {bodyMetrics?.height_inches && (
+                <div className="max-w-2xl mx-auto px-4 pb-8">
+                  {isHeightPlausible(parseHeightToInches(bodyMetrics.height_inches)) ? (
+                    <BlueprintCard
+                      data={generateBlueprint(
+                        reportData.currentWeight || 0,
+                        parseHeightToInches(bodyMetrics.height_inches),
+                        client?.gender || null
+                      )}
+                      currentWeightKg={reportData.currentWeight || 0}
+                      clientName={client?.full_name}
+                    />
+                  ) : (
+                    <div className="bg-white border border-amber-200 rounded-2xl p-6">
+                      <h3 className="text-base font-semibold text-[#0f172a] mb-2">
+                        Fat Loss Blueprint
+                      </h3>
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                        <p className="text-sm text-amber-700 leading-relaxed">
+                          ⚠ Height on file is {bodyMetrics.height_inches} inches, which looks
+                          incorrect (likely entered as feet'.inches, e.g. "5.4" for 5'4" instead
+                          of total inches, which should be 64). Please correct the height in the{' '}
+                          <button
+                            onClick={() => setTab('edit')}
+                            className="underline font-medium hover:text-amber-800"
+                          >
+                            Edit Profile
+                          </button>{' '}
+                          tab to see the blueprint.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Export modal */}
+      {exportOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setExportOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e2e8f0]">
+              <h3 className="text-base font-semibold text-[#0f172a]">Export Client Data</h3>
+              <button
+                onClick={() => setExportOpen(false)}
+                className="text-[#94a3b8] hover:text-[#64748b] text-xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+            <div className="px-6 py-4 overflow-y-auto flex-1">
+              <p className="text-xs text-[#64748b] mb-3">
+                Copy this and paste into ChatGPT (or any AI tool) to generate a personalised
+                workout, nutrition, or lifestyle plan for this client.
+              </p>
+              <textarea
+                readOnly
+                value={buildExportText()}
+                rows={16}
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-xs font-mono focus:outline-none resize-none"
+              />
+            </div>
+            <div className="flex gap-3 px-6 py-4 border-t border-[#e2e8f0]">
+              <button
+                onClick={handleCopyExport}
+                className="flex-1 bg-[#1a1f3a] text-[#00d4d4] py-2.5 rounded-lg text-sm font-medium hover:bg-[#141930] transition-colors"
+              >
+                Copy to Clipboard
+              </button>
+              <button
+                onClick={handleDownloadExport}
+                className="px-5 py-2.5 rounded-lg text-sm text-[#64748b] border border-[#e2e8f0] hover:border-[#94a3b8] transition-colors"
+              >
+                Download .md
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
