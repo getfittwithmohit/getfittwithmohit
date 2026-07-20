@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { calcCurrentWeek } from '@/lib/supabase/queries/clients'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,9 +11,9 @@ const supabaseAdmin = createClient(
 export async function GET() {
   try {
     const { data: clients, error: clientsErr } = await supabaseAdmin
-      .from('clients')
-      .select('id, current_week')
-      .neq('phase', 'Onboarding')
+  .from('clients')
+  .select('id, start_date, phase, current_week, program_duration_weeks')
+  .neq('phase', 'Onboarding')
 
     if (clientsErr) throw clientsErr
 
@@ -25,17 +26,21 @@ export async function GET() {
     }> = {}
 
     for (const client of clients || []) {
-      if (!client.current_week) continue
+  const rawWeek = !client.start_date
+    ? client.current_week
+    : calcCurrentWeek(client.start_date)
+  const liveWeek = Math.min(rawWeek, client.program_duration_weeks || 12)
+  if (!liveWeek) continue
 
       const { data: call } = await supabaseAdmin
         .from('review_calls')
         .select('status, discussed, changes, next_focus')
         .eq('client_id', client.id)
-        .eq('week_number', client.current_week)
+        .eq('week_number', liveWeek)
         .maybeSingle()
 
       result[client.id] = {
-        week: client.current_week,
+        week: liveWeek,
         status: call?.status || 'pending',
         discussed: call?.discussed || '',
         changes: call?.changes || '',

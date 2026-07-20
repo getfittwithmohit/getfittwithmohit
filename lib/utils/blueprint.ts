@@ -12,16 +12,25 @@
 // 5'1" cannot be reliably distinguished by this function alone. Treat any
 // client showing as exactly X.1 with caution until heights are migrated to
 // two separate feet/inches fields.
-export function parseHeightToInches(raw: string | number): number {
-  const str = String(raw).trim()
-  const [feetPart, inchPart] = str.split('.')
-  const feet = parseInt(feetPart, 10) || 0
-  const inches = inchPart ? parseInt(inchPart, 10) || 0 : 0
+// Height is now always stored as TRUE total inches in the database.
+// These helpers convert between total inches and feet/inches for display and input.
+
+export function feetInchesToTotal(feet: number, inches: number): number {
   return feet * 12 + inches
 }
 
-// Sanity check on the CONVERTED total-inches value (after parseHeightToInches),
-// not the raw feet.inches input.
+export function totalToFeetInches(totalInches: number): { feet: number; inches: number } {
+  const feet = Math.floor(totalInches / 12)
+  const inches = Math.round(totalInches % 12)
+  return { feet, inches }
+}
+
+export function formatHeight(totalInches: number | null): string {
+  if (!totalInches) return '—'
+  const { feet, inches } = totalToFeetInches(totalInches)
+  return `${feet}' ${inches}"`
+}
+
 export function isHeightPlausible(totalInches: number): boolean {
   return totalInches >= 48 && totalInches <= 84
 }

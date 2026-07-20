@@ -55,21 +55,14 @@ if (user) {
 
   if (client) {
   clientId = client.id
-  if (client.start_date) {
-    const start = new Date(client.start_date)
-    const today = new Date()
-    const diff = Math.floor(
-      (today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7)
-    )
-    weekNumber = Math.max(1, diff + 1)
-  } else {
-    // Fallback — count existing checkins + 1
-    const { count } = await supabase
-      .from('weekly_checkins')
-      .select('*', { count: 'exact', head: true })
-      .eq('client_id', client.id)
-    weekNumber = (count || 0) + 1
-  }
+  // Always derive week_number from actual check-in history, never from calendar
+// math against start_date — start_date can be edited/corrected later, and
+// missed/caught-up weeks would otherwise produce wrong or out-of-order numbers.
+const { count } = await supabase
+  .from('weekly_checkins')
+  .select('*', { count: 'exact', head: true })
+  .eq('client_id', client.id)
+weekNumber = (count || 0) + 1
 }
 }
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
+import { calcCurrentWeek } from '@/lib/supabase/queries/clients'
 
 export type Client = {
   id: string
@@ -26,7 +27,13 @@ export function useClient() {
     async function fetch() {
       try {
         const data = await getCurrentClient()
-        setClient(data)
+        if (data) {
+          const liveWeek =
+            data.phase === 'Onboarding' || !data.start_date
+              ? data.current_week
+              : calcCurrentWeek(data.start_date)
+          setClient({ ...data, current_week: liveWeek })
+        }
         setHasOnboarded(!!data)
       } catch (err) {
         console.error('useClient error:', err)

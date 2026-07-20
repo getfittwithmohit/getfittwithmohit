@@ -6,8 +6,10 @@ import { PageLoader } from '@/components/ui/PageLoader'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
 import { getTransformationReport, TransformationReportData } from '@/lib/supabase/queries/transformationReport'
 import { TransformationReport } from '@/components/reports/TransformationReport'
-import { generateBlueprint } from '@/lib/utils/blueprint'
+import { generateBlueprint, isHeightPlausible } from '@/lib/utils/blueprint'
 import { BlueprintCard } from '@/components/blueprint/BlueprintCard'
+import { calcWHtR } from '@/lib/utils/whtr'
+import { WHtRCard } from '@/components/blueprint/WHtRCard'
 import { supabase } from '@/lib/supabase/client'
 
 export default function ClientReportPage() {
@@ -16,7 +18,9 @@ export default function ClientReportPage() {
   const [reportData, setReportData] = useState<TransformationReportData | null>(null)
   const [clientName, setClientName] = useState('')
   const [heightInches, setHeightInches] = useState<number | null>(null)
+  const [waistInches, setWaistInches] = useState<number | null>(null)
   const [gender, setGender] = useState<string | null>(null)
+
   useEffect(() => {
     async function load() {
       const client = await getCurrentClient()
@@ -25,14 +29,17 @@ export default function ClientReportPage() {
         return
       }
       setClientName(client.full_name?.split(' ')[0] || '')
-const { data: metrics } = await supabase
-  .from('body_metrics')
-  .select('height_inches')
-  .eq('client_id', client.id)
-  .maybeSingle()
 
-setHeightInches(metrics?.height_inches || null)
-setGender(client.gender || null)
+      const { data: metrics } = await supabase
+        .from('body_metrics')
+        .select('height_inches, waist_inches')
+        .eq('client_id', client.id)
+        .maybeSingle()
+
+      setHeightInches(metrics?.height_inches ? parseFloat(metrics.height_inches) : null)
+      setWaistInches(metrics?.waist_inches ? parseFloat(metrics.waist_inches) : null)
+      setGender(client.gender || null)
+
       try {
         const data = await getTransformationReport(client.id)
         setReportData(data)
@@ -46,6 +53,8 @@ setGender(client.gender || null)
   }, [])
 
   if (checking || loading) return <PageLoader />
+
+  const heightOk = heightInches !== null && isHeightPlausible(heightInches)
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
@@ -96,14 +105,38 @@ setGender(client.gender || null)
       ) : (
         <TransformationReport data={reportData} />
       )}
-{reportData && heightInches && (
-  <div className="max-w-2xl mx-auto px-4 pb-8">
-    <BlueprintCard
-      data={generateBlueprint(reportData.currentWeight || 0, heightInches, gender)}
-      currentWeightKg={reportData.currentWeight || 0}
-    />
-  </div>
-)}
+
+      {reportData && heightInches !== null && (
+        <div className="max-w-2xl mx-auto px-4 pb-8 flex flex-col gap-4">
+          {heightOk ? (
+            <>
+              <BlueprintCard
+                data={generateBlueprint(reportData.currentWeight || 0, heightInches, gender)}
+                currentWeightKg={reportData.currentWeight || 0}
+              />
+              {waistInches && (() => {
+                const whtr = calcWHtR(waistInches, heightInches)
+                return whtr ? (
+                  <WHtRCard data={whtr} waistInches={waistInches} heightInches={heightInches} />
+                ) : null
+              })()}
+            </>
+          ) : (
+            <div className="bg-white border border-amber-200 rounded-2xl p-6">
+              <h3 className="text-base font-semibold text-[#0f172a] mb-2">
+                Fat Loss Blueprint
+              </h3>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                <p className="text-sm text-amber-700 leading-relaxed">
+                  ⚠ Your height on file looks incorrect. Please reach out to Coach Mohit
+                  to get it corrected so we can calculate your blueprint accurately.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
     </div>
   )
 }

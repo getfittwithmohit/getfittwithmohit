@@ -19,9 +19,16 @@ import { supabase } from '@/lib/supabase/client'
 import { getTransformationReport, TransformationReportData } from '@/lib/supabase/queries/transformationReport'
 import { TransformationReport } from '@/components/reports/TransformationReport'
 import { BlueprintCard } from '@/components/blueprint/BlueprintCard'
-import { generateBlueprint, parseHeightToInches, isHeightPlausible } from '@/lib/utils/blueprint'
+import { generateBlueprint, isHeightPlausible, totalToFeetInches, feetInchesToTotal, formatHeight } from '@/lib/utils/blueprint'
+import { calcWHtR } from '@/lib/utils/whtr'
+import { WHtRCard } from '@/components/blueprint/WHtRCard'
+import { WHtRTrendChart } from '@/components/progress/WHtRTrendChart'
+import { calcCurrentWeek } from '@/lib/supabase/queries/clients'
 
 type Tab = 'progress' | 'edit' | 'calls' | 'report'
+
+const FEET_OPTIONS = [3, 4, 5, 6, 7]
+const INCH_OPTIONS = Array.from({ length: 12 }, (_, i) => i)
 
 function calcAge(dob: string): number {
   const birth = new Date(dob)
@@ -89,6 +96,8 @@ export default function ClientProgressPage() {
   // Edit form state
   const [editData, setEditData] = useState<any>(null)
   const [bodyMetrics, setBodyMetrics] = useState<any>(null)
+  const [heightFeet, setHeightFeet] = useState<number>(5)
+  const [heightInch, setHeightInch] = useState<number>(6)
   const [saving, setSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
 
@@ -154,6 +163,12 @@ export default function ClientProgressPage() {
         target_weight_kg: metrics.target_weight_kg || '',
         primary_goal: metrics.primary_goal || '',
       })
+
+      if (metrics.height_inches) {
+        const { feet, inches } = totalToFeetInches(parseFloat(metrics.height_inches))
+        setHeightFeet(feet)
+        setHeightInch(inches)
+      }
     })
   }, [clientId])
 
@@ -212,7 +227,10 @@ export default function ClientProgressPage() {
     medical, fitness, lifestyle, nutrition,
     psychology, expectations, assessments, hormonal,
   } = progressData
-  const currentWeek = client?.current_week || 1
+  const currentWeek =
+  client?.phase === 'Onboarding' || !client?.start_date
+    ? client?.current_week || 1
+    : calcCurrentWeek(client.start_date)
   const checkinStatus = getThisWeekCheckinStatus(checkins, currentWeek)
   const checkinStreak = calcCheckinStreak(checkins)
   const workoutStreak = calcWorkoutStreak(checkins)
@@ -227,15 +245,10 @@ export default function ClientProgressPage() {
     setSaving(true)
     setSaveSuccess(false)
     try {
-      let currentWeekCalc = editData.current_week
-      if (editData.start_date) {
-        const start = new Date(editData.start_date)
-        const today = new Date()
-        const diff = Math.floor(
-          (today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7)
-        )
-        currentWeekCalc = Math.max(1, diff + 1)
-      }
+      const currentWeekCalc =
+  editData.phase === 'Onboarding' || !editData.start_date
+    ? editData.current_week
+    : calcCurrentWeek(editData.start_date)
 
       await supabase
         .from('clients')
@@ -255,12 +268,14 @@ export default function ClientProgressPage() {
         })
         .eq('id', clientId)
 
+      const totalHeightInches = feetInchesToTotal(heightFeet, heightInch)
+
       if (client?.body_metrics?.[0]?.id) {
         await supabase
           .from('body_metrics')
           .update({
             weight_kg: parseFloat(bodyMetrics.weight_kg) || null,
-            height_inches: parseFloat(bodyMetrics.height_inches) || null,
+            height_inches: totalHeightInches || null,
             waist_inches: parseFloat(bodyMetrics.waist_inches) || null,
             chest_inches: parseFloat(bodyMetrics.chest_inches) || null,
             hip_inches: parseFloat(bodyMetrics.hip_inches) || null,
@@ -274,7 +289,7 @@ export default function ClientProgressPage() {
           .insert({
             client_id: clientId,
             weight_kg: parseFloat(bodyMetrics.weight_kg) || null,
-            height_inches: parseFloat(bodyMetrics.height_inches) || null,
+            height_inches: totalHeightInches || null,
             waist_inches: parseFloat(bodyMetrics.waist_inches) || null,
             chest_inches: parseFloat(bodyMetrics.chest_inches) || null,
             hip_inches: parseFloat(bodyMetrics.hip_inches) || null,
@@ -283,6 +298,7 @@ export default function ClientProgressPage() {
           })
       }
 
+      setBodyMetrics((prev: any) => ({ ...prev, height_inches: totalHeightInches }))
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 3000)
     } catch (err: any) {
@@ -336,7 +352,7 @@ export default function ClientProgressPage() {
     lines.push('## Body Metrics')
     lines.push(`- Starting weight: ${formatVal(bodyMetrics?.weight_kg)} kg`)
     lines.push(`- Target weight: ${formatVal(bodyMetrics?.target_weight_kg)} kg`)
-    lines.push(`- Height: ${formatVal(bodyMetrics?.height_inches)} inches`)
+    lines.push(`- Height: ${formatHeight(bodyMetrics?.height_inches ? parseFloat(bodyMetrics.height_inches) : null)}`)
     lines.push(`- Waist: ${formatVal(bodyMetrics?.waist_inches)} inches`)
     lines.push(`- Chest: ${formatVal(bodyMetrics?.chest_inches)} inches`)
     lines.push(`- Hip: ${formatVal(bodyMetrics?.hip_inches)} inches`)
@@ -425,11 +441,15 @@ export default function ClientProgressPage() {
 
     if (identity) {
       lines.push('## Purpose & Identity')
+      lines.push(`- Surface goal: ${formatVal(identity.surface_goal)}`)
+      lines.push(`- Deep why: ${formatVal(identity.deep_why)}`)
       lines.push(`- Identity statement: ${formatVal(identity.identity_statement)}`)
-      lines.push(`- Core values: ${formatVal(identity.core_values)}`)
-      lines.push(`- Vision 6 months: ${formatVal(identity.vision_6_months)}`)
-      lines.push(`- Vision 1 year: ${formatVal(identity.vision_1_year)}`)
-      lines.push(`- Vision 5 years: ${formatVal(identity.vision_5_years)}`)
+      lines.push(`- Identity person: ${formatVal(identity.identity_person)}`)
+      lines.push(`- Values: ${formatVal(identity.values)}`)
+      lines.push(`- Obstacle: ${formatVal(identity.obstacle)}`)
+      lines.push(`- Personal commitment: ${formatVal(identity.personal_commitment)}`)
+      lines.push(`- Life vision: ${formatVal(identity.life_vision)}`)
+      lines.push(`- Re-engagement anchor: ${formatVal(identity.reengagement_anchor)}`)
       lines.push('')
     }
 
@@ -588,6 +608,15 @@ export default function ClientProgressPage() {
             Weekly Trends
           </p>
           <TrendCharts checkins={checkins} />
+
+          {bodyMetrics?.height_inches && isHeightPlausible(parseFloat(bodyMetrics.height_inches)) && (
+            <div className="mt-4">
+              <WHtRTrendChart
+                checkins={checkins}
+                heightInches={parseFloat(bodyMetrics.height_inches)}
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -689,7 +718,41 @@ export default function ClientProgressPage() {
             <div className="grid grid-cols-2 gap-4">
               {field('Starting weight (kg)', 'weight_kg', 'number', 'metrics')}
               {field('Target weight (kg)', 'target_weight_kg', 'number', 'metrics')}
-              {field('Height (inches)', 'height_inches', 'number', 'metrics')}
+
+              {/* Height — Feet + Inches */}
+              <div className="col-span-2">
+                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">Height</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-[#94a3b8] mb-1 block">Feet</label>
+                    <select
+                      value={heightFeet}
+                      onChange={(e) => setHeightFeet(parseInt(e.target.value))}
+                      className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                    >
+                      {FEET_OPTIONS.map((f) => (
+                        <option key={f} value={f}>{f} ft</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-[#94a3b8] mb-1 block">Inches</label>
+                    <select
+                      value={heightInch}
+                      onChange={(e) => setHeightInch(parseInt(e.target.value))}
+                      className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                    >
+                      {INCH_OPTIONS.map((i) => (
+                        <option key={i} value={i}>{i} in</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <p className="text-xs text-[#94a3b8] mt-1.5">
+                  {heightFeet}' {heightInch}" — {feetInchesToTotal(heightFeet, heightInch)} inches total
+                </p>
+              </div>
+
               {field('Waist (inches)', 'waist_inches', 'number', 'metrics')}
               {field('Chest (inches)', 'chest_inches', 'number', 'metrics')}
               {field('Hip (inches)', 'hip_inches', 'number', 'metrics')}
@@ -753,19 +816,19 @@ export default function ClientProgressPage() {
 
           {/* Purpose & Identity */}
           {identity && (
-  <InfoSection title="Purpose & Identity" data={{
-    submitted: new Date(identity.created_at).toLocaleDateString('en-IN'),
-    surface_goal: identity.surface_goal,
-    deep_why: identity.deep_why,
-    identity_statement: identity.identity_statement,
-    identity_person: identity.identity_person,
-    values: identity.values,
-    obstacle: identity.obstacle,
-    personal_commitment: identity.personal_commitment,
-    life_vision: identity.life_vision,
-    reengagement_anchor: identity.reengagement_anchor,
-  }} />
-)}
+            <InfoSection title="Purpose & Identity" data={{
+              submitted: new Date(identity.created_at).toLocaleDateString('en-IN'),
+              surface_goal: identity.surface_goal,
+              deep_why: identity.deep_why,
+              identity_statement: identity.identity_statement,
+              identity_person: identity.identity_person,
+              values: identity.values,
+              obstacle: identity.obstacle,
+              personal_commitment: identity.personal_commitment,
+              life_vision: identity.life_vision,
+              reengagement_anchor: identity.reengagement_anchor,
+            }} />
+          )}
 
           {/* Medical History */}
           {medical && (
@@ -1100,17 +1163,27 @@ export default function ClientProgressPage() {
             <>
               <TransformationReport data={reportData} />
               {bodyMetrics?.height_inches && (
-                <div className="max-w-2xl mx-auto px-4 pb-8">
-                  {isHeightPlausible(parseHeightToInches(bodyMetrics.height_inches)) ? (
-                    <BlueprintCard
-                      data={generateBlueprint(
-                        reportData.currentWeight || 0,
-                        parseHeightToInches(bodyMetrics.height_inches),
-                        client?.gender || null
-                      )}
-                      currentWeightKg={reportData.currentWeight || 0}
-                      clientName={client?.full_name}
-                    />
+                <div className="max-w-2xl mx-auto px-4 pb-8 flex flex-col gap-4">
+                  {isHeightPlausible(parseFloat(bodyMetrics.height_inches)) ? (
+                    <>
+                      <BlueprintCard
+                        data={generateBlueprint(
+                          reportData.currentWeight || 0,
+                          parseFloat(bodyMetrics.height_inches),
+                          client?.gender || null
+                        )}
+                        currentWeightKg={reportData.currentWeight || 0}
+                        clientName={client?.full_name}
+                      />
+                      {bodyMetrics?.waist_inches && (() => {
+                        const heightIn = parseFloat(bodyMetrics.height_inches)
+                        const waistIn = parseFloat(bodyMetrics.waist_inches)
+                        const whtr = calcWHtR(waistIn, heightIn)
+                        return whtr ? (
+                          <WHtRCard data={whtr} waistInches={waistIn} heightInches={heightIn} />
+                        ) : null
+                      })()}
+                    </>
                   ) : (
                     <div className="bg-white border border-amber-200 rounded-2xl p-6">
                       <h3 className="text-base font-semibold text-[#0f172a] mb-2">
@@ -1118,9 +1191,7 @@ export default function ClientProgressPage() {
                       </h3>
                       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                         <p className="text-sm text-amber-700 leading-relaxed">
-                          ⚠ Height on file is {bodyMetrics.height_inches} inches, which looks
-                          incorrect (likely entered as feet'.inches, e.g. "5.4" for 5'4" instead
-                          of total inches, which should be 64). Please correct the height in the{' '}
+                          ⚠ Height on file looks incorrect. Please correct the height in the{' '}
                           <button
                             onClick={() => setTab('edit')}
                             className="underline font-medium hover:text-amber-800"

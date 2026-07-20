@@ -22,19 +22,6 @@ export default function DashboardPage() {
   const { clients, loading, error, flagClient, saveNotes, setClientStatus } = useClients()
   const [selected, setSelected] = useState<ClientSummary | null>(null)
 
-  // Silent self-healing backfill — runs once per dashboard load
-  useEffect(() => {
-    if (checking) return
-    fetch('/api/review-calls/backfill', { method: 'POST' })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.totalCreated > 0) {
-          console.log(`Backfilled ${data.totalCreated} review call rows`)
-        }
-      })
-      .catch((err) => console.error('Backfill failed:', err))
-  }, [checking])
-
   if (checking) return <PageLoader />
 
   // Summary counts

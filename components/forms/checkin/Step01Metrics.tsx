@@ -6,6 +6,7 @@ import { useCheckinStore } from '@/store/checkinStore'
 import { Input } from '@/components/ui/Input'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { NavButtons } from '@/components/ui/NavButtons'
+import { MeasurementGuide } from '@/components/ui/MeasurementGuide'
 
 interface Props {
   onNext: () => void
@@ -94,12 +95,24 @@ export function Step01Metrics({ onNext }: Props) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Input label="Weight (kg)" required type="number" placeholder="e.g. 78.8" {...register('weight_kg')} />
-        <Input label="Waist (inches)" type="number" placeholder="e.g. 32.5" {...register('waist_inches')} />
+        <div>
+          <Input label="Weight (kg)" required type="number" placeholder="e.g. 78.8" {...register('weight_kg')} />
+          <MeasurementGuide type="weight" />
+        </div>
+        <div>
+          <Input label="Waist (inches)" type="number" placeholder="e.g. 32.5" {...register('waist_inches')} />
+          <MeasurementGuide type="waist" />
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <Input label="Chest (inches)" type="number" placeholder="e.g. 37" {...register('chest_inches')} />
-        <Input label="Hip (inches)" type="number" placeholder="e.g. 36" {...register('hip_inches')} />
+        <div>
+          <Input label="Chest (inches)" type="number" placeholder="e.g. 37" {...register('chest_inches')} />
+          <MeasurementGuide type="chest" />
+        </div>
+        <div>
+          <Input label="Hip (inches)" type="number" placeholder="e.g. 36" {...register('hip_inches')} />
+          <MeasurementGuide type="hip" />
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <Input label="Lower belly (inches)" type="number" placeholder="e.g. 35" {...register('lower_belly_inches')} />
