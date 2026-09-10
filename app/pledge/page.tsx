@@ -165,14 +165,6 @@ useEffect(() => {
         signed_at: new Date().toISOString(),
       })
 
-      // Update client phase note — pledge signed
-      if (client?.id) {
-        await supabase
-          .from('clients')
-          .update({ coach_notes: `Commitment Pledge signed on ${new Date().toLocaleDateString('en-IN')}` })
-          .eq('id', client.id)
-      }
-
       reset()
       setSubmitted(true)
     } catch (error: any) {

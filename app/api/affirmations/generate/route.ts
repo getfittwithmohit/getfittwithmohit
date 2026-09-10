@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { AuthError, requireOwnClientOrCoach, authErrorResponse } from '@/lib/supabase/serverAuth'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,6 +14,7 @@ export async function POST(req: NextRequest) {
     if (!clientId) {
       return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
     }
+    await requireOwnClientOrCoach(clientId)
 
     const [clientRes, pledgeRes, identityRes, codexRes] = await Promise.all([
       supabaseAdmin
@@ -161,6 +163,7 @@ Return ONLY valid JSON with no other text, no markdown, no code blocks:
     })
 
   } catch (err: any) {
+    if (err instanceof AuthError) return authErrorResponse(err)
     console.error('Affirmations generate error:', err)
     return NextResponse.json({ error: err.message || 'Unknown error' }, { status: 500 })
   }

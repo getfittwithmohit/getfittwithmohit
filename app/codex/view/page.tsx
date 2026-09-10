@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase/client'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
 
 export default function CodexViewPage() {

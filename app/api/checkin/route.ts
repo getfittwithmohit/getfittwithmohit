@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createClient as createServerClient } from '@/lib/supabase/server'
+import { AuthError, requireOwnClientOrCoach, authErrorResponse } from '@/lib/supabase/serverAuth'
 import { notifyCoach } from '@/lib/email/send'
 import { checkinNotificationEmail } from '@/lib/email/templates'
 
@@ -10,6 +11,9 @@ export async function POST(req: NextRequest) {
     // Get client name
     let clientName = 'A client'
     if (body.client_id) {
+      await requireOwnClientOrCoach(body.client_id)
+
+      const supabase = await createServerClient()
       const { data: client } = await supabase
         .from('clients')
         .select('full_name, current_week')
@@ -38,6 +42,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
+    if (error instanceof AuthError) return authErrorResponse(error)
     console.error('Checkin notification error:', error)
     return NextResponse.json(
       { success: false, error: error.message },

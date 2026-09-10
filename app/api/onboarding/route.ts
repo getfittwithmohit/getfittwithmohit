@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createClient } from '@supabase/supabase-js'
 import { OnboardingFormData } from '@/lib/types/forms'
+
+// Public signup endpoint — runs before a client necessarily has a session,
+// so it uses the service role key rather than a session-bound client.
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { autoRefreshToken: false, persistSession: false } }
+)
 import { notifyCoach, sendEmail } from '@/lib/email/send'
 import {
   coachNotificationEmail,
@@ -40,11 +48,15 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (existingClient) {
-      // Update auth_user_id if not set
-      await supabase
-        .from('clients')
-        .update({ auth_user_id: authUser?.id || null })
-        .eq('id', existingClient.id)
+      // Link this account if the client re-submits while logged in. Skip
+      // entirely when unauthenticated, so an anonymous resubmission can't
+      // wipe out an auth_user_id that was already linked.
+      if (authUser?.id) {
+        await supabase
+          .from('clients')
+          .update({ auth_user_id: authUser.id })
+          .eq('id', existingClient.id)
+      }
 
       return NextResponse.json({
         success: true,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { AuthError, requireOwnClientOrCoach, authErrorResponse } from '@/lib/supabase/serverAuth'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,6 +11,11 @@ const supabaseAdmin = createClient(
 export async function POST(req: NextRequest) {
   try {
     const { clientId, steps } = await req.json()
+    if (!clientId) {
+      return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
+    }
+    await requireOwnClientOrCoach(clientId)
+
     const today = new Date().toISOString().split('T')[0]
 
     // Save today's ritual
@@ -57,6 +63,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, streak: currentStreak, longest: longestStreak })
   } catch (err: any) {
+    if (err instanceof AuthError) return authErrorResponse(err)
     console.error('Ritual complete error:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }

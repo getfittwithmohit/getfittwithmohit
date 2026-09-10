@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { AuthError, requireOwnClientOrCoach, authErrorResponse } from '@/lib/supabase/serverAuth'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,6 +12,7 @@ export async function POST(req: NextRequest) {
   try {
     const { clientId } = await req.json()
     if (!clientId) return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
+    await requireOwnClientOrCoach(clientId)
 
     // Fetch all client data in parallel
     const [
@@ -151,6 +153,7 @@ Return ONLY valid JSON. No other text before or after. No markdown code blocks. 
 
     return NextResponse.json({ success: true, codex: parsed })
   } catch (err: any) {
+    if (err instanceof AuthError) return authErrorResponse(err)
     console.error('Codex generation error:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }

@@ -5,7 +5,7 @@ import { useClient } from '@/hooks/useClient'
 import { signOut } from '@/lib/supabase/queries/auth'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase/client'
 
 const PHASE_EMOJI: Record<string, string> = {
   Onboarding: '📋',

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { calcCurrentWeek } from '@/lib/supabase/queries/clients'
+import { AuthError, requireCoach, authErrorResponse } from '@/lib/supabase/serverAuth'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,6 +11,8 @@ const supabaseAdmin = createClient(
 
 export async function GET() {
   try {
+    await requireCoach()
+
     const { data: clients, error: clientsErr } = await supabaseAdmin
   .from('clients')
   .select('id, start_date, phase, current_week, program_duration_weeks')
@@ -50,6 +53,7 @@ export async function GET() {
 
     return NextResponse.json({ current: result })
   } catch (err: any) {
+    if (err instanceof AuthError) return authErrorResponse(err)
     console.error('Current status fetch error:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }

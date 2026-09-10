@@ -1,24 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase/client'
+import { calcCurrentWeek } from '@/lib/supabase/queries/clients'
 
-
-// Use service role for backend operations (cron + backfill)
-function getAdminClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  )
-}
-
-// Calculate current week number from start_date
-export function calcCurrentWeek(startDate: string | null): number {
-  if (!startDate) return 1
-  const start = new Date(startDate)
-  const today = new Date()
-  const diff = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 7))
-  return Math.max(1, diff + 1)
-}
+// These queries only run from API routes that have already verified the
+// caller is the coach (see requireCoach() in lib/supabase/serverAuth.ts),
+// so they use the service role client rather than a session-bound one.
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { autoRefreshToken: false, persistSession: false } }
+)
 
 // Mark a call's status + notes, with auto risk-flagging
 export async function markReviewCall(
