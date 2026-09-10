@@ -25,7 +25,7 @@ import { WHtRCard } from '@/components/blueprint/WHtRCard'
 import { WHtRTrendChart } from '@/components/progress/WHtRTrendChart'
 import { calcCurrentWeek } from '@/lib/supabase/queries/clients'
 
-type Tab = 'progress' | 'edit' | 'calls' | 'report'
+type Tab = 'progress' | 'edit' | 'calls' | 'report' | 'checkins'
 
 const FEET_OPTIONS = [3, 4, 5, 6, 7]
 const INCH_OPTIONS = Array.from({ length: 12 }, (_, i) => i)
@@ -92,6 +92,7 @@ export default function ClientProgressPage() {
   const [loading, setLoading] = useState(true)
   const [progressData, setProgressData] = useState<any>(null)
   const [tab, setTab] = useState<Tab>('progress')
+  const [expandedCheckin, setExpandedCheckin] = useState<string | null>(null)
 
   // Edit form state
   const [editData, setEditData] = useState<any>(null)
@@ -547,6 +548,7 @@ export default function ClientProgressPage() {
             { key: 'progress', label: '📊 Progress' },
             { key: 'edit', label: '✏️ Edit Profile' },
             { key: 'calls', label: '📞 Weekly Calls' },
+            { key: 'checkins', label: '📝 Check-ins' },
             { key: 'report', label: '📑 Report' },
           ].map((t) => (
             <button
@@ -1147,6 +1149,89 @@ export default function ClientProgressPage() {
       )}
 
       {/* Report Tab */}
+      {/* Check-ins Tab — full weekly_checkins data, ordered like the coach's SQL query */}
+      {tab === 'checkins' && (
+        <div className="max-w-3xl mx-auto px-4 py-6">
+          {checkins.length === 0 ? (
+            <p className="text-sm text-[#94a3b8] text-center py-16">
+              No check-ins yet.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {[...checkins]
+                .sort((a, b) => (a.week_number ?? 0) - (b.week_number ?? 0))
+                .map((c, i) => {
+                  const isOpen = expandedCheckin === c.id
+                  return (
+                    <div key={c.id} className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden">
+                      <button
+                        onClick={() => setExpandedCheckin(isOpen ? null : c.id)}
+                        className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-[#f8fafc] transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-medium text-[#0f172a]">
+                            {c.week_number ? `Week ${c.week_number}` : `Check-in ${i + 1}`}
+                          </span>
+                          <span className="text-xs text-[#94a3b8]">
+                            {new Date(c.submitted_at).toLocaleDateString('en-IN', {
+                              day: 'numeric', month: 'short', year: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-[#64748b]">
+                          {c.weight_kg != null && <span>⚖️ {c.weight_kg}kg</span>}
+                          {c.workouts_completed != null && <span>💪 {c.workouts_completed} workouts</span>}
+                          {c.energy_level != null && <span>⚡ {c.energy_level}/10</span>}
+                          {c.week_rating != null && <span>⭐ {c.week_rating}/10</span>}
+                          <span className="text-[#94a3b8]">{isOpen ? '▲' : '▼'}</span>
+                        </div>
+                      </button>
+                      {isOpen && (
+                        <div className="border-t border-[#e2e8f0] px-5 py-4 bg-[#f8fafc]">
+                          <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                            {Object.entries({
+                              'Weight (kg)': c.weight_kg,
+                              'Waist (in)': c.waist_inches,
+                              'Lower belly (in)': c.lower_belly_inches,
+                              'Thigh (in)': c.thigh_inches,
+                              'Daily steps': c.daily_steps,
+                              'Health issues': c.health_issues,
+                              'Workouts completed': c.workouts_completed,
+                              'Workout intensity': c.workout_intensity,
+                              'Nutrition adherence': c.nutrition_adherence,
+                              'Water intake': c.water_intake,
+                              'Meals followed': c.meals_followed,
+                              'Mood': c.mood,
+                              'Energy level': c.energy_level,
+                              'Sleep duration': c.sleep_duration,
+                              'Sleep quality': c.sleep_quality,
+                              'Stress level': c.stress_level,
+                              'Biggest win': c.biggest_win,
+                              'Biggest challenge': c.biggest_challenge,
+                              'Real-life context': c.real_life_context,
+                              'Mindset answer': c.mindset_answer,
+                              'Why connection': c.why_connection,
+                              'Needs from coach': c.needs_from_coach,
+                              'Week rating': c.week_rating,
+                              'Call booked': c.call_booked,
+                              'Coach notes': c.coach_notes,
+                            }).map(([label, value]) => (
+                              <div key={label}>
+                                <p className="text-xs text-[#94a3b8] mb-0.5">{label}</p>
+                                <p className="text-sm text-[#0f172a] leading-relaxed">{formatVal(value)}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+            </div>
+          )}
+        </div>
+      )}
+
       {tab === 'report' && (
         <div>
           {reportLoading && (
