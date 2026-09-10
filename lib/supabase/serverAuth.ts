@@ -20,7 +20,7 @@ async function getSessionUser() {
 }
 
 function isCoach(email: string | null | undefined): boolean {
-  const coachEmail = process.env.COACH_EMAIL?.toLowerCase()
+  const coachEmail = (process.env.COACH_EMAIL || process.env.NEXT_PUBLIC_COACH_EMAIL)?.toLowerCase()
   return !!email && !!coachEmail && email.toLowerCase() === coachEmail
 }
 
