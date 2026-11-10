@@ -73,6 +73,12 @@ export default function DashboardPage() {
 
         <div className="flex items-center gap-3">
           <button
+            onClick={() => window.location.href = '/coach/dashboard/content'}
+            className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors"
+          >
+            📚 Courses &amp; Audios
+          </button>
+          <button
             onClick={() => window.location.href = '/coach/dashboard/blueprint-calculator'}
             className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors"
           >

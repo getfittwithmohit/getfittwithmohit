@@ -36,6 +36,8 @@ const QUICK_LINKS = [
   { emoji: '✊', label: 'Pledge', href: '/pledge' },
   //{ emoji: '📖', label: 'My Codex', href: '/codex/view' },
   { emoji: '🌅', label: 'Ritual', href: '/ritual' },
+  { emoji: '🎓', label: 'Courses', href: '/courses' },
+  { emoji: '🎧', label: 'Audios', href: '/audios' },
 ]
 
 export default function ClientHomePage() {
