@@ -5,6 +5,7 @@ import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { supabase } from '@/lib/supabase/client'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
+import { todayIST } from '@/lib/utils/istDate'
 
 const AUDIO_URL = process.env.NEXT_PUBLIC_STRANGEST_SECRET_URL || ''
 
@@ -67,7 +68,7 @@ export default function RitualPage() {
       if (!c) { setLoading(false); return }
       setClient(c)
 
-      const today = new Date().toISOString().split('T')[0]
+      const today = todayIST()
       const { quarter, year } = getCurrentQuarter()
 
       const [ritualRes, streakRes, goalRes, affRes, codexRes] = await Promise.all([
@@ -224,7 +225,7 @@ export default function RitualPage() {
   const saveGoals = async () => {
     if (!client) return
     setSavingGoals(true)
-    const today = new Date().toISOString().split('T')[0]
+    const today = todayIST()
     await supabase.from('daily_goals').upsert({
       client_id: client.id,
       date: today,

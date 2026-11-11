@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { DailyHistory } from '@/components/coach/DailyHistory'
 import { useParams } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -25,7 +26,7 @@ import { WHtRCard } from '@/components/blueprint/WHtRCard'
 import { WHtRTrendChart } from '@/components/progress/WHtRTrendChart'
 import { calcCurrentWeek } from '@/lib/supabase/queries/clients'
 
-type Tab = 'progress' | 'edit' | 'calls' | 'report' | 'checkins'
+type Tab = 'progress' | 'edit' | 'calls' | 'report' | 'checkins' | 'daily'
 
 const FEET_OPTIONS = [3, 4, 5, 6, 7]
 const INCH_OPTIONS = Array.from({ length: 12 }, (_, i) => i)
@@ -543,11 +544,12 @@ export default function ClientProgressPage() {
 
       {/* Tabs */}
       <div className="bg-white border-b border-[#e2e8f0]">
-        <div className="max-w-3xl mx-auto px-4 flex gap-0">
+        <div className="max-w-3xl mx-auto px-4 flex gap-0 overflow-x-auto">
           {[
             { key: 'progress', label: '📊 Progress' },
             { key: 'edit', label: '✏️ Edit Profile' },
             { key: 'calls', label: '📞 Weekly Calls' },
+            { key: 'daily', label: '📋 Daily' },
             { key: 'checkins', label: '📝 Check-ins' },
             { key: 'report', label: '📑 Report' },
           ].map((t) => (
@@ -558,7 +560,7 @@ export default function ClientProgressPage() {
                 if (t.key === 'calls' && calls.length === 0) loadCalls()
                 if (t.key === 'report' && !reportData) loadReport()
               }}
-              className={`px-6 py-3.5 text-sm font-medium border-b-2 transition-colors ${
+              className={`px-4 py-3.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 tab === t.key
                   ? 'border-[#00d4d4] text-[#0f172a]'
                   : 'border-transparent text-[#94a3b8] hover:text-[#64748b]'
@@ -1231,6 +1233,8 @@ export default function ClientProgressPage() {
           )}
         </div>
       )}
+
+      {tab === 'daily' && <DailyHistory clientId={clientId} />}
 
       {tab === 'report' && (
         <div>
