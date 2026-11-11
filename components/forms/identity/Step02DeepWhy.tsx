@@ -30,8 +30,8 @@ export function Step02DeepWhy({ onNext, onBack }: Props) {
       title="But why does that matter to you?"
       subtitle="Most people stop at the surface. Keep asking why — the real reason is usually 3–4 layers deeper."
     >
-      <div className="bg-gradient-to-br from-[#00d4d4]/5 to-[#4a7fd4]/5 border border-[#00d4d4]/15 rounded-xl p-4">
-        <p className="text-xs font-medium text-[#00d4d4] mb-1">
+      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
+        <p className="text-xs font-medium text-[#00D4E8] mb-1">
           The 5 Whys — Simon Sinek
         </p>
         <p className="text-sm text-[#64748b] leading-relaxed">

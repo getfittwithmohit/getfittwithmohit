@@ -63,7 +63,7 @@ export default function BlueprintCalculatorPage() {
             </button>
           </div>
           <div className="text-right">
-            <p className="text-[#00d4d4] text-xs font-medium tracking-wide">GETFITTWITHMOHIT</p>
+            <p className="text-[#00D4E8] text-xs font-medium tracking-wide">GETFITTWITHMOHIT</p>
             <p className="text-white/40 text-xs">Transform to Inspire</p>
           </div>
         </div>
@@ -91,7 +91,7 @@ export default function BlueprintCalculatorPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Prospect or client name"
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
               />
             </div>
 
@@ -104,7 +104,7 @@ export default function BlueprintCalculatorPage() {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 placeholder="e.g. 80"
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
               />
             </div>
 
@@ -118,7 +118,7 @@ export default function BlueprintCalculatorPage() {
                   <select
                     value={heightFeet}
                     onChange={(e) => setHeightFeet(parseInt(e.target.value))}
-                    className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                    className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                   >
                     {FEET_OPTIONS.map((f) => (
                       <option key={f} value={f}>{f} ft</option>
@@ -130,7 +130,7 @@ export default function BlueprintCalculatorPage() {
                   <select
                     value={heightInch}
                     onChange={(e) => setHeightInch(parseInt(e.target.value))}
-                    className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                    className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                   >
                     {INCH_OPTIONS.map((i) => (
                       <option key={i} value={i}>{i} in</option>
@@ -152,7 +152,7 @@ export default function BlueprintCalculatorPage() {
                 value={waist}
                 onChange={(e) => setWaist(e.target.value)}
                 placeholder="e.g. 36"
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
               />
             </div>
 
@@ -168,7 +168,7 @@ export default function BlueprintCalculatorPage() {
                     onClick={() => setGender(g)}
                     className={`py-2.5 rounded-lg text-sm font-medium border transition-colors ${
                       gender === g
-                        ? 'bg-[#1a1f3a] text-[#00d4d4] border-[#1a1f3a]'
+                        ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#1a1f3a]'
                         : 'bg-white text-[#64748b] border-[#e2e8f0]'
                     }`}
                   >
@@ -181,7 +181,7 @@ export default function BlueprintCalculatorPage() {
             <div className="flex gap-3 mt-1">
               <button
                 onClick={handleCalculate}
-                className="flex-1 bg-[#00d4d4] text-[#1a1f3a] py-3 rounded-xl text-sm font-medium hover:bg-[#00bcbc] transition-colors"
+                className="flex-1 bg-[#00D4E8] text-[#1a1f3a] py-3 rounded-xl text-sm font-medium hover:bg-[#00BED1] transition-colors"
               >
                 Calculate →
               </button>

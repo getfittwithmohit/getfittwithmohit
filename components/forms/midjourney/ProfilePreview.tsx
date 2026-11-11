@@ -19,7 +19,7 @@ export function ProfilePreview({ data }: Props) {
     <div className="bg-[#1a1f3a] rounded-xl p-5 relative overflow-hidden">
 
       {/* Decorative */}
-      <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-[#00d4d4]/5" />
+      <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-[#00D4E8]/5" />
       <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-[#4a7fd4]/5" />
 
       <div className="relative">
@@ -35,7 +35,7 @@ export function ProfilePreview({ data }: Props) {
         {/* Stats grid */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           <div className="bg-white/5 rounded-lg p-2.5 text-center">
-            <p className="text-sm font-medium text-[#00d4d4]">
+            <p className="text-sm font-medium text-[#00D4E8]">
               {data.current_week ? `Wk ${data.current_week}` : '–'}
             </p>
             <p className="text-xs text-white/40 mt-0.5 uppercase tracking-wide">
@@ -45,7 +45,7 @@ export function ProfilePreview({ data }: Props) {
           <div className="bg-white/5 rounded-lg p-2.5 text-center">
             <p
               className="text-sm font-medium"
-              style={{ color: phase?.color || '#00d4d4' }}
+              style={{ color: phase?.color || '#00D4E8' }}
             >
               {phase ? `${phase.emoji} ${phase.label}` : '–'}
             </p>

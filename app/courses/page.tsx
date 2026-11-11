@@ -69,7 +69,7 @@ export default function CoursesPage() {
             <button
               key={course.id}
               onClick={() => window.location.href = `/courses/${course.id}`}
-              className="bg-white border border-[#e2e8f0] rounded-2xl p-5 text-left hover:border-[#00d4d4] transition-colors"
+              className="bg-white border border-[#e2e8f0] rounded-2xl p-5 text-left hover:border-[#00D4E8] transition-colors"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
@@ -88,7 +88,7 @@ export default function CoursesPage() {
                   <span>{percent}%</span>
                 </div>
                 <div className="w-full h-1.5 bg-[#f1f5f9] rounded-full overflow-hidden">
-                  <div className="h-full bg-[#00d4d4] rounded-full transition-all" style={{ width: `${percent}%` }} />
+                  <div className="h-full bg-[#00D4E8] rounded-full transition-all" style={{ width: `${percent}%` }} />
                 </div>
               </div>
             </button>

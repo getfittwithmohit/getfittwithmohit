@@ -30,7 +30,7 @@ export function Step08Anchor({ onNext, onBack }: Props) {
       title="If Coach Mohit reaches out during a quiet week — what do you want him to remind you of?"
       subtitle="Write this as a message to your future self. The version of you who is tired, overwhelmed, and thinking about giving up."
     >
-      <div className="bg-gradient-to-br from-[#00d4d4]/5 to-[#4a7fd4]/5 border border-[#00d4d4]/15 rounded-xl p-4">
+      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
         <p className="text-sm text-[#64748b] leading-relaxed">
           Coach Mohit will use this exact message when you go quiet.
           Not a generic motivational quote — <strong className="text-[#0f172a]">

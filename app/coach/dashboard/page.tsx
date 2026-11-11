@@ -11,7 +11,7 @@ import { useAuthGuard } from '@/hooks/useAuthGuard'
 const PHASE_COLORS: Record<string, string> = {
   Onboarding: '#f59e0b',
   Adaptation: '#4a7fd4',
-  Building: '#00d4d4',
+  Building: '#00D4E8',
   Performance: '#22c55e',
   Maintenance: '#a855f7',
 }
@@ -73,6 +73,12 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => window.location.href = '/coach/dashboard/workouts'}
+            className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors"
+          >
+            🏋️ Workouts
+          </button>
           <button
             onClick={() => window.location.href = '/coach/dashboard/daily'}
             className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors"

@@ -14,7 +14,7 @@ import { supabase } from '@/lib/supabase/client'
 const PHASE_COLORS: Record<string, string> = {
   Onboarding: '#f59e0b',
   Adaptation: '#4a7fd4',
-  Building: '#00d4d4',
+  Building: '#00D4E8',
   Performance: '#22c55e',
   Maintenance: '#a855f7',
 }
@@ -217,7 +217,7 @@ export function DetailPanel({
             ? `${client.avg_nutrition_adherence}/10`
             : '–'
           }
-          color="#00d4d4"
+          color="#00D4E8"
         />
         <StatCard
           label="Lost"
@@ -336,7 +336,7 @@ export function DetailPanel({
           onChange={(e) => setNotes(e.target.value)}
           placeholder={`Add coaching notes for ${client.full_name}...`}
           rows={4}
-          className="w-full px-3 py-2.5 text-sm border border-[#e2e8f0] rounded-lg text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#00d4d4] resize-none transition-colors duration-150"
+          className="w-full px-3 py-2.5 text-sm border border-[#e2e8f0] rounded-lg text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#00D4E8] resize-none transition-colors duration-150"
         />
         <div className="flex justify-end mt-2">
           <Button

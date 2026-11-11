@@ -8,7 +8,7 @@ type Filter = 'active' | 'red' | 'amber' | 'green' | 'paused' | 'inactive'
 const PHASE_COLORS: Record<string, string> = {
   Onboarding: '#f59e0b',
   Adaptation: '#4a7fd4',
-  Building: '#00d4d4',
+  Building: '#00D4E8',
   Performance: '#22c55e',
   Maintenance: '#a855f7',
 }
@@ -205,7 +205,7 @@ export function ClientList({
               py-1.5 px-2.5 rounded-lg text-xs font-medium
               transition-all duration-150
               ${filter === tab.key
-                ? 'bg-[#1a1f3a] text-[#00d4d4]'
+                ? 'bg-[#1a1f3a] text-[#00D4E8]'
                 : 'text-[#64748b] hover:bg-[#f8fafc]'
               }
             `}
@@ -243,7 +243,7 @@ export function ClientList({
                   cursor-pointer
                   transition-all duration-150
                   ${isSelected
-                    ? 'bg-[#f0fdfd] border-l-2 border-l-[#00d4d4]'
+                    ? 'bg-[#f0fdfd] border-l-2 border-l-[#00D4E8]'
                     : 'hover:bg-[#f8fafc]'
                   }
                 `}
@@ -334,7 +334,7 @@ export function ClientList({
                         <span style={{ color: isCurrent ? cfg.color : '#0f172a' }}>
                           {cfg.label}
                         </span>
-                        {isCurrent && <span className="ml-auto text-[#00d4d4]">✓</span>}
+                        {isCurrent && <span className="ml-auto text-[#00D4E8]">✓</span>}
                       </button>
                     )
                   })}
@@ -362,7 +362,7 @@ export function ClientList({
                         onClick={() => setForm((p) => ({ ...p, status: opt.value as any }))}
                         className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-colors ${
                           form.status === opt.value
-                            ? 'bg-[#1a1f3a] text-[#00d4d4] border-[#1a1f3a]'
+                            ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#1a1f3a]'
                             : 'bg-white text-[#64748b] border-[#e2e8f0]'
                         }`}
                       >
@@ -378,21 +378,21 @@ export function ClientList({
                         onChange={(e) => setForm((p) => ({ ...p, discussed: e.target.value }))}
                         placeholder="What we discussed..."
                         rows={2}
-                        className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00d4d4] resize-none"
+                        className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
                       />
                       <textarea
                         value={form.changes}
                         onChange={(e) => setForm((p) => ({ ...p, changes: e.target.value }))}
                         placeholder="What we're changing..."
                         rows={2}
-                        className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00d4d4] resize-none"
+                        className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
                       />
                       <textarea
                         value={form.next_focus}
                         onChange={(e) => setForm((p) => ({ ...p, next_focus: e.target.value }))}
                         placeholder="Next week's focus..."
                         rows={2}
-                        className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00d4d4] resize-none"
+                        className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
                       />
                     </div>
                   )}
@@ -401,7 +401,7 @@ export function ClientList({
                     <button
                       onClick={() => handleMark(client.id, current.week)}
                       disabled={marking}
-                      className="flex-1 bg-[#1a1f3a] text-[#00d4d4] py-2 rounded-lg text-xs font-medium disabled:opacity-50"
+                      className="flex-1 bg-[#1a1f3a] text-[#00D4E8] py-2 rounded-lg text-xs font-medium disabled:opacity-50"
                     >
                       {marking ? 'Saving...' : 'Save'}
                     </button>

@@ -59,7 +59,7 @@ function WaistIllustration() {
       <path d="M38 78 Q35 95 36 130 L44 130 L46 95" fill="#e2e8f0" />
       <path d="M82 78 Q85 95 84 130 L76 130 L74 95" fill="#e2e8f0" />
       {/* Tape line at waist — narrowest point */}
-      <ellipse cx="60" cy="80" rx="24" ry="4" fill="none" stroke="#00d4d4" strokeWidth="2.5" strokeDasharray="4 3" />
+      <ellipse cx="60" cy="80" rx="24" ry="4" fill="none" stroke="#00D4E8" strokeWidth="2.5" strokeDasharray="4 3" />
       <text x="60" y="146" textAnchor="middle" fontSize="9" fill="#4a7fd4" fontWeight="600">narrowest point</text>
     </svg>
   )
@@ -76,7 +76,7 @@ function ChestIllustration() {
       <path d="M37 70 Q33 90 35 130 L43 130 L46 95" fill="#e2e8f0" />
       <path d="M83 70 Q87 90 85 130 L77 130 L74 95" fill="#e2e8f0" />
       {/* Tape line at chest — fullest part, upper torso */}
-      <ellipse cx="60" cy="58" rx="27" ry="4" fill="none" stroke="#00d4d4" strokeWidth="2.5" strokeDasharray="4 3" />
+      <ellipse cx="60" cy="58" rx="27" ry="4" fill="none" stroke="#00D4E8" strokeWidth="2.5" strokeDasharray="4 3" />
       <text x="60" y="146" textAnchor="middle" fontSize="9" fill="#4a7fd4" fontWeight="600">fullest part</text>
     </svg>
   )
@@ -93,7 +93,7 @@ function HipIllustration() {
       <path d="M42 100 Q38 110 36 130 L44 130 L48 105" fill="#e2e8f0" />
       <path d="M78 100 Q82 110 84 130 L76 130 L72 105" fill="#e2e8f0" />
       {/* Tape line at hip — widest point, lower torso */}
-      <ellipse cx="60" cy="102" rx="27" ry="4" fill="none" stroke="#00d4d4" strokeWidth="2.5" strokeDasharray="4 3" />
+      <ellipse cx="60" cy="102" rx="27" ry="4" fill="none" stroke="#00D4E8" strokeWidth="2.5" strokeDasharray="4 3" />
       <text x="60" y="146" textAnchor="middle" fontSize="9" fill="#4a7fd4" fontWeight="600">widest point</text>
     </svg>
   )
@@ -105,7 +105,7 @@ function WeightIllustration() {
       {/* Simple scale illustration */}
       <rect x="25" y="120" width="70" height="14" rx="4" fill="#e2e8f0" />
       <rect x="35" y="100" width="50" height="22" rx="3" fill="#1a1f3a" />
-      <text x="60" y="115" textAnchor="middle" fontSize="11" fill="#00d4d4" fontWeight="700">0.0</text>
+      <text x="60" y="115" textAnchor="middle" fontSize="11" fill="#00D4E8" fontWeight="700">0.0</text>
       {/* Sun rising — morning symbol */}
       <circle cx="60" cy="55" r="14" fill="none" stroke="#f59e0b" strokeWidth="2.5" />
       <line x1="60" y1="32" x2="60" y2="38" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />

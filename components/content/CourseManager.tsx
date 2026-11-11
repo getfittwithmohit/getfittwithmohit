@@ -367,7 +367,7 @@ function LessonForm({
   const hasLink = draft.video_url.trim().length > 0
   const linkOk = hasLink && !!getVideoEmbedUrl(draft.video_url)
   return (
-    <div className="bg-white border border-[#00d4d4] rounded-xl p-4 flex flex-col gap-3">
+    <div className="bg-white border border-[#00D4E8] rounded-xl p-4 flex flex-col gap-3">
       <p className="text-sm font-medium text-[#0f172a]">{draft.id ? 'Edit lesson' : 'New lesson'}</p>
       <Input label="Lesson title" value={draft.title} onChange={(e) => onChange({ ...draft, title: e.target.value })} />
       <Input

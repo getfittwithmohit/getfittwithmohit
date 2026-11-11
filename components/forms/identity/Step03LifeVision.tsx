@@ -30,7 +30,7 @@ export function Step03LifeVision({ onNext, onBack }: Props) {
       title="If you achieved everything — how would your life actually be different?"
       subtitle="Close your eyes for a moment. Picture it. Not the number on the scale — the life."
     >
-      <div className="bg-gradient-to-br from-[#00d4d4]/5 to-[#4a7fd4]/5 border border-[#00d4d4]/15 rounded-xl p-4">
+      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
         <p className="text-sm text-[#64748b] leading-relaxed italic">
           "What are you doing? Who's around you? How do you feel getting out of bed?
           What does a Tuesday morning look like? How do you carry yourself?"

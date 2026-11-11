@@ -20,7 +20,7 @@ export function QuickActions({
       label: 'Re-engage',
       icon: '💬',
       onClick: onReengage,
-      style: 'bg-[#1a1f3a] text-[#00d4d4] border-[#1a1f3a]',
+      style: 'bg-[#1a1f3a] text-[#00D4E8] border-[#1a1f3a]',
     },
     {
       label: 'Flag at-risk',
@@ -32,7 +32,7 @@ export function QuickActions({
       label: 'View profile',
       icon: '📋',
       onClick: onViewProfile,
-      style: 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00d4d4] hover:text-[#00d4d4]',
+      style: 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00D4E8] hover:text-[#00D4E8]',
     },
     {
   label: 'Send Pledge',
@@ -48,7 +48,7 @@ export function QuickActions({
       {showStartProgramme && onStartProgramme && (
         <button
           onClick={onStartProgramme}
-          className="w-full py-2.5 bg-[#00d4d4] text-[#1a1f3a] rounded-lg text-xs font-medium hover:bg-[#00bcbc] transition-all"
+          className="w-full py-2.5 bg-[#00D4E8] text-[#1a1f3a] rounded-lg text-xs font-medium hover:bg-[#00BED1] transition-all"
         >
           🚀 Start Programme — Move to Adaptation Week 1
         </button>

@@ -127,7 +127,7 @@ export function TestRenderer({
               defaultValue={
                 existingResult?.fields[field.label] || ''
               }
-              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#00d4d4] transition-colors"
+              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#00D4E8] transition-colors"
             />
           </div>
         ))}
@@ -170,7 +170,7 @@ export function TestRenderer({
           defaultValue={existingResult?.pain || ''}
           placeholder="Note any pain, tightness or discomfort during this test..."
           rows={2}
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
         />
       </div>
 
@@ -184,7 +184,7 @@ export function TestRenderer({
         </button>
         <button
           onClick={handleNext}
-          className="bg-[#00d4d4] text-[#1a1f3a] px-8 py-2.5 rounded-lg text-sm font-medium hover:bg-[#00bcbc] transition-colors"
+          className="bg-[#00D4E8] text-[#1a1f3a] px-8 py-2.5 rounded-lg text-sm font-medium hover:bg-[#00BED1] transition-colors"
         >
           {isLast ? 'View Results' : 'Next Test →'}
         </button>

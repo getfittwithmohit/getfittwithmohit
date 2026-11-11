@@ -230,7 +230,7 @@ export function RenewalsPanel() {
                         value={newEnd}
                         min={addDaysIST(c.end, 1)}
                         onChange={(e) => setNewEnd(e.target.value)}
-                        className="px-3 py-2 text-sm border border-[#e2e8f0] rounded-lg focus:outline-none focus:border-[#00d4d4]"
+                        className="px-3 py-2 text-sm border border-[#e2e8f0] rounded-lg focus:outline-none focus:border-[#00D4E8]"
                       />
                     </div>
                     <div className="flex gap-1.5">
@@ -238,7 +238,7 @@ export function RenewalsPanel() {
                         <button
                           key={w}
                           onClick={() => setNewEnd(addDaysIST(c.left < 0 ? todayIST() : c.end, w * 7))}
-                          className="text-xs px-2.5 py-2 border border-[#e2e8f0] rounded-lg hover:border-[#00d4d4]"
+                          className="text-xs px-2.5 py-2 border border-[#e2e8f0] rounded-lg hover:border-[#00D4E8]"
                         >
                           +{w} wks
                         </button>
@@ -247,7 +247,7 @@ export function RenewalsPanel() {
                     <button
                       onClick={() => renew(c)}
                       disabled={busy}
-                      className="bg-[#1a1f3a] text-[#00d4d4] px-4 py-2 rounded-lg text-xs font-medium disabled:opacity-50"
+                      className="bg-[#1a1f3a] text-[#00D4E8] px-4 py-2 rounded-lg text-xs font-medium disabled:opacity-50"
                     >
                       {busy ? 'Saving…' : 'Save renewal'}
                     </button>

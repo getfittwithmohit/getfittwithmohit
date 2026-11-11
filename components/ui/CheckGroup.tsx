@@ -30,8 +30,8 @@ export function CheckGroup({
               px-4 py-2 rounded-full text-xs border
               transition-all duration-150
               ${values.includes(opt)
-                ? 'bg-[#1a1f3a] text-[#00d4d4] border-[#00d4d4]'
-                : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00d4d4]'
+                ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#00D4E8]'
+                : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00D4E8]'
               }
             `}
           >

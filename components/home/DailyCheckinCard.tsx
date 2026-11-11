@@ -29,13 +29,13 @@ export function DailyCheckinCard({ clientId }: { clientId: string }) {
       onClick={() => window.location.href = '/daily-checkin'}
       className={`w-full rounded-2xl p-5 mb-3 text-left transition-colors border ${
         done
-          ? 'bg-white border-[#e2e8f0] hover:border-[#00d4d4]'
-          : 'bg-[#00d4d4] border-[#00d4d4] hover:bg-[#00bcbc]'
+          ? 'bg-white border-[#e2e8f0] hover:border-[#00D4E8]'
+          : 'bg-[#00D4E8] border-[#00D4E8] hover:bg-[#00BED1]'
       }`}
     >
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className={`text-xs tracking-widest uppercase mb-1 ${done ? 'text-[#00a3a3]' : 'text-[#1a1f3a]/70'}`}>
+          <p className={`text-xs tracking-widest uppercase mb-1 ${done ? 'text-[#0095A8]' : 'text-[#1a1f3a]/70'}`}>
             Daily Check-In
           </p>
           <p className="text-base font-medium text-[#0f172a]">

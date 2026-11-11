@@ -63,7 +63,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
 
       {/* Header */}
       <div className="mb-6">
-        <p className="text-xs font-medium text-[#00d4d4] uppercase tracking-widest mb-1">
+        <p className="text-xs font-medium text-[#00D4E8] uppercase tracking-widest mb-1">
           GetFittWithMohit · Transform to Inspire
         </p>
         <h1 className="text-2xl font-bold text-[#0f172a] leading-tight">
@@ -143,7 +143,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
               onClick={() => setTab(t.key as ChartTab)}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
                 tab === t.key
-                  ? 'bg-[#1a1f3a] text-[#00d4d4]'
+                  ? 'bg-[#1a1f3a] text-[#00D4E8]'
                   : 'bg-[#f8fafc] text-[#64748b] border border-[#e2e8f0]'
               }`}
             >
@@ -311,7 +311,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
 
       {/* Brand block — Transform to Inspire (only showcase genuine wins) */}
       <div className="bg-[#1a1f3a] rounded-2xl p-6 mb-4">
-        <p className="text-xs font-medium text-[#00d4d4] uppercase tracking-widest mb-4">
+        <p className="text-xs font-medium text-[#00D4E8] uppercase tracking-widest mb-4">
           The GetFittWithMohit Difference
         </p>
         <div className="flex flex-col gap-2.5">
@@ -329,7 +329,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
               `${avgSteps.toLocaleString()} daily steps — consistency mastered`,
           ].filter(Boolean).map((line, i) => (
             <div key={i} className="flex items-start gap-2.5">
-              <span className="text-[#00d4d4] text-sm flex-shrink-0 mt-0.5">✓</span>
+              <span className="text-[#00D4E8] text-sm flex-shrink-0 mt-0.5">✓</span>
               <p className="text-sm text-white/80 leading-relaxed">{line}</p>
             </div>
           ))}

@@ -74,7 +74,7 @@ export function Step02Metrics({ onNext, onBack }: Props) {
       <div>
         <p className="text-xs font-medium text-[#64748b] mb-2">
           Height
-          <span className="text-[#00d4d4] ml-0.5">*</span>
+          <span className="text-[#00D4E8] ml-0.5">*</span>
         </p>
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -86,7 +86,7 @@ export function Step02Metrics({ onNext, onBack }: Props) {
     setValue('height_feet' as any, feet)
     setValue('height_inches', String(feet * 12 + heightInchRemainder), { shouldValidate: true })
   }}
-              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
             >
               {FEET_OPTIONS.map((f) => (
                 <option key={f} value={f}>{f} ft</option>
@@ -102,7 +102,7 @@ export function Step02Metrics({ onNext, onBack }: Props) {
     setValue('height_in_remainder' as any, inch)
     setValue('height_inches', String(heightFeet * 12 + inch), { shouldValidate: true })
   }}
-              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
             >
               {INCH_OPTIONS.map((i) => (
                 <option key={i} value={i}>{i} in</option>

@@ -42,15 +42,15 @@ function PhotoUpload({
           border border-dashed rounded-lg p-5 text-center cursor-pointer
           transition-colors duration-150
           ${selectedFile
-            ? 'border-[#00d4d4] bg-[#00d4d4]/5'
-            : 'border-[#e2e8f0] hover:border-[#00d4d4]'
+            ? 'border-[#00D4E8] bg-[#00D4E8]/5'
+            : 'border-[#e2e8f0] hover:border-[#00D4E8]'
           }
         `}
       >
         {selectedFile ? (
           <div>
             <div className="text-xl mb-1">✅</div>
-            <p className="text-xs text-[#00d4d4] font-medium">
+            <p className="text-xs text-[#00D4E8] font-medium">
               {selectedFile.name}
             </p>
             <p className="text-xs text-[#94a3b8] mt-0.5">
@@ -59,7 +59,7 @@ function PhotoUpload({
           </div>
         ) : (
           <div>
-            <div className="text-xl text-[#00d4d4] mb-1">+</div>
+            <div className="text-xl text-[#00D4E8] mb-1">+</div>
             <p className="text-xs text-[#94a3b8]">Tap to upload</p>
           </div>
         )}

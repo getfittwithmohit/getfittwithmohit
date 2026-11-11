@@ -32,7 +32,7 @@ interface ProgressBarsProps {
 export function ProgressBars({ workout, nutrition, overall }: ProgressBarsProps) {
   return (
     <div>
-      <ProgressBarRow label="Workout adherence" value={workout} color="#00d4d4" />
+      <ProgressBarRow label="Workout adherence" value={workout} color="#00D4E8" />
       <ProgressBarRow label="Nutrition adherence" value={nutrition} color="#4a7fd4" />
       <ProgressBarRow label="Overall progress" value={overall} color="#22c55e" />
     </div>

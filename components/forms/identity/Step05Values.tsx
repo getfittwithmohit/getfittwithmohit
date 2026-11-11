@@ -43,7 +43,7 @@ export function Step05Values({ onNext, onBack }: Props) {
         <p className="text-xs text-[#94a3b8]">
           Select up to 5 that feel most true to you
         </p>
-        <p className="text-xs font-medium text-[#00d4d4]">
+        <p className="text-xs font-medium text-[#00D4E8]">
           {selected.length} / {MAX_VALUES} selected
         </p>
       </div>
@@ -64,10 +64,10 @@ export function Step05Values({ onNext, onBack }: Props) {
                 py-2.5 px-3 rounded-lg text-xs font-medium border
                 transition-all duration-150 text-center
                 ${isSelected
-                  ? 'bg-[#1a1f3a] text-[#00d4d4] border-[#00d4d4]'
+                  ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#00D4E8]'
                   : isDisabled
                     ? 'bg-[#f8fafc] text-[#c4cdd6] border-[#e2e8f0] cursor-not-allowed'
-                    : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00d4d4] hover:text-[#00d4d4]'
+                    : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00D4E8] hover:text-[#00D4E8]'
                 }
               `}
             >
@@ -85,7 +85,7 @@ export function Step05Values({ onNext, onBack }: Props) {
             {selected.map((v) => (
               <span
                 key={v}
-                className="text-xs bg-[#1a1f3a] text-[#00d4d4] px-3 py-1 rounded-full"
+                className="text-xs bg-[#1a1f3a] text-[#00D4E8] px-3 py-1 rounded-full"
               >
                 {v}
               </span>

@@ -14,7 +14,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label className="text-xs font-medium text-[#64748b]">
             {label}
-            {required && <span className="text-[#00d4d4] ml-0.5">*</span>}
+            {required && <span className="text-[#00D4E8] ml-0.5">*</span>}
           </label>
         )}
         {hint && (
@@ -28,7 +28,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             border border-[#e2e8f0] rounded-lg
             text-[#0f172a] bg-white
             placeholder:text-[#94a3b8]
-            focus:outline-none focus:border-[#00d4d4]
+            focus:outline-none focus:border-[#00D4E8]
             transition-colors duration-150
             resize-none
             ${error ? 'border-[#ef4444]' : ''}

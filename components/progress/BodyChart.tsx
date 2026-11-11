@@ -24,7 +24,7 @@ export function BodyChart({ checkins, startWeight }: BodyChartProps) {
     }))
 
   const LINES = [
-    { key: 'Weight', color: '#00d4d4', unit: 'kg' },
+    { key: 'Weight', color: '#00D4E8', unit: 'kg' },
     { key: 'Waist', color: '#4a7fd4', unit: 'in' },
     { key: 'Lower Belly', color: '#f59e0b', unit: 'in' },
     { key: 'Hip', color: '#a855f7', unit: 'in' },

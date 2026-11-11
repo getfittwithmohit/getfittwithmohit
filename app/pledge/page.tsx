@@ -184,7 +184,7 @@ useEffect(() => {
         <div className="max-w-lg w-full text-center">
 
           {/* Seal */}
-          <div className="w-24 h-24 rounded-full bg-[#00d4d4] flex items-center justify-center mx-auto mb-8">
+          <div className="w-24 h-24 rounded-full bg-[#00D4E8] flex items-center justify-center mx-auto mb-8">
             <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
               <path d="M12 24l8 8 16-16" stroke="#1a1f3a" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
@@ -206,13 +206,13 @@ useEffect(() => {
               Your commitment
             </p>
             <p className="text-white/80 text-sm leading-relaxed italic">
-              "I, <span className="text-[#00d4d4] not-italic font-medium">{data.full_name}</span>, pledge from today that I will become unstoppable in my health, fitness, and performance. I start now."
+              "I, <span className="text-[#00D4E8] not-italic font-medium">{data.full_name}</span>, pledge from today that I will become unstoppable in my health, fitness, and performance. I start now."
             </p>
           </div>
 
           <button
             onClick={() => window.location.href = '/home'}
-            className="bg-[#00d4d4] text-[#1a1f3a] px-10 py-3.5 rounded-xl text-sm font-medium hover:bg-[#00bcbc] transition-colors"
+            className="bg-[#00D4E8] text-[#1a1f3a] px-10 py-3.5 rounded-xl text-sm font-medium hover:bg-[#00BED1] transition-colors"
           >
             Begin my journey →
           </button>
@@ -290,7 +290,7 @@ if (pledgeSigned && existingPledge) {
 
             <div>
               <p className="text-xs text-white/30 mb-1.5">Who you are doing this for</p>
-              <p className="text-sm text-[#00d4d4] leading-relaxed font-medium">
+              <p className="text-sm text-[#00D4E8] leading-relaxed font-medium">
                 "{existingPledge.doing_this_for}"
               </p>
             </div>
@@ -305,7 +305,7 @@ if (pledgeSigned && existingPledge) {
 
           <p className="text-white text-base leading-relaxed mb-6">
             I,{' '}
-            <span className="text-[#00d4d4] font-medium">
+            <span className="text-[#00D4E8] font-medium">
               {existingPledge.full_name}
             </span>
             , pledge from today that I will become unstoppable in my health, fitness, and performance.
@@ -326,7 +326,7 @@ if (pledgeSigned && existingPledge) {
           </div>
 
           <div className="mt-8 pt-6 border-t border-white/10 text-center">
-            <p className="text-[#00d4d4] text-base font-medium mb-1">
+            <p className="text-[#00D4E8] text-base font-medium mb-1">
               {existingPledge.full_name}
             </p>
             <p className="text-white/30 text-xs">
@@ -383,7 +383,7 @@ if (pledgeSigned && existingPledge) {
             key={s}
             className="w-2 h-2 rounded-full transition-all duration-300"
             style={{
-              background: s <= currentStep ? '#00d4d4' : '#e2e8f0',
+              background: s <= currentStep ? '#00D4E8' : '#e2e8f0',
               transform: s === currentStep ? 'scale(1.3)' : 'scale(1)',
             }}
           />
@@ -427,7 +427,7 @@ if (pledgeSigned && existingPledge) {
               <div className="mt-8 pt-6 border-t border-[#e2e8f0] flex justify-end">
                 <button
                   onClick={() => setStep(2)}
-                  className="bg-[#1a1f3a] text-[#00d4d4] px-8 py-3 rounded-xl text-sm font-medium hover:bg-[#141930] transition-colors"
+                  className="bg-[#1a1f3a] text-[#00D4E8] px-8 py-3 rounded-xl text-sm font-medium hover:bg-[#141930] transition-colors"
                 >
                   I am ready →
                 </button>
@@ -441,7 +441,7 @@ if (pledgeSigned && existingPledge) {
           <div className="bg-white rounded-2xl shadow-sm border border-[#e2e8f0] p-8">
 
             <div className="mb-6">
-              <span className="inline-block bg-[#1a1f3a] text-[#00d4d4] text-xs px-3 py-1 rounded-full mb-4 tracking-wide">
+              <span className="inline-block bg-[#1a1f3a] text-[#00D4E8] text-xs px-3 py-1 rounded-full mb-4 tracking-wide">
                 Your Why
               </span>
               <h3 className="text-lg font-medium text-[#0f172a] mb-2">
@@ -456,66 +456,66 @@ if (pledgeSigned && existingPledge) {
 
               <div>
                 <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
-                  Your full name <span className="text-[#00d4d4]">*</span>
+                  Your full name <span className="text-[#00D4E8]">*</span>
                 </label>
                 <input
                   type="text"
                   defaultValue={data.full_name}
                   onChange={(e) => updateData({ full_name: e.target.value })}
                   placeholder="As it appears on your ID"
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                 />
               </div>
 
               <div>
                 <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
-                  Why do you want to transform your health, fitness, and performance at this stage of your life? <span className="text-[#00d4d4]">*</span>
+                  Why do you want to transform your health, fitness, and performance at this stage of your life? <span className="text-[#00D4E8]">*</span>
                 </label>
                 <textarea
                   defaultValue={data.why_transform}
                   onChange={(e) => updateData({ why_transform: e.target.value })}
                   placeholder="Be specific. Be honest. Go deep."
                   rows={4}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
                 />
               </div>
 
               <div>
                 <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
-                  What has your lack of consistency in health and fitness cost you till now? <span className="text-[#00d4d4]">*</span>
+                  What has your lack of consistency in health and fitness cost you till now? <span className="text-[#00D4E8]">*</span>
                 </label>
                 <textarea
                   defaultValue={data.cost_of_inconsistency}
                   onChange={(e) => updateData({ cost_of_inconsistency: e.target.value })}
                   placeholder="Energy, confidence, relationships, performance, time..."
                   rows={4}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
                 />
               </div>
 
               <div>
                 <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
-                  What kind of person do you want to become physically, mentally, and emotionally in the next 3 to 12 months? <span className="text-[#00d4d4]">*</span>
+                  What kind of person do you want to become physically, mentally, and emotionally in the next 3 to 12 months? <span className="text-[#00D4E8]">*</span>
                 </label>
                 <textarea
                   defaultValue={data.person_becoming}
                   onChange={(e) => updateData({ person_becoming: e.target.value })}
                   placeholder="Describe them in detail. How do they look, feel, think, show up?"
                   rows={4}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
                 />
               </div>
 
               <div>
                 <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
-                  Who are you doing this for? <span className="text-[#00d4d4]">*</span>
+                  Who are you doing this for? <span className="text-[#00D4E8]">*</span>
                 </label>
                 <textarea
                   defaultValue={data.doing_this_for}
                   onChange={(e) => updateData({ doing_this_for: e.target.value })}
                   placeholder="Yourself, your family, your future self, your children..."
                   rows={3}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
                 />
               </div>
 
@@ -536,7 +536,7 @@ if (pledgeSigned && existingPledge) {
                   }
                   setStep(3)
                 }}
-                className="bg-[#1a1f3a] text-[#00d4d4] px-8 py-2.5 rounded-xl text-sm font-medium hover:bg-[#141930] transition-colors"
+                className="bg-[#1a1f3a] text-[#00D4E8] px-8 py-2.5 rounded-xl text-sm font-medium hover:bg-[#141930] transition-colors"
               >
                 Continue →
               </button>
@@ -565,7 +565,7 @@ if (pledgeSigned && existingPledge) {
               {/* Name in pledge */}
               <p className="text-white text-base leading-relaxed mb-8">
                 I,{' '}
-                <span className="text-[#00d4d4] font-medium border-b border-[#00d4d4]/40">
+                <span className="text-[#00D4E8] font-medium border-b border-[#00D4E8]/40">
                   {data.full_name}
                 </span>
                 , pledge from today that I will become unstoppable in my health, fitness, and performance.
@@ -610,7 +610,7 @@ if (pledgeSigned && existingPledge) {
                 </p>
                 <button
                   onClick={() => setStep(4)}
-                  className="bg-[#00d4d4] text-[#1a1f3a] px-8 py-2.5 rounded-xl text-sm font-medium hover:bg-[#00bcbc] transition-colors"
+                  className="bg-[#00D4E8] text-[#1a1f3a] px-8 py-2.5 rounded-xl text-sm font-medium hover:bg-[#00BED1] transition-colors"
                 >
                   I have read it →
                 </button>
@@ -625,7 +625,7 @@ if (pledgeSigned && existingPledge) {
           <div className="flex flex-col gap-4">
 
             <div className="bg-white rounded-2xl shadow-sm border border-[#e2e8f0] p-8">
-              <span className="inline-block bg-[#1a1f3a] text-[#00d4d4] text-xs px-3 py-1 rounded-full mb-4 tracking-wide">
+              <span className="inline-block bg-[#1a1f3a] text-[#00D4E8] text-xs px-3 py-1 rounded-full mb-4 tracking-wide">
                 Your Agreement
               </span>
               <h3 className="text-lg font-medium text-[#0f172a] mb-2">
@@ -643,7 +643,7 @@ if (pledgeSigned && existingPledge) {
                       flex items-start gap-3 p-4 rounded-xl border cursor-pointer
                       transition-all duration-150
                       ${agreements.includes(agreement)
-                        ? 'bg-[#f0fdfd] border-[#00d4d4]'
+                        ? 'bg-[#f0fdfd] border-[#00D4E8]'
                         : 'border-[#e2e8f0] hover:border-[#94a3b8]'
                       }
                     `}
@@ -652,7 +652,7 @@ if (pledgeSigned && existingPledge) {
                       w-5 h-5 rounded flex items-center justify-center flex-shrink-0 mt-0.5
                       border-2 transition-all duration-150
                       ${agreements.includes(agreement)
-                        ? 'bg-[#00d4d4] border-[#00d4d4]'
+                        ? 'bg-[#00D4E8] border-[#00D4E8]'
                         : 'border-[#e2e8f0]'
                       }
                     `}>
@@ -679,7 +679,7 @@ if (pledgeSigned && existingPledge) {
               <p className="text-white/40 text-xs uppercase tracking-widest mb-6">
                 Your signature
               </p>
-              <p className="text-[#00d4d4] text-2xl font-medium mb-2">
+              <p className="text-[#00D4E8] text-2xl font-medium mb-2">
                 {data.full_name}
               </p>
               <p className="text-white/30 text-xs mb-8">
@@ -700,7 +700,7 @@ if (pledgeSigned && existingPledge) {
                 <button
                   onClick={handleSubmit}
                   disabled={submitting || agreements.length < AGREEMENTS.length}
-                  className="bg-[#00d4d4] text-[#1a1f3a] px-10 py-3 rounded-xl text-sm font-medium hover:bg-[#00bcbc] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="bg-[#00D4E8] text-[#1a1f3a] px-10 py-3 rounded-xl text-sm font-medium hover:bg-[#00BED1] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {submitting
                     ? 'Signing...'

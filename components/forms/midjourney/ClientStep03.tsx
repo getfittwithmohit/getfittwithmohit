@@ -43,14 +43,14 @@ export function ClientStep03({ onNext, onBack }: Props) {
       <div>
         <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
           What has been your biggest challenge working with Coach Mohit so far?
-          <span className="text-[#00d4d4] ml-0.5">*</span>
+          <span className="text-[#00D4E8] ml-0.5">*</span>
         </label>
         <textarea
           ref={biggestChallengeRef}
           defaultValue={client.biggest_challenge}
           placeholder="e.g. I keep falling off during travel weeks. I find it hard to say no at social events..."
           rows={3}
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
         />
       </div>
 
@@ -63,7 +63,7 @@ export function ClientStep03({ onNext, onBack }: Props) {
           defaultValue={client.what_missing}
           placeholder="e.g. More accountability, clearer meal plan, harder workouts, more flexibility..."
           rows={3}
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
         />
       </div>
 
@@ -76,7 +76,7 @@ export function ClientStep03({ onNext, onBack }: Props) {
           defaultValue={client.what_worked}
           placeholder="e.g. The check-ins keep me accountable. Home workouts fit my schedule better..."
           rows={3}
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
         />
       </div>
 
@@ -97,7 +97,7 @@ export function ClientStep03({ onNext, onBack }: Props) {
           defaultValue={client.next_4_weeks}
           placeholder="Be specific — this goes directly to Coach Mohit to adjust your plan..."
           rows={3}
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
         />
       </div>
 

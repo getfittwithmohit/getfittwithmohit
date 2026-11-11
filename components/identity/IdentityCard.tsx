@@ -30,7 +30,7 @@ export function IdentityCard({
       <div className="bg-[#1a1f3a] rounded-2xl p-6 relative overflow-hidden">
 
         {/* Decorative circles */}
-        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[#00d4d4]/5" />
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[#00D4E8]/5" />
         <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-[#4a7fd4]/5" />
 
         {/* Header */}
@@ -77,7 +77,7 @@ export function IdentityCard({
               {data.values.map((v) => (
                 <span
                   key={v}
-                  className="text-xs bg-[#00d4d4]/15 border border-[#00d4d4]/25 text-[#00d4d4] px-3 py-1 rounded-full"
+                  className="text-xs bg-[#00D4E8]/15 border border-[#00D4E8]/25 text-[#00D4E8] px-3 py-1 rounded-full"
                 >
                   {v}
                 </span>
@@ -95,7 +95,7 @@ export function IdentityCard({
           <p className="text-xs text-white/40 uppercase tracking-wide mb-1">
             I am someone who...
           </p>
-          <p className="text-base font-medium text-[#00d4d4] leading-relaxed">
+          <p className="text-base font-medium text-[#00D4E8] leading-relaxed">
             {data.identity_statement || '—'}
           </p>
         </div>
@@ -158,7 +158,7 @@ export function IdentityCard({
               onChange={(e) => onCoachNotesChange?.(e.target.value)}
               placeholder="Add your observations, patterns you noticed, re-engagement strategies..."
               rows={4}
-              className="w-full px-3 py-2.5 text-sm border border-[#e2e8f0] rounded-lg text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#00d4d4] resize-none transition-colors duration-150"
+              className="w-full px-3 py-2.5 text-sm border border-[#e2e8f0] rounded-lg text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#00D4E8] resize-none transition-colors duration-150"
             />
           </div>
         </div>

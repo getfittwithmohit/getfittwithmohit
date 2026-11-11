@@ -14,7 +14,8 @@ import {
   type DailyCheckin,
   type XpEvent,
 } from '@/lib/supabase/queries/dailyCheckin'
-import { addDaysIST, formatDayLabel, todayIST } from '@/lib/utils/istDate'
+import { addDaysIST, formatDayLabel, istDate, todayIST } from '@/lib/utils/istDate'
+import { getLogs } from '@/lib/supabase/queries/workouts'
 
 type Draft = {
   workout_status: DailyCheckinInput['workout_status'] | null
@@ -131,20 +132,27 @@ export default function DailyCheckinPage() {
     async function load() {
       try {
         if (!client) throw new Error('We could not find your client profile. Please sign out and sign in again.')
-        const [rows, xpRows] = await Promise.all([
+        const [rows, xpRows, workoutLogs] = await Promise.all([
           getDailyCheckins(client.id, addDaysIST(today, -60)),
           getClientXp(client.id),
+          getLogs(client.id, 5).catch(() => []),
         ])
         setHistory(rows)
         setXp(xpRows)
         const todays = rows.find((r) => r.checkin_date === today)
         const pending = loadDraft(today)
+        // A workout finished in the app today pre-ticks "Workout done"
+        const trainedToday = workoutLogs.some(
+          (l) => l.status === 'completed' && l.completed_at && istDate(new Date(l.completed_at)) === today
+        )
         if (pending) {
           setDraft(pending)
           setEditing(true)
         } else if (todays) {
           setDraft(fromSaved(todays))
           setEditing(false)
+        } else if (trainedToday) {
+          setDraft({ ...EMPTY, workout_status: 'done' })
         }
       } catch (err) {
         setError((err as Error).message)
@@ -246,7 +254,7 @@ export default function DailyCheckinPage() {
           <HomeButton />
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-[#00d4d4] text-xs tracking-widest uppercase mb-1">Daily Check-In</p>
+              <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-1">Daily Check-In</p>
               <h1 className="text-white text-lg font-medium">{formatDayLabel(date)}</h1>
             </div>
             <div className="text-right">
@@ -267,7 +275,7 @@ export default function DailyCheckinPage() {
                   onClick={() => switchDate(opt.value)}
                   className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-colors ${
                     date === opt.value
-                      ? 'bg-[#00d4d4] border-[#00d4d4] text-[#1a1f3a]'
+                      ? 'bg-[#00D4E8] border-[#00D4E8] text-[#1a1f3a]'
                       : 'border-white/15 text-white/60 hover:text-white'
                   }`}
                 >
@@ -333,7 +341,7 @@ export default function DailyCheckinPage() {
               )}
               <button
                 onClick={() => window.location.href = '/leaderboard'}
-                className="flex-1 py-2.5 rounded-xl bg-[#00d4d4] text-sm font-medium text-[#1a1f3a] hover:bg-[#00bcbc]"
+                className="flex-1 py-2.5 rounded-xl bg-[#00D4E8] text-sm font-medium text-[#1a1f3a] hover:bg-[#00BED1]"
               >
                 🏆 Leaderboard
               </button>
@@ -383,7 +391,7 @@ export default function DailyCheckinPage() {
                 placeholder="e.g. 8500"
                 value={draft.steps}
                 onChange={(e) => set('steps', e.target.value)}
-                className="w-full px-3 py-2.5 text-base border border-[#e2e8f0] rounded-lg focus:outline-none focus:border-[#00d4d4]"
+                className="w-full px-3 py-2.5 text-base border border-[#e2e8f0] rounded-lg focus:outline-none focus:border-[#00D4E8]"
               />
               <p className="text-xs text-[#94a3b8] mt-1.5">Target: {DAILY_TARGETS.steps.toLocaleString('en-IN')}</p>
             </Question>
@@ -457,7 +465,7 @@ export default function DailyCheckinPage() {
                   placeholder="Shout — what's going on? Coach Mohit gets this straight away."
                   value={draft.support_message}
                   onChange={(e) => set('support_message', e.target.value)}
-                  className={`w-full mt-3 px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:border-[#00d4d4] ${
+                  className={`w-full mt-3 px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:border-[#00D4E8] ${
                     fieldErrors.support_message ? 'border-[#ef4444]' : 'border-[#e2e8f0]'
                   }`}
                 />
@@ -468,7 +476,7 @@ export default function DailyCheckinPage() {
             <button
               onClick={handleSubmit}
               disabled={saving}
-              className="w-full py-4 rounded-2xl bg-[#00d4d4] text-[#1a1f3a] text-base font-semibold hover:bg-[#00bcbc] disabled:opacity-50 transition-colors"
+              className="w-full py-4 rounded-2xl bg-[#00D4E8] text-[#1a1f3a] text-base font-semibold hover:bg-[#00BED1] disabled:opacity-50 transition-colors"
             >
               {saving ? 'Saving…' : savedForDate ? 'Save changes' : 'Submit check-in'}
             </button>
@@ -527,7 +535,7 @@ function Question({
   return (
     <div className={`bg-white border rounded-2xl p-5 ${error ? 'border-[#ef4444]' : 'border-[#e2e8f0]'}`}>
       <p className="text-sm font-medium text-[#0f172a] mb-3">
-        <span className="text-[#00d4d4] mr-2">{n}</span>
+        <span className="text-[#00D4E8] mr-2">{n}</span>
         {title}
       </p>
       {children}
@@ -555,7 +563,7 @@ function Choice({
           className={`flex-1 min-w-[6rem] py-2.5 px-3 rounded-lg border text-sm transition-colors ${
             value === o.value
               ? 'bg-[#1a1f3a] border-[#1a1f3a] text-white'
-              : 'border-[#e2e8f0] text-[#64748b] hover:border-[#00d4d4]'
+              : 'border-[#e2e8f0] text-[#64748b] hover:border-[#00D4E8]'
           }`}
         >
           {o.label}
@@ -576,9 +584,9 @@ function Scale({ value, onChange }: { value: number | null; onChange: (value: nu
           onClick={() => onChange(n)}
           className={`h-10 rounded-lg text-sm font-medium transition-colors ${
             value === n
-              ? 'bg-[#00d4d4] text-[#1a1f3a]'
+              ? 'bg-[#00D4E8] text-[#1a1f3a]'
               : value !== null && n < value
-                ? 'bg-[#00d4d4]/15 text-[#0f172a]'
+                ? 'bg-[#00D4E8]/15 text-[#0f172a]'
                 : 'bg-[#f1f5f9] text-[#64748b] hover:bg-[#e2e8f0]'
           }`}
         >
@@ -658,7 +666,7 @@ function TextLine({
         value={value}
         maxLength={500}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full mt-3 px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:border-[#00d4d4] ${
+        className={`w-full mt-3 px-3 py-2.5 text-sm border rounded-lg focus:outline-none focus:border-[#00D4E8] ${
           error ? 'border-[#ef4444]' : 'border-[#e2e8f0]'
         }`}
       />

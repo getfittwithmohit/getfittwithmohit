@@ -48,7 +48,7 @@ export default function CoachContentPage() {
               onClick={() => setTab(t.key)}
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 tab === t.key
-                  ? 'border-[#00d4d4] text-[#0f172a]'
+                  ? 'border-[#00D4E8] text-[#0f172a]'
                   : 'border-transparent text-[#94a3b8] hover:text-[#64748b]'
               }`}
             >

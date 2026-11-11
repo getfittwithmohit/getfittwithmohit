@@ -108,7 +108,7 @@ export default function CourseDetailPage() {
             <>
               <p className="text-white/50 text-xs mt-1">{doneCount} of {lessons.length} lessons complete · {percent}%</p>
               <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-3">
-                <div className="h-full bg-[#00d4d4] rounded-full transition-all" style={{ width: `${percent}%` }} />
+                <div className="h-full bg-[#00D4E8] rounded-full transition-all" style={{ width: `${percent}%` }} />
               </div>
             </>
           )}
@@ -137,7 +137,7 @@ export default function CourseDetailPage() {
           const embedUrl = getVideoEmbedUrl(lesson.video_url)
           const docs = lesson.lesson_documents || []
           return (
-            <div key={lesson.id} className={`bg-white border rounded-2xl overflow-hidden ${isOpen ? 'border-[#00d4d4]' : 'border-[#e2e8f0]'}`}>
+            <div key={lesson.id} className={`bg-white border rounded-2xl overflow-hidden ${isOpen ? 'border-[#00D4E8]' : 'border-[#e2e8f0]'}`}>
               <button
                 onClick={() => setOpenLessonId(isOpen ? null : lesson.id)}
                 className="w-full p-4 flex items-center gap-3 text-left"
@@ -197,7 +197,7 @@ export default function CourseDetailPage() {
                           <button
                             key={doc.id}
                             onClick={() => openDocument(doc)}
-                            className="flex items-center gap-2 text-sm text-[#0f172a] border border-[#e2e8f0] rounded-lg px-3 py-2.5 text-left hover:border-[#00d4d4] transition-colors"
+                            className="flex items-center gap-2 text-sm text-[#0f172a] border border-[#e2e8f0] rounded-lg px-3 py-2.5 text-left hover:border-[#00D4E8] transition-colors"
                           >
                             <span>📄</span>
                             <span className="flex-1 truncate">{doc.title}</span>
@@ -214,7 +214,7 @@ export default function CourseDetailPage() {
                     className={`w-full py-3 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 ${
                       isDone
                         ? 'border border-[#e2e8f0] text-[#64748b] hover:bg-[#f8fafc]'
-                        : 'bg-[#00d4d4] text-[#1a1f3a] hover:bg-[#00bcbc]'
+                        : 'bg-[#00D4E8] text-[#1a1f3a] hover:bg-[#00BED1]'
                     }`}
                   >
                     {savingLessonId === lesson.id ? 'Saving…' : isDone ? '✓ Completed — tap to undo' : 'Mark lesson complete ✓'}
