@@ -74,6 +74,12 @@ export default function DashboardPage() {
 
         <div className="flex items-center gap-3">
           <button
+            onClick={() => window.location.href = '/coach/dashboard/ideas'}
+            className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors"
+          >
+            💡 PEAK Ideas
+          </button>
+          <button
             onClick={() => window.location.href = '/coach/dashboard/workouts'}
             className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors"
           >
