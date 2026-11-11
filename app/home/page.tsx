@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { DailyCheckinCard } from '@/components/home/DailyCheckinCard'
 import { WorkoutCard } from '@/components/home/WorkoutCard'
+import { PeakIdeaCard } from '@/components/home/PeakIdeaCard'
 import { useClient } from '@/hooks/useClient'
 import { signOut } from '@/lib/supabase/queries/auth'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -222,6 +223,9 @@ if (!codex) pendingItems.push({
         </div>
         {/* Today's workout */}
         {client && <WorkoutCard clientId={client.id} />}
+
+        {/* Today's PEAK Idea */}
+        {client && <PeakIdeaCard clientId={client.id} />}
 
         {/* Daily check-in card */}
         {client && <DailyCheckinCard clientId={client.id} />}
