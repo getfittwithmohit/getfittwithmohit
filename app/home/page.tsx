@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { DailyCheckinCard } from '@/components/home/DailyCheckinCard'
 import { useClient } from '@/hooks/useClient'
 import { signOut } from '@/lib/supabase/queries/auth'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -28,7 +29,7 @@ const DAILY_QUOTES = [
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 const QUICK_LINKS = [
-  { emoji: '📋', label: 'Check-in', href: '/checkin' },
+  { emoji: '🗓️', label: 'Weekly Check-in', href: '/checkin' },
   { emoji: '💪', label: 'Assessment', href: '/assessment' },
   { emoji: '🎯', label: 'Identity', href: '/identity' },
   { emoji: '📊', label: 'Progress', href: '/home/progress' },
@@ -36,6 +37,8 @@ const QUICK_LINKS = [
   { emoji: '✊', label: 'Pledge', href: '/pledge' },
   //{ emoji: '📖', label: 'My Codex', href: '/codex/view' },
   { emoji: '🌅', label: 'Ritual', href: '/ritual' },
+  { emoji: '📋', label: 'Daily Check-In', href: '/daily-checkin' },
+  { emoji: '🏆', label: 'Leaderboard', href: '/leaderboard' },
   { emoji: '🎓', label: 'Courses', href: '/courses' },
   { emoji: '🎧', label: 'Audios', href: '/audios' },
 ]
@@ -216,6 +219,9 @@ if (!codex) pendingItems.push({
             {client?.phase !== 'Onboarding' && ` · Week ${client?.current_week || 1}`}
           </p>
         </div>
+        {/* Daily check-in card */}
+        {client && <DailyCheckinCard clientId={client.id} />}
+
         {/* Daily ritual card */}
         <button
           onClick={() => window.location.href = '/ritual'}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { AuthError, requireOwnClientOrCoach, authErrorResponse } from '@/lib/supabase/serverAuth'
+import { addDaysIST, todayIST } from '@/lib/utils/istDate'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,7 +17,8 @@ export async function POST(req: NextRequest) {
     }
     await requireOwnClientOrCoach(clientId)
 
-    const today = new Date().toISOString().split('T')[0]
+    // India calendar day — a ritual done at 1 AM belongs to that day, not the previous UTC day
+    const today = todayIST()
 
     // Save today's ritual
     await supabaseAdmin.from('daily_rituals').upsert({
@@ -31,9 +33,7 @@ export async function POST(req: NextRequest) {
     }, { onConflict: 'client_id,date' })
 
     // Calculate streak
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    const yesterdayStr = yesterday.toISOString().split('T')[0]
+    const yesterdayStr = addDaysIST(today, -1)
 
     const { data: yesterdayRitual } = await supabaseAdmin
       .from('daily_rituals')
