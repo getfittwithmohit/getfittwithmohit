@@ -10,10 +10,8 @@ import { dailyCheckinSchema, type DailyCheckinInput } from '@/lib/validation/dai
 import {
   getClientXp,
   getDailyCheckins,
-  getRitualStatus,
   submitDailyCheckin,
   type DailyCheckin,
-  type RitualStatus,
   type XpEvent,
 } from '@/lib/supabase/queries/dailyCheckin'
 import { addDaysIST, formatDayLabel, todayIST } from '@/lib/utils/istDate'
@@ -28,6 +26,8 @@ type Draft = {
   sleep_quality: number | null
   energy: number | null
   water_litres: number | null
+  goal_writing_done: boolean
+  affirmations_done: boolean
   gratitude_done: boolean
   support_needed: boolean | null
   support_message: string
@@ -43,6 +43,8 @@ const EMPTY: Draft = {
   sleep_quality: null,
   energy: null,
   water_litres: null,
+  goal_writing_done: false,
+  affirmations_done: false,
   gratitude_done: false,
   support_needed: null,
   support_message: '',
@@ -59,6 +61,8 @@ function fromSaved(c: DailyCheckin): Draft {
     sleep_quality: c.sleep_quality,
     energy: c.energy,
     water_litres: c.water_litres,
+    goal_writing_done: !!c.goal_writing_done,
+    affirmations_done: !!c.affirmations_done,
     gratitude_done: c.gratitude_done,
     support_needed: c.support_needed,
     support_message: c.support_message || '',
@@ -107,7 +111,6 @@ export default function DailyCheckinPage() {
   const yesterday = useMemo(() => addDaysIST(today, -1), [today])
 
   const [history, setHistory] = useState<DailyCheckin[]>([])
-  const [rituals, setRituals] = useState<Record<string, RitualStatus>>({})
   const [xp, setXp] = useState<XpEvent[]>([])
   const [date, setDate] = useState(today)
   const [draft, setDraft] = useState<Draft>(EMPTY)
@@ -128,14 +131,11 @@ export default function DailyCheckinPage() {
     async function load() {
       try {
         if (!client) throw new Error('We could not find your client profile. Please sign out and sign in again.')
-        const [rows, ritualToday, ritualYesterday, xpRows] = await Promise.all([
+        const [rows, xpRows] = await Promise.all([
           getDailyCheckins(client.id, addDaysIST(today, -60)),
-          getRitualStatus(client.id, today),
-          getRitualStatus(client.id, yesterday),
           getClientXp(client.id),
         ])
         setHistory(rows)
-        setRituals({ [today]: ritualToday, [yesterday]: ritualYesterday })
         setXp(xpRows)
         const todays = rows.find((r) => r.checkin_date === today)
         const pending = loadDraft(today)
@@ -153,7 +153,7 @@ export default function DailyCheckinPage() {
       }
     }
     load()
-  }, [client, clientLoading, today, yesterday])
+  }, [client, clientLoading, today])
 
   const switchDate = (next: string) => {
     setDate(next)
@@ -188,6 +188,8 @@ export default function DailyCheckinPage() {
       sleep_quality: draft.sleep_quality ?? undefined,
       energy: draft.energy ?? undefined,
       water_litres: draft.water_litres ?? undefined,
+      goal_writing_done: draft.goal_writing_done,
+      affirmations_done: draft.affirmations_done,
       gratitude_done: draft.gratitude_done,
       support_needed: draft.support_needed ?? false,
       support_message: draft.support_message,
@@ -419,38 +421,24 @@ export default function DailyCheckinPage() {
 
             <Question n={7} title="Rituals completed?">
               <div className="flex flex-col gap-2">
-                {/* Goal writing + affirmations come from the in-app daily ritual */}
-                <RitualRow
+                <RitualTick
                   emoji="✍️"
                   label="Goal writing"
-                  done={!!rituals[date]?.goalWriting}
-                  canOpen={isToday}
+                  checked={draft.goal_writing_done}
+                  onChange={(v) => set('goal_writing_done', v)}
                 />
-                <RitualRow
+                <RitualTick
                   emoji="🎙️"
                   label="Affirmations"
-                  done={!!rituals[date]?.affirmations}
-                  canOpen={isToday}
+                  checked={draft.affirmations_done}
+                  onChange={(v) => set('affirmations_done', v)}
                 />
-                {/* Gratitude isn't part of the in-app ritual, so the client ticks it */}
-                <label
-                  className={`flex items-center gap-3 border rounded-lg px-3 py-2.5 cursor-pointer transition-colors ${
-                    draft.gratitude_done ? 'border-[#22c55e]/40 bg-[#22c55e]/5' : 'border-[#e2e8f0]'
-                  }`}
-                >
-                  <span className="text-base">🙏</span>
-                  <span className="flex-1 text-sm text-[#0f172a]">Gratitude practice</span>
-                  <input
-                    type="checkbox"
-                    checked={draft.gratitude_done}
-                    onChange={(e) => set('gratitude_done', e.target.checked)}
-                    className="w-5 h-5 accent-[#22c55e]"
-                  />
-                </label>
-                <p className="text-xs text-[#94a3b8] mt-1">
-                  Goal writing and affirmations tick automatically when you do them in your Daily Ritual.
-                  {' '}Full ritual ({rituals[date]?.stepsDone ?? 0}/5 steps today) earns +10 XP.
-                </p>
+                <RitualTick
+                  emoji="🙏"
+                  label="Gratitude practice"
+                  checked={draft.gratitude_done}
+                  onChange={(v) => set('gratitude_done', v)}
+                />
               </div>
             </Question>
 
@@ -496,39 +484,32 @@ export default function DailyCheckinPage() {
   )
 }
 
-function RitualRow({
+function RitualTick({
   emoji,
   label,
-  done,
-  canOpen,
+  checked,
+  onChange,
 }: {
   emoji: string
   label: string
-  done: boolean
-  canOpen: boolean
+  checked: boolean
+  onChange: (checked: boolean) => void
 }) {
   return (
-    <div
-      className={`flex items-center gap-3 border rounded-lg px-3 py-2.5 ${
-        done ? 'border-[#22c55e]/40 bg-[#22c55e]/5' : 'border-[#e2e8f0]'
+    <label
+      className={`flex items-center gap-3 border rounded-lg px-3 py-2.5 cursor-pointer transition-colors ${
+        checked ? 'border-[#22c55e]/40 bg-[#22c55e]/5' : 'border-[#e2e8f0]'
       }`}
     >
       <span className="text-base">{emoji}</span>
       <span className="flex-1 text-sm text-[#0f172a]">{label}</span>
-      {done ? (
-        <span className="text-sm font-medium text-[#16a34a]">✓ Done</span>
-      ) : canOpen ? (
-        <button
-          type="button"
-          onClick={() => window.location.href = '/ritual'}
-          className="text-xs font-medium text-[#4a7fd4] underline underline-offset-2"
-        >
-          Do it now →
-        </button>
-      ) : (
-        <span className="text-xs text-[#94a3b8]">Not done</span>
-      )}
-    </div>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="w-5 h-5 accent-[#22c55e]"
+      />
+    </label>
   )
 }
 

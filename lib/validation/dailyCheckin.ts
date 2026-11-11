@@ -14,6 +14,8 @@ export const dailyCheckinSchema = z
     sleep_quality: z.number({ message: 'Rate your sleep quality' }).int().min(1).max(10),
     energy: z.number({ message: 'Rate your energy' }).int().min(1).max(10),
     water_litres: z.number({ message: 'Enter your water intake' }).min(0).max(20),
+    goal_writing_done: z.boolean(),
+    affirmations_done: z.boolean(),
     gratitude_done: z.boolean(),
     support_needed: z.boolean(),
     support_message: note,

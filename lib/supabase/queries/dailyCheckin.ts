@@ -113,24 +113,3 @@ export async function setLeaderboardHidden(clientId: string, hidden: boolean) {
   const { error } = await supabase.from('clients').update({ leaderboard_hidden: hidden }).eq('id', clientId)
   if (error) fail('Could not update leaderboard visibility', error)
 }
-
-export interface RitualStatus {
-  goalWriting: boolean // "20 Goals" step
-  affirmations: boolean
-  stepsDone: number // out of 5 — all 5 earns the "Full daily ritual" XP
-}
-
-export async function getRitualStatus(clientId: string, date: string): Promise<RitualStatus> {
-  const { data, error } = await supabase
-    .from('daily_rituals')
-    .select('strangest_secret_done, goal_card_done, affirmations_done, goals_done, codex_done')
-    .eq('client_id', clientId)
-    .eq('date', date)
-    .maybeSingle()
-  if (error) fail('Could not load your ritual', error)
-  return {
-    goalWriting: !!data?.goals_done,
-    affirmations: !!data?.affirmations_done,
-    stepsDone: data ? Object.values(data).filter(Boolean).length : 0,
-  }
-}
