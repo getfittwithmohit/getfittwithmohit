@@ -1,4 +1,4 @@
--- Starter exercise library: 122 exercises. Safe to re-run (existing names are skipped).
+-- Starter exercise library: 141 exercises. Safe to re-run (existing names are skipped).
 -- Video links are blank: open each exercise in Coach → Workouts → Library and use "Find demo on YouTube".
 insert into public.exercises (name, muscle_group, equipment, locations, log_type, weight_step, cues) values
 ('Barbell Bench Press','Chest','Barbell','{gym}','weight_reps',2.5,array['Shoulder blades pinned back and down','Lower the bar to your lower chest','Feet planted, press up and slightly back']),
@@ -122,7 +122,26 @@ insert into public.exercises (name, muscle_group, equipment, locations, log_type
 ('Hip Flexor Stretch','Mobility','Bodyweight','{gym,home,hotel}','time',2.5,array['Half-kneel, back knee down','Tuck your pelvis, squeeze the back glute','Gently move hips forward']),
 ('Open Book Rotation','Mobility','Bodyweight','{gym,home,hotel}','reps',2.5,array['Lie on your side, knees bent','Open your top arm across to the other side','Follow your hand with your eyes']),
 ('Deep Squat Hold','Mobility','Bodyweight','{gym,home,hotel}','time',2.5,array['Sit as low as you comfortably can','Heels down, chest up','Hold onto something if needed']),
-('Hamstring Stretch','Mobility','Bodyweight','{gym,home,hotel}','time',2.5,array['Straight leg on a low step','Hinge forward with a flat back','Breathe and relax into it'])
+('Hamstring Stretch','Mobility','Bodyweight','{gym,home,hotel}','time',2.5,array['Straight leg on a low step','Hinge forward with a flat back','Breathe and relax into it']),
+('Shadow Boxing','Cardio','Bodyweight','{gym,home,hotel}','time',2.5,array['Hands up guarding your chin','Stay light on the balls of your feet','Turn your hips into every punch']),
+('Heavy Bag Rounds','Cardio','Heavy bag','{gym}','time',2.5,array['Hands back to your face after every punch','Breathe out sharply as you hit','Keep moving around the bag']),
+('Battle Ropes','Cardio','Battle ropes','{gym}','time',2.5,array['Athletic stance, knees soft','Fast alternating waves from the shoulders','Keep your core braced']),
+('Running Intervals','Cardio','None','{gym,home,hotel}','time',2.5,array['Fast but controlled — about 8 out of 10 effort','Walk or jog slowly in the rest','Stop if your form breaks down']),
+('Air Bike Sprint','Cardio','Air bike','{gym}','time',2.5,array['Push and pull with arms and legs','All-out effort for the work period','Easy spin in the rest']),
+('Medicine Ball Slam','Full body','Medicine ball','{gym}','reps',2.5,array['Ball overhead, rise onto your toes','Slam it down hard in front of you','Squat to pick it up with a flat back']),
+('Wall Ball','Full body','Medicine ball','{gym}','reps',2.5,array['Squat with the ball at your chest','Drive up and throw to a target on the wall','Catch and go straight into the next squat']),
+('Box Jump','Legs','Plyo box','{gym}','reps',2.5,array['Swing your arms and jump up','Land softly with both feet on the box','Step down, don''t jump down']),
+('Skater Jump','Cardio','Bodyweight','{gym,home,hotel}','reps',2.5,array['Leap sideways from one foot to the other','Land softly and hold for a moment','Count each side as one rep']),
+('Push Press','Shoulders','Barbell','{gym}','weight_reps',2.5,array['Bar on front of shoulders','Small dip with the knees, then drive','Use the leg drive to press overhead']),
+('Dumbbell Snatch','Full body','Dumbbell','{gym,home}','weight_reps',2,array['Dumbbell between your feet, hinge down','Explode up, pull it close to your body','Punch it overhead in one move']),
+('Dumbbell Hip Thrust','Glutes','Dumbbell','{gym,home,hotel}','weight_reps',2,array['Upper back on a bench or sofa','Dumbbell on your hips, drive them up','Squeeze glutes hard at the top']),
+('Frog Pump','Glutes','Bodyweight','{gym,home,hotel}','reps',2.5,array['Soles of your feet together, knees out','Drive hips up by squeezing glutes','Short, controlled reps']),
+('Archer Push-up','Chest','Bodyweight','{gym,home,hotel}','reps',2.5,array['Hands very wide','Lower towards one hand, other arm straight','Alternate sides; each side is one rep']),
+('Negative Pull-up','Back','Bodyweight','{gym}','reps',2.5,array['Jump or step up to chin over the bar','Lower as slowly as you can — aim for 5 seconds','Reset and repeat']),
+('Scapular Pull-up','Back','Bodyweight','{gym}','reps',2.5,array['Hang with straight arms','Pull shoulder blades down without bending elbows','Hold one second, then relax']),
+('L-Sit Hold','Core','Parallettes','{gym,home}','time',2.5,array['Hands on bars or two chairs, arms locked','Lift your legs out in front','Bend your knees to make it easier']),
+('Wall Handstand Hold','Shoulders','Bodyweight','{gym,home,hotel}','time',2.5,array['Walk your feet up the wall','Arms locked, push the floor away','Body tight, come down if form breaks']),
+('Assisted Pistol Squat','Legs','Bodyweight','{gym,home,hotel}','reps',2.5,array['Hold a door frame or post for support','Lower on one leg, other leg forward','Use your arms only as much as needed'])
 on conflict (name) do nothing;
 
 -- Home / hotel swaps (only fills ones not already set)
@@ -239,3 +258,23 @@ update public.exercises e set hotel_alt_id = a.id from public.exercises a where 
 update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Kettlebell Swing' and a.name = 'Dumbbell Romanian Deadlift' and e.hotel_alt_id is null;
 update public.exercises e set home_alt_id = a.id from public.exercises a where e.name = 'Sled Push' and a.name = 'Bear Crawl' and e.home_alt_id is null;
 update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Sled Push' and a.name = 'Burpee' and e.hotel_alt_id is null;
+update public.exercises e set home_alt_id = a.id from public.exercises a where e.name = 'Heavy Bag Rounds' and a.name = 'Shadow Boxing' and e.home_alt_id is null;
+update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Heavy Bag Rounds' and a.name = 'Shadow Boxing' and e.hotel_alt_id is null;
+update public.exercises e set home_alt_id = a.id from public.exercises a where e.name = 'Battle Ropes' and a.name = 'Mountain Climber' and e.home_alt_id is null;
+update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Battle Ropes' and a.name = 'High Knees' and e.hotel_alt_id is null;
+update public.exercises e set home_alt_id = a.id from public.exercises a where e.name = 'Air Bike Sprint' and a.name = 'Burpee' and e.home_alt_id is null;
+update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Air Bike Sprint' and a.name = 'Running Intervals' and e.hotel_alt_id is null;
+update public.exercises e set home_alt_id = a.id from public.exercises a where e.name = 'Medicine Ball Slam' and a.name = 'Burpee' and e.home_alt_id is null;
+update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Medicine Ball Slam' and a.name = 'Burpee' and e.hotel_alt_id is null;
+update public.exercises e set home_alt_id = a.id from public.exercises a where e.name = 'Wall Ball' and a.name = 'Dumbbell Thruster' and e.home_alt_id is null;
+update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Wall Ball' and a.name = 'Dumbbell Thruster' and e.hotel_alt_id is null;
+update public.exercises e set home_alt_id = a.id from public.exercises a where e.name = 'Box Jump' and a.name = 'Jump Squat' and e.home_alt_id is null;
+update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Box Jump' and a.name = 'Jump Squat' and e.hotel_alt_id is null;
+update public.exercises e set home_alt_id = a.id from public.exercises a where e.name = 'Push Press' and a.name = 'Pike Push-up' and e.home_alt_id is null;
+update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Push Press' and a.name = 'Dumbbell Shoulder Press' and e.hotel_alt_id is null;
+update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Dumbbell Snatch' and a.name = 'Dumbbell Thruster' and e.hotel_alt_id is null;
+update public.exercises e set home_alt_id = a.id from public.exercises a where e.name = 'Negative Pull-up' and a.name = 'Band Lat Pulldown' and e.home_alt_id is null;
+update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Negative Pull-up' and a.name = 'Band Lat Pulldown' and e.hotel_alt_id is null;
+update public.exercises e set home_alt_id = a.id from public.exercises a where e.name = 'Scapular Pull-up' and a.name = 'Band Pull-Apart' and e.home_alt_id is null;
+update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'Scapular Pull-up' and a.name = 'Band Pull-Apart' and e.hotel_alt_id is null;
+update public.exercises e set hotel_alt_id = a.id from public.exercises a where e.name = 'L-Sit Hold' and a.name = 'Hollow Body Hold' and e.hotel_alt_id is null;
