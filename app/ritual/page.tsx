@@ -278,7 +278,7 @@ export default function RitualPage() {
         <div className="max-w-sm w-full text-center">
           <div className="text-6xl mb-6">🔥</div>
           <h1 className="text-4xl font-bold text-white mb-1">{streak}</h1>
-          <p className="text-[#00d4d4] text-xs tracking-widest uppercase mb-1">
+          <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-1">
             {streak === 1 ? 'day streak' : 'days strong'}
           </p>
           {longest > streak && (
@@ -297,7 +297,7 @@ export default function RitualPage() {
           <p className="text-white/20 text-xs mb-10">Keep showing up. Every day compounds.</p>
           <button
             onClick={() => window.location.href = '/home'}
-            className="w-full bg-[#00d4d4] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold"
+            className="w-full bg-[#00D4E8] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold"
           >
             Back to home
           </button>
@@ -329,7 +329,7 @@ export default function RitualPage() {
         >
           ← Home
         </button>
-        <p className="text-[#00d4d4] text-xs font-medium tracking-widest uppercase mb-1">
+        <p className="text-[#00D4E8] text-xs font-medium tracking-widest uppercase mb-1">
           {dayName} · Daily Ritual
         </p>
         <h1 className="text-white text-2xl font-semibold mb-1">
@@ -365,12 +365,12 @@ export default function RitualPage() {
               className="rounded-2xl border transition-all duration-300 overflow-hidden"
               style={{
                 borderColor: done
-                  ? 'rgba(0,212,212,0.3)'
+                  ? 'rgba(0,212,232,0.3)'
                   : open
                     ? 'rgba(255,255,255,0.15)'
                     : 'rgba(255,255,255,0.07)',
                 background: done
-                  ? 'rgba(0,212,212,0.05)'
+                  ? 'rgba(0,212,232,0.05)'
                   : open
                     ? 'rgba(255,255,255,0.05)'
                     : 'rgba(255,255,255,0.02)',
@@ -383,13 +383,13 @@ export default function RitualPage() {
               >
                 <span className="text-2xl flex-shrink-0">{item.emoji}</span>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium ${done ? 'text-[#00d4d4]' : 'text-white'}`}>
+                  <p className={`text-sm font-medium ${done ? 'text-[#00D4E8]' : 'text-white'}`}>
                     {item.label}
                   </p>
                   <p className="text-xs text-white/30 mt-0.5 truncate">{item.sub}</p>
                 </div>
                 {done ? (
-                  <div className="w-6 h-6 rounded-full bg-[#00d4d4] flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-[#00D4E8] flex items-center justify-center flex-shrink-0">
                     <svg viewBox="0 0 12 12" width="12" height="12" fill="none">
                       <path d="M2 6l3 3 5-5" stroke="#0a0a0f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
@@ -426,7 +426,7 @@ export default function RitualPage() {
                               className="w-1 rounded-full"
                               style={{
                                 height: isPlaying ? `${8 + (i % 7) * 4}px` : '4px',
-                                background: isPlaying ? '#00d4d4' : 'rgba(255,255,255,0.15)',
+                                background: isPlaying ? '#00D4E8' : 'rgba(255,255,255,0.15)',
                                 transition: 'height 0.3s ease',
                                 animationDelay: `${i * 50}ms`,
                               }}
@@ -441,7 +441,7 @@ export default function RitualPage() {
                         </div>
                         <div className="w-full h-0.5 bg-white/10 rounded-full mb-4 overflow-hidden">
                           <div
-                            className="h-full bg-[#00d4d4] rounded-full transition-all duration-1000"
+                            className="h-full bg-[#00D4E8] rounded-full transition-all duration-1000"
                             style={{ width: `${audioDuration ? (audioTime / audioDuration) * 100 : 0}%` }}
                           />
                         </div>
@@ -456,7 +456,7 @@ export default function RitualPage() {
                           </button>
                           <button
                             onClick={toggleAudio}
-                            className="w-14 h-14 rounded-full bg-[#00d4d4] flex items-center justify-center transition-transform active:scale-95"
+                            className="w-14 h-14 rounded-full bg-[#00D4E8] flex items-center justify-center transition-transform active:scale-95"
                           >
                             {isPlaying ? (
                               <svg viewBox="0 0 24 24" width="20" height="20" fill="#0a0a0f">
@@ -487,7 +487,7 @@ export default function RitualPage() {
                           onClick={() => markDone('secret')}
                           disabled={!listenedEnough}
                           className="flex-1 py-3 rounded-xl text-sm font-medium transition-all disabled:opacity-25"
-                          style={{ background: '#00d4d4', color: '#0a0a0f' }}
+                          style={{ background: '#00D4E8', color: '#0a0a0f' }}
                         >
                           Mark complete ✓
                         </button>
@@ -515,7 +515,7 @@ export default function RitualPage() {
                             { label: 'Goal Two', text: goalCard.goal2_text, deadline: goalCard.goal2_deadline },
                           ].map((g, i) => (
                             <div key={i} className="bg-white/5 rounded-xl p-4">
-                              <p className="text-[#00d4d4] text-xs tracking-widest uppercase mb-2">{g.label}</p>
+                              <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-2">{g.label}</p>
                               <p className="text-white text-sm leading-relaxed">{g.text}</p>
                               {g.deadline && <p className="text-white/25 text-xs mt-2">By: {g.deadline}</p>}
                             </div>
@@ -526,7 +526,7 @@ export default function RitualPage() {
                           <p className="text-white/30 text-xs mb-3">No goal card yet.</p>
                           <button
                             onClick={() => window.location.href = '/ritual/goal-card'}
-                            className="text-[#00d4d4] text-xs underline underline-offset-2"
+                            className="text-[#00D4E8] text-xs underline underline-offset-2"
                           >
                             Set up my goal card →
                           </button>
@@ -537,7 +537,7 @@ export default function RitualPage() {
                         <button
                           onClick={() => markDone('goals')}
                           className="flex-1 py-3 rounded-xl text-sm font-medium"
-                          style={{ background: '#00d4d4', color: '#0a0a0f' }}
+                          style={{ background: '#00D4E8', color: '#0a0a0f' }}
                         >
                           I've read it ✓
                         </button>
@@ -561,7 +561,7 @@ export default function RitualPage() {
                       {!affirmationText && !generatingAff && (
                         <button
                           onClick={generateAffirmations}
-                          className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-sm text-white/50 hover:border-[#00d4d4]/40 transition-colors mb-3"
+                          className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-sm text-white/50 hover:border-[#00D4E8]/40 transition-colors mb-3"
                         >
                           Generate my affirmations →
                         </button>
@@ -569,7 +569,7 @@ export default function RitualPage() {
 
                       {generatingAff && (
                         <div className="flex items-center gap-3 py-3 mb-3">
-                          <div className="w-4 h-4 border border-white/20 border-t-[#00d4d4] rounded-full animate-spin flex-shrink-0" />
+                          <div className="w-4 h-4 border border-white/20 border-t-[#00D4E8] rounded-full animate-spin flex-shrink-0" />
                           <p className="text-white/30 text-xs">Generating your affirmations...</p>
                         </div>
                       )}
@@ -593,7 +593,7 @@ export default function RitualPage() {
                                   if (affPlaying) { audio.pause(); setAffPlaying(false) }
                                   else { audio.play(); setAffPlaying(true); audio.onended = () => setAffPlaying(false) }
                                 }}
-                                className="w-10 h-10 rounded-full bg-[#00d4d4] flex items-center justify-center flex-shrink-0"
+                                className="w-10 h-10 rounded-full bg-[#00D4E8] flex items-center justify-center flex-shrink-0"
                               >
                                 {affPlaying ? (
                                   <svg viewBox="0 0 24 24" width="16" height="16" fill="#0a0a0f">
@@ -641,7 +641,7 @@ export default function RitualPage() {
 
                           {uploadingRec && (
                             <div className="flex items-center gap-2 py-2 mb-3">
-                              <div className="w-3 h-3 border border-white/20 border-t-[#00d4d4] rounded-full animate-spin" />
+                              <div className="w-3 h-3 border border-white/20 border-t-[#00D4E8] rounded-full animate-spin" />
                               <p className="text-white/25 text-xs">Saving recording...</p>
                             </div>
                           )}
@@ -652,7 +652,7 @@ export default function RitualPage() {
                         <button
                           onClick={() => markDone('affirmations')}
                           className="flex-1 py-3 rounded-xl text-sm font-medium"
-                          style={{ background: '#00d4d4', color: '#0a0a0f' }}
+                          style={{ background: '#00D4E8', color: '#0a0a0f' }}
                         >
                           {affirmationUrl ? "I've listened ✓" : 'Mark complete ✓'}
                         </button>
@@ -681,7 +681,7 @@ export default function RitualPage() {
                             onClick={() => setGoalsPage(p)}
                             className="flex-1 py-2 rounded-lg text-xs font-medium transition-all"
                             style={{
-                              background: goalsPage === p ? '#00d4d4' : 'transparent',
+                              background: goalsPage === p ? '#00D4E8' : 'transparent',
                               color: goalsPage === p ? '#0a0a0f' : 'rgba(255,255,255,0.3)',
                             }}
                           >
@@ -695,7 +695,7 @@ export default function RitualPage() {
                           const idx = goalsPage === 1 ? i : i + 10
                           return (
                             <div key={idx} className="flex items-center gap-2">
-                              <span className="text-[#00d4d4] text-xs font-medium w-5 text-right flex-shrink-0">
+                              <span className="text-[#00D4E8] text-xs font-medium w-5 text-right flex-shrink-0">
                                 {idx + 1}.
                               </span>
                               <input
@@ -707,7 +707,7 @@ export default function RitualPage() {
                                   setGoals(updated)
                                 }}
                                 placeholder={`Goal ${idx + 1}...`}
-                                className="flex-1 bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-white text-xs placeholder:text-white/15 focus:outline-none focus:border-[#00d4d4]/30 transition-colors"
+                                className="flex-1 bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-white text-xs placeholder:text-white/15 focus:outline-none focus:border-[#00D4E8]/30 transition-colors"
                               />
                             </div>
                           )
@@ -718,7 +718,7 @@ export default function RitualPage() {
                         onClick={saveGoals}
                         disabled={savingGoals}
                         className="w-full py-3 rounded-xl text-sm font-medium disabled:opacity-50"
-                        style={{ background: '#00d4d4', color: '#0a0a0f' }}
+                        style={{ background: '#00D4E8', color: '#0a0a0f' }}
                       >
                         {savingGoals ? 'Saving...' : 'Save & complete ✓'}
                       </button>
@@ -746,7 +746,7 @@ export default function RitualPage() {
 
                       <button
                         onClick={() => window.open('/codex/view', '_blank')}
-                        className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-xs text-white/50 hover:border-[#00d4d4]/40 transition-colors mb-2"
+                        className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-xs text-white/50 hover:border-[#00D4E8]/40 transition-colors mb-2"
                       >
                         Open full Codex →
                       </button>
@@ -755,7 +755,7 @@ export default function RitualPage() {
                         <button
                           onClick={() => markDone('codex')}
                           className="flex-1 py-3 rounded-xl text-sm font-medium"
-                          style={{ background: '#00d4d4', color: '#0a0a0f' }}
+                          style={{ background: '#00D4E8', color: '#0a0a0f' }}
                         >
                           I've read it ✓
                         </button>
@@ -783,7 +783,7 @@ export default function RitualPage() {
             onClick={completeRitual}
             disabled={finishing}
             className="w-full py-4 rounded-2xl text-sm font-semibold disabled:opacity-50 transition-all"
-            style={{ background: '#00d4d4', color: '#0a0a0f' }}
+            style={{ background: '#00D4E8', color: '#0a0a0f' }}
           >
             {finishing ? 'Completing...' : '🔥 Complete my ritual'}
           </button>

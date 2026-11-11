@@ -118,7 +118,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
                   onKeyDown={(e) => e.key === 'Enter' && handleSendOTP()}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                 />
               </div>
 
@@ -162,7 +162,7 @@ export default function LoginPage() {
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder="123456"
                   onKeyDown={(e) => e.key === 'Enter' && handleVerifyOTP()}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors tracking-[0.5em] text-center text-xl font-medium"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors tracking-[0.5em] text-center text-xl font-medium"
                 />
               </div>
 
@@ -193,7 +193,7 @@ export default function LoginPage() {
                 <button
                   onClick={handleSendOTP}
                   disabled={loading}
-                  className="text-xs text-[#00d4d4] hover:underline disabled:opacity-50"
+                  className="text-xs text-[#00D4E8] hover:underline disabled:opacity-50"
                 >
                   Resend code
                 </button>
@@ -209,7 +209,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => window.location.href = '/coach/login'}
-              className="text-[#00d4d4] hover:underline"
+              className="text-[#00D4E8] hover:underline"
             >
               Sign in here
             </button>

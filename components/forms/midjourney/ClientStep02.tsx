@@ -69,7 +69,7 @@ export function ClientStep02({ onNext, onBack }: Props) {
           defaultValue={client.life_changes}
           placeholder="e.g. new job, moved city, relationship change, health issue, travel schedule changed..."
           rows={3}
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
         />
       </div>
 

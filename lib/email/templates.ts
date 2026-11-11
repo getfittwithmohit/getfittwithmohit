@@ -14,7 +14,7 @@ export function coachNotificationEmail(clientData: {
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
         
         <div style="background: #1a1f3a; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
-          <h1 style="color: #00d4d4; font-size: 16px; font-weight: 500; letter-spacing: 2px; margin: 0 0 4px;">
+          <h1 style="color: #00D4E8; font-size: 16px; font-weight: 500; letter-spacing: 2px; margin: 0 0 4px;">
             GETFITTWITHMOHIT
           </h1>
           <p style="color: rgba(255,255,255,0.4); font-size: 12px; margin: 0;">
@@ -61,13 +61,13 @@ export function coachNotificationEmail(clientData: {
             </tr>
             <tr style="border-top: 1px solid #e2e8f0;">
               <td style="padding: 8px 0; color: #64748b; font-size: 13px;">Readiness score</td>
-              <td style="padding: 8px 0; color: #00d4d4; font-size: 16px; font-weight: 500;">${clientData.readiness_score || '–'} / 10</td>
+              <td style="padding: 8px 0; color: #00D4E8; font-size: 16px; font-weight: 500;">${clientData.readiness_score || '–'} / 10</td>
             </tr>
           </table>
         </div>
 
         <div style="background: #1a1f3a; border-radius: 10px; padding: 16px; text-align: center;">
-          <p style="color: #00d4d4; font-size: 12px; font-weight: 500; letter-spacing: 1px; margin: 0;">
+          <p style="color: #00D4E8; font-size: 12px; font-weight: 500; letter-spacing: 1px; margin: 0;">
             TRANSFORM TO INSPIRE
           </p>
         </div>
@@ -85,7 +85,7 @@ export function clientConfirmationEmail(clientName: string) {
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
 
         <div style="background: #1a1f3a; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
-          <h1 style="color: #00d4d4; font-size: 16px; font-weight: 500; letter-spacing: 2px; margin: 0 0 4px;">
+          <h1 style="color: #00D4E8; font-size: 16px; font-weight: 500; letter-spacing: 2px; margin: 0 0 4px;">
             GETFITTWITHMOHIT
           </h1>
           <p style="color: rgba(255,255,255,0.4); font-size: 12px; margin: 0;">
@@ -106,15 +106,15 @@ export function clientConfirmationEmail(clientName: string) {
           </h3>
           <div style="display: flex; flex-direction: column; gap: 12px;">
             <div style="display: flex; align-items: flex-start; gap: 12px;">
-              <div style="width: 24px; height: 24px; background: #00d4d4; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #1a1f3a; font-size: 12px; font-weight: 600;">1</div>
+              <div style="width: 24px; height: 24px; background: #00D4E8; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #1a1f3a; font-size: 12px; font-weight: 600;">1</div>
               <p style="color: #64748b; font-size: 13px; margin: 0; padding-top: 3px;">Coach Mohit reviews your profile — within 24 hours</p>
             </div>
             <div style="display: flex; align-items: flex-start; gap: 12px;">
-              <div style="width: 24px; height: 24px; background: #00d4d4; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #1a1f3a; font-size: 12px; font-weight: 600;">2</div>
+              <div style="width: 24px; height: 24px; background: #00D4E8; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #1a1f3a; font-size: 12px; font-weight: 600;">2</div>
               <p style="color: #64748b; font-size: 13px; margin: 0; padding-top: 3px;">He reaches out to schedule your first consultation call</p>
             </div>
             <div style="display: flex; align-items: flex-start; gap: 12px;">
-              <div style="width: 24px; height: 24px; background: #00d4d4; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #1a1f3a; font-size: 12px; font-weight: 600;">3</div>
+              <div style="width: 24px; height: 24px; background: #00D4E8; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #1a1f3a; font-size: 12px; font-weight: 600;">3</div>
               <p style="color: #64748b; font-size: 13px; margin: 0; padding-top: 3px;">Your personalised programme is designed — just for you</p>
             </div>
           </div>
@@ -125,7 +125,7 @@ export function clientConfirmationEmail(clientName: string) {
         </p>
 
         <div style="background: #1a1f3a; border-radius: 10px; padding: 16px; text-align: center;">
-          <p style="color: #00d4d4; font-size: 12px; font-weight: 500; letter-spacing: 1px; margin: 0;">
+          <p style="color: #00D4E8; font-size: 12px; font-weight: 500; letter-spacing: 1px; margin: 0;">
             TRANSFORM TO INSPIRE
           </p>
         </div>
@@ -153,7 +153,7 @@ export function checkinNotificationEmail(clientData: {
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
 
         <div style="background: #1a1f3a; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
-          <h1 style="color: #00d4d4; font-size: 16px; font-weight: 500; letter-spacing: 2px; margin: 0 0 4px;">
+          <h1 style="color: #00D4E8; font-size: 16px; font-weight: 500; letter-spacing: 2px; margin: 0 0 4px;">
             GETFITTWITHMOHIT
           </h1>
           <p style="color: rgba(255,255,255,0.4); font-size: 12px; margin: 0;">
@@ -210,7 +210,7 @@ export function checkinNotificationEmail(clientData: {
         ` : ''}
 
         <div style="background: #1a1f3a; border-radius: 10px; padding: 16px; text-align: center;">
-          <p style="color: #00d4d4; font-size: 12px; font-weight: 500; letter-spacing: 1px; margin: 0;">
+          <p style="color: #00D4E8; font-size: 12px; font-weight: 500; letter-spacing: 1px; margin: 0;">
             TRANSFORM TO INSPIRE
           </p>
         </div>

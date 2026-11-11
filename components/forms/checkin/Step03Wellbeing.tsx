@@ -65,7 +65,7 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
       <div>
         <p className="text-xs font-medium text-[#64748b] mb-2">
           Overall mood this week
-          <span className="text-[#00d4d4] ml-0.5">*</span>
+          <span className="text-[#00D4E8] ml-0.5">*</span>
         </p>
         <div className="flex gap-2 flex-wrap">
           {MOOD_OPTIONS.map((opt) => (
@@ -75,8 +75,8 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
               onClick={() => { setValue('mood', opt.emoji); setError('') }}
               className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl border transition-all duration-150 ${
                 mood === opt.emoji
-                  ? 'border-[#00d4d4] bg-[#00d4d4]/5 scale-110'
-                  : 'border-[#e2e8f0] hover:border-[#00d4d4]'
+                  ? 'border-[#00D4E8] bg-[#00D4E8]/5 scale-110'
+                  : 'border-[#e2e8f0] hover:border-[#00D4E8]'
               }`}
             >
               <span className="text-2xl">{opt.emoji}</span>

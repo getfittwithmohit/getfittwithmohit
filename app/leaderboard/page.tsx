@@ -78,7 +78,7 @@ export default function LeaderboardPage() {
       <div className="bg-[#1a1f3a] px-6 pt-5 pb-6">
         <div className="max-w-2xl mx-auto">
           <HomeButton />
-          <p className="text-[#00d4d4] text-xs tracking-widest uppercase mb-1">Leaderboard</p>
+          <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-1">Leaderboard</p>
           <div className="flex items-end justify-between mt-2">
             <div>
               <p className="text-white/40 text-xs">Level {level.number}</p>
@@ -90,7 +90,7 @@ export default function LeaderboardPage() {
             </div>
           </div>
           <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mt-4">
-            <div className="h-full bg-[#00d4d4] rounded-full transition-all" style={{ width: `${level.progress * 100}%` }} />
+            <div className="h-full bg-[#00D4E8] rounded-full transition-all" style={{ width: `${level.progress * 100}%` }} />
           </div>
           <p className="text-white/40 text-xs mt-1.5">
             {level.next
@@ -134,14 +134,14 @@ export default function LeaderboardPage() {
           {rows.map((row) => (
             <div
               key={row.client_id}
-              className={`flex items-center gap-3 px-4 py-3 ${row.is_me ? 'bg-[#00d4d4]/10' : ''}`}
+              className={`flex items-center gap-3 px-4 py-3 ${row.is_me ? 'bg-[#00D4E8]/10' : ''}`}
             >
               <span className="w-8 text-center text-sm font-semibold text-[#64748b]">
                 {row.xp > 0 && row.rank <= 3 ? MEDALS[row.rank - 1] : row.rank}
               </span>
               <span className="flex-1 text-sm text-[#0f172a] truncate">
                 {row.display_name}
-                {row.is_me && <span className="text-xs text-[#00a3a3] ml-2">You{row.is_hidden ? ' · hidden' : ''}</span>}
+                {row.is_me && <span className="text-xs text-[#0095A8] ml-2">You{row.is_hidden ? ' · hidden' : ''}</span>}
               </span>
               <span className="text-sm font-semibold text-[#1a1f3a]">{row.xp.toLocaleString('en-IN')} XP</span>
             </div>

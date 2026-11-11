@@ -15,7 +15,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label className="text-xs font-medium text-[#64748b]">
             {label}
-            {required && <span className="text-[#00d4d4] ml-0.5">*</span>}
+            {required && <span className="text-[#00D4E8] ml-0.5">*</span>}
           </label>
         )}
         <select
@@ -24,7 +24,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             w-full px-3 py-2.5 text-sm
             border border-[#e2e8f0] rounded-lg
             text-[#0f172a] bg-white
-            focus:outline-none focus:border-[#00d4d4]
+            focus:outline-none focus:border-[#00D4E8]
             transition-colors duration-150
             ${error ? 'border-[#ef4444]' : ''}
             ${className}

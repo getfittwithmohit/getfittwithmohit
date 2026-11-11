@@ -56,7 +56,7 @@ export function StreaksPanel({
       {/* Doing this for */}
       {doingThisFor && (
         <div className="bg-[#1a1f3a] rounded-2xl p-4 mb-4 text-center">
-          <p className="text-xs text-[#00d4d4] uppercase tracking-wide mb-1">
+          <p className="text-xs text-[#00D4E8] uppercase tracking-wide mb-1">
             Doing this for
           </p>
           <p className="text-white text-sm font-medium leading-relaxed">
@@ -79,7 +79,7 @@ export function StreaksPanel({
           value={`${workoutStreak}w`}
           label="Workout streak"
           sublabel="3+ sessions/week"
-          color="#00d4d4"
+          color="#00D4E8"
         />
       </div>
 

@@ -74,8 +74,8 @@ export function Step05Mindset({ onNext, onBack }: Props) {
       title="How are you doing on the inside?"
       subtitle="Physical results follow mental state. Coach Mohit coaches the whole person — not just the body."
     >
-      <div className="bg-gradient-to-br from-[#00d4d4]/5 to-[#4a7fd4]/5 border border-[#00d4d4]/15 rounded-xl p-4">
-        <p className="text-xs font-medium text-[#00d4d4] mb-1 uppercase tracking-wide">
+      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
+        <p className="text-xs font-medium text-[#00D4E8] mb-1 uppercase tracking-wide">
           This week's mindset question
         </p>
         <p className="text-sm font-medium text-[#0f172a] leading-relaxed">
@@ -102,7 +102,7 @@ export function Step05Mindset({ onNext, onBack }: Props) {
       <div>
         <p className="text-xs font-medium text-[#64748b] mb-2">
           What do you need from Coach Mohit in this week's call?
-          <span className="text-[#00d4d4] ml-0.5">*</span>
+          <span className="text-[#00D4E8] ml-0.5">*</span>
         </p>
         <CheckGroup
           options={COACH_NEEDS}

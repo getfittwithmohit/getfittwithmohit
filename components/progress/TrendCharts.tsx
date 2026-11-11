@@ -104,13 +104,13 @@ export function TrendCharts({ checkins }: TrendChartsProps) {
             <XAxis dataKey="week" tick={tickStyle} {...axisProps} />
             <YAxis tick={tickStyle} {...axisProps} />
             <Tooltip {...tooltipStyle} />
-            <Bar dataKey="Workout" fill="#00d4d4" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="Workout" fill="#00D4E8" radius={[4, 4, 0, 0]} />
             <Bar dataKey="Nutrition" fill="#f59e0b" radius={[4, 4, 0, 0]} />
             <Bar dataKey="SAVER" fill="#a855f7" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
         <div className="flex gap-4 mt-2">
-  <span className="text-xs flex items-center gap-1"><span className="w-3 h-2 bg-[#00d4d4] inline-block rounded" /> Workouts</span>
+  <span className="text-xs flex items-center gap-1"><span className="w-3 h-2 bg-[#00D4E8] inline-block rounded" /> Workouts</span>
   <span className="text-xs flex items-center gap-1"><span className="w-3 h-2 bg-[#f59e0b] inline-block rounded" /> Nutrition /10</span>
   <span className="text-xs flex items-center gap-1"><span className="w-3 h-2 bg-[#a855f7] inline-block rounded" /> SAVER days</span>
 </div>

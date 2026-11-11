@@ -24,8 +24,8 @@ export function Button({
   `
 
   const variants = {
-    primary: 'bg-[#00d4d4] text-[#1a1f3a] hover:bg-[#00bcbc]',
-    secondary: 'bg-[#1a1f3a] text-[#00d4d4] hover:bg-[#141930]',
+    primary: 'bg-[#00D4E8] text-[#1a1f3a] hover:bg-[#00BED1]',
+    secondary: 'bg-[#1a1f3a] text-[#00D4E8] hover:bg-[#141930]',
     back: 'border border-[#e2e8f0] text-[#64748b] hover:bg-[#f8fafc] bg-transparent',
     danger: 'bg-[#ef4444] text-white hover:bg-[#dc2626]',
   }

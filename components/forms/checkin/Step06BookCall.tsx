@@ -59,7 +59,7 @@ export function Step06BookCall({ onNext, onBack, submitting }: Props) {
           label="Workout adherence"
           value={workouts}
           max={6}
-          color="#00d4d4"
+          color="#00D4E8"
           display={`${workouts}/6 workouts`}
         />
         <SummaryBar

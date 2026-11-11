@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { subscriptionEndDate, weeksToCover } from '@/lib/utils/subscription'
 import { formatDayLabel } from '@/lib/utils/istDate'
 import { DailyHistory } from '@/components/coach/DailyHistory'
+import { ClientWorkouts } from '@/components/coach/ClientWorkouts'
 import { useParams } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -28,7 +29,7 @@ import { WHtRCard } from '@/components/blueprint/WHtRCard'
 import { WHtRTrendChart } from '@/components/progress/WHtRTrendChart'
 import { calcCurrentWeek } from '@/lib/supabase/queries/clients'
 
-type Tab = 'progress' | 'edit' | 'calls' | 'report' | 'checkins' | 'daily'
+type Tab = 'progress' | 'edit' | 'calls' | 'report' | 'checkins' | 'daily' | 'workouts'
 
 const FEET_OPTIONS = [3, 4, 5, 6, 7]
 const INCH_OPTIONS = Array.from({ length: 12 }, (_, i) => i)
@@ -334,7 +335,7 @@ export default function ClientProgressPage() {
           type={type}
           value={data?.[key] || ''}
           onChange={(e) => setter((prev: any) => ({ ...prev, [key]: e.target.value }))}
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
         />
       </div>
     )
@@ -543,7 +544,7 @@ export default function ClientProgressPage() {
               📤 Export Data
             </button>
             <div className="text-right">
-              <p className="text-[#00d4d4] text-xs font-medium tracking-wide">GETFITTWITHMOHIT</p>
+              <p className="text-[#00D4E8] text-xs font-medium tracking-wide">GETFITTWITHMOHIT</p>
               <p className="text-white/40 text-xs">Transform to Inspire</p>
             </div>
           </div>
@@ -558,6 +559,7 @@ export default function ClientProgressPage() {
             { key: 'edit', label: '✏️ Edit Profile' },
             { key: 'calls', label: '📞 Weekly Calls' },
             { key: 'daily', label: '📋 Daily' },
+            { key: 'workouts', label: '🏋️ Workouts' },
             { key: 'checkins', label: '📝 Check-ins' },
             { key: 'report', label: '📑 Report' },
           ].map((t) => (
@@ -570,7 +572,7 @@ export default function ClientProgressPage() {
               }}
               className={`px-4 py-3.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 tab === t.key
-                  ? 'border-[#00d4d4] text-[#0f172a]'
+                  ? 'border-[#00D4E8] text-[#0f172a]'
                   : 'border-transparent text-[#94a3b8] hover:text-[#64748b]'
               }`}
             >
@@ -669,7 +671,7 @@ export default function ClientProgressPage() {
                 <select
                   value={editData.phase}
                   onChange={(e) => setEditData((p: any) => ({ ...p, phase: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                 >
                   {PHASES.map((p) => (
                     <option key={p} value={p}>{p}</option>
@@ -681,7 +683,7 @@ export default function ClientProgressPage() {
                 <select
                   value={editData.risk_status}
                   onChange={(e) => setEditData((p: any) => ({ ...p, risk_status: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                 >
                   {RISK_OPTIONS.map((r) => (
                     <option key={r.value} value={r.value}>{r.label}</option>
@@ -696,7 +698,7 @@ export default function ClientProgressPage() {
                   type="date"
                   value={editData.start_date || ''}
                   onChange={(e) => setEditData((p: any) => ({ ...p, start_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                 />
               </div>
               <div>
@@ -717,7 +719,7 @@ export default function ClientProgressPage() {
                   onChange={(e) => setEditData((p: any) => ({ ...p, program_duration_weeks: e.target.value }))}
                   placeholder="12"
                   disabled={!!editData.subscription_end_date}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors disabled:bg-[#f8fafc] disabled:text-[#94a3b8]"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors disabled:bg-[#f8fafc] disabled:text-[#94a3b8]"
                 />
               </div>
               <div>
@@ -729,7 +731,7 @@ export default function ClientProgressPage() {
                     type="date"
                     value={editData.subscription_end_date || ''}
                     onChange={(e) => setEditData((p: any) => ({ ...p, subscription_end_date: e.target.value }))}
-                    className="flex-1 px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                    className="flex-1 px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                   />
                   {editData.subscription_end_date && (
                     <button
@@ -771,7 +773,7 @@ export default function ClientProgressPage() {
                     <select
                       value={heightFeet}
                       onChange={(e) => setHeightFeet(parseInt(e.target.value))}
-                      className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                      className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                     >
                       {FEET_OPTIONS.map((f) => (
                         <option key={f} value={f}>{f} ft</option>
@@ -783,7 +785,7 @@ export default function ClientProgressPage() {
                     <select
                       value={heightInch}
                       onChange={(e) => setHeightInch(parseInt(e.target.value))}
-                      className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                      className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                     >
                       {INCH_OPTIONS.map((i) => (
                         <option key={i} value={i}>{i} in</option>
@@ -806,7 +808,7 @@ export default function ClientProgressPage() {
                   value={bodyMetrics?.primary_goal || ''}
                   onChange={(e) => setBodyMetrics((p: any) => ({ ...p, primary_goal: e.target.value }))}
                   placeholder="e.g. Fat loss, muscle gain, body recomposition..."
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                 />
               </div>
             </div>
@@ -995,7 +997,7 @@ export default function ClientProgressPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="bg-[#1a1f3a] text-[#00d4d4] px-8 py-3 rounded-xl text-sm font-medium hover:bg-[#141930] transition-colors disabled:opacity-50"
+              className="bg-[#1a1f3a] text-[#00D4E8] px-8 py-3 rounded-xl text-sm font-medium hover:bg-[#141930] transition-colors disabled:opacity-50"
             >
               {saving ? 'Saving...' : 'Save changes →'}
             </button>
@@ -1051,7 +1053,7 @@ export default function ClientProgressPage() {
                 value={editData?.program_duration_weeks || ''}
                 onChange={(e) => setEditData((p: any) => ({ ...p, program_duration_weeks: e.target.value }))}
                 placeholder="12"
-                className="w-32 px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                className="w-32 px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
               />
               <button
                 onClick={async () => {
@@ -1061,7 +1063,7 @@ export default function ClientProgressPage() {
                     .eq('id', clientId)
                   window.alert('Programme duration updated')
                 }}
-                className="bg-[#1a1f3a] text-[#00d4d4] px-5 py-2.5 rounded-lg text-xs font-medium hover:bg-[#141930] transition-colors"
+                className="bg-[#1a1f3a] text-[#00D4E8] px-5 py-2.5 rounded-lg text-xs font-medium hover:bg-[#141930] transition-colors"
               >
                 Update
               </button>
@@ -1131,7 +1133,7 @@ export default function ClientProgressPage() {
                             onClick={() => setCallForm((p) => ({ ...p, status: opt.value as any }))}
                             className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-colors ${
                               callForm.status === opt.value
-                                ? 'bg-[#1a1f3a] text-[#00d4d4] border-[#1a1f3a]'
+                                ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#1a1f3a]'
                                 : 'bg-white text-[#64748b] border-[#e2e8f0]'
                             }`}
                           >
@@ -1148,7 +1150,7 @@ export default function ClientProgressPage() {
                               value={callForm.discussed}
                               onChange={(e) => setCallForm((p) => ({ ...p, discussed: e.target.value }))}
                               rows={2}
-                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00d4d4] resize-none"
+                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
                             />
                           </div>
                           <div>
@@ -1157,7 +1159,7 @@ export default function ClientProgressPage() {
                               value={callForm.changes}
                               onChange={(e) => setCallForm((p) => ({ ...p, changes: e.target.value }))}
                               rows={2}
-                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00d4d4] resize-none"
+                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
                             />
                           </div>
                           <div>
@@ -1166,7 +1168,7 @@ export default function ClientProgressPage() {
                               value={callForm.next_focus}
                               onChange={(e) => setCallForm((p) => ({ ...p, next_focus: e.target.value }))}
                               rows={2}
-                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00d4d4] resize-none"
+                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
                             />
                           </div>
                         </div>
@@ -1175,7 +1177,7 @@ export default function ClientProgressPage() {
                       <button
                         onClick={() => saveCall(call.week_number)}
                         disabled={savingCall}
-                        className="w-full bg-[#1a1f3a] text-[#00d4d4] py-2.5 rounded-lg text-xs font-medium disabled:opacity-50"
+                        className="w-full bg-[#1a1f3a] text-[#00D4E8] py-2.5 rounded-lg text-xs font-medium disabled:opacity-50"
                       >
                         {savingCall ? 'Saving...' : 'Save'}
                       </button>
@@ -1275,6 +1277,8 @@ export default function ClientProgressPage() {
 
       {tab === 'daily' && <DailyHistory clientId={clientId} />}
 
+      {tab === 'workouts' && <ClientWorkouts clientId={clientId} />}
+
       {tab === 'report' && (
         <div>
           {reportLoading && (
@@ -1372,7 +1376,7 @@ export default function ClientProgressPage() {
             <div className="flex gap-3 px-6 py-4 border-t border-[#e2e8f0]">
               <button
                 onClick={handleCopyExport}
-                className="flex-1 bg-[#1a1f3a] text-[#00d4d4] py-2.5 rounded-lg text-sm font-medium hover:bg-[#141930] transition-colors"
+                className="flex-1 bg-[#1a1f3a] text-[#00D4E8] py-2.5 rounded-lg text-sm font-medium hover:bg-[#141930] transition-colors"
               >
                 Copy to Clipboard
               </button>

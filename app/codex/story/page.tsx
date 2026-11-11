@@ -146,7 +146,7 @@ export default function CodexStoryPage() {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-6">
         <div className="max-w-sm w-full text-center">
-          <div className="w-20 h-20 rounded-full bg-[#00d4d4] flex items-center justify-center mx-auto mb-8">
+          <div className="w-20 h-20 rounded-full bg-[#00D4E8] flex items-center justify-center mx-auto mb-8">
             <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
               <path d="M8 16l5 5 11-11" stroke="#0a0a0f" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -157,7 +157,7 @@ export default function CodexStoryPage() {
           </p>
           <button
             onClick={() => window.location.href = '/codex'}
-            className="w-full bg-[#00d4d4] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3"
+            className="w-full bg-[#00D4E8] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3"
           >
             Continue to Codex Setup →
           </button>
@@ -178,7 +178,7 @@ export default function CodexStoryPage() {
       {/* Progress bar */}
       <div className="h-0.5 bg-white/5 w-full">
         <div
-          className="h-full bg-[#00d4d4] transition-all duration-700"
+          className="h-full bg-[#00D4E8] transition-all duration-700"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -204,7 +204,7 @@ export default function CodexStoryPage() {
           transition: 'opacity 0.28s ease, transform 0.28s ease',
         }}
       >
-        <p className="text-[#00d4d4] text-xs font-medium tracking-widest uppercase mb-4">
+        <p className="text-[#00D4E8] text-xs font-medium tracking-widest uppercase mb-4">
           {q.category}
         </p>
         <h2 className="text-white text-2xl font-medium leading-tight mb-3">
@@ -221,7 +221,7 @@ export default function CodexStoryPage() {
           placeholder={q.placeholder}
           autoFocus
           rows={6}
-          className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00d4d4]/50 resize-none transition-colors leading-relaxed"
+          className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50 resize-none transition-colors leading-relaxed"
         />
 
         <button
@@ -229,7 +229,7 @@ export default function CodexStoryPage() {
           disabled={!isAnswered || submitting}
           className="mt-6 w-full py-4 rounded-2xl text-sm font-semibold transition-all duration-200 disabled:opacity-20"
           style={{
-            background: isAnswered ? '#00d4d4' : 'rgba(255,255,255,0.05)',
+            background: isAnswered ? '#00D4E8' : 'rgba(255,255,255,0.05)',
             color: isAnswered ? '#0a0a0f' : 'white',
           }}
         >
@@ -255,7 +255,7 @@ export default function CodexStoryPage() {
             style={{
               width: i === currentQ ? 20 : 6,
               height: 6,
-              background: i < currentQ ? '#00d4d4' : i === currentQ ? '#00d4d4' : 'rgba(255,255,255,0.1)',
+              background: i < currentQ ? '#00D4E8' : i === currentQ ? '#00D4E8' : 'rgba(255,255,255,0.1)',
             }}
           />
         ))}

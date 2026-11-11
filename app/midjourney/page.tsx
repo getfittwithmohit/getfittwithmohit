@@ -104,7 +104,7 @@ export default function MidJourneyPage() {
         <div className="flex flex-col gap-3">
           <button
             onClick={() => window.location.href = '/identity'}
-            className="w-full py-3 bg-[#1a1f3a] text-[#00d4d4] rounded-xl text-sm font-medium hover:bg-[#141930] transition-colors"
+            className="w-full py-3 bg-[#1a1f3a] text-[#00D4E8] rounded-xl text-sm font-medium hover:bg-[#141930] transition-colors"
           >
             Complete Purpose & Identity Form →
           </button>
@@ -116,7 +116,7 @@ export default function MidJourneyPage() {
           </button>
         </div>
         <div className="mt-6 bg-[#1a1f3a] rounded-xl py-3 px-6 inline-block">
-          <p className="text-[#00d4d4] text-xs font-medium tracking-widest">
+          <p className="text-[#00D4E8] text-xs font-medium tracking-widest">
             TRANSFORM TO INSPIRE
           </p>
         </div>
@@ -164,7 +164,7 @@ export default function MidJourneyPage() {
             className={`
               flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
               ${mode === 'coach'
-                ? 'bg-[#1a1f3a] text-[#00d4d4]'
+                ? 'bg-[#1a1f3a] text-[#00D4E8]'
                 : 'text-[#64748b] hover:text-[#0f172a]'
               }
             `}
@@ -176,7 +176,7 @@ export default function MidJourneyPage() {
             className={`
               flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
               ${mode === 'client'
-                ? 'bg-[#1a1f3a] text-[#00d4d4]'
+                ? 'bg-[#1a1f3a] text-[#00D4E8]'
                 : 'text-[#64748b] hover:text-[#0f172a]'
               }
             `}

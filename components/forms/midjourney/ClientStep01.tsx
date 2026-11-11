@@ -37,8 +37,8 @@ export function ClientStep01({ onNext }: Props) {
       subtitle="Coach Mohit has upgraded his coaching system. This takes 15 minutes — and it will make your sessions significantly more personalised."
     >
       {/* What coach already has */}
-      <div className="bg-gradient-to-br from-[#00d4d4]/5 to-[#4a7fd4]/5 border border-[#00d4d4]/15 rounded-xl p-4">
-        <p className="text-xs font-medium text-[#00d4d4] mb-2">
+      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
+        <p className="text-xs font-medium text-[#00D4E8] mb-2">
           What Coach Mohit already has
         </p>
         <p className="text-sm text-[#64748b] leading-relaxed">
@@ -53,7 +53,7 @@ export function ClientStep01({ onNext }: Props) {
           ].filter(Boolean).map((item) => (
             <span
               key={item}
-              className="text-xs bg-[#1a1f3a] text-[#00d4d4] px-2.5 py-1 rounded-full"
+              className="text-xs bg-[#1a1f3a] text-[#00D4E8] px-2.5 py-1 rounded-full"
             >
               {item}
             </span>
@@ -65,14 +65,14 @@ export function ClientStep01({ onNext }: Props) {
       <div>
         <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
           Confirm your current weight (kg)
-          <span className="text-[#00d4d4] ml-0.5">*</span>
+          <span className="text-[#00D4E8] ml-0.5">*</span>
         </label>
         <input
           ref={weightRef}
           type="number"
           defaultValue={client.confirmed_weight}
           placeholder="e.g. 83.2"
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
         />
       </div>
 
@@ -85,7 +85,7 @@ export function ClientStep01({ onNext }: Props) {
           type="number"
           defaultValue={client.waist_inches}
           placeholder="e.g. 33"
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
         />
       </div>
 

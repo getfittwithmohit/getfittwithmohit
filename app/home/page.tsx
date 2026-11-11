@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { DailyCheckinCard } from '@/components/home/DailyCheckinCard'
+import { WorkoutCard } from '@/components/home/WorkoutCard'
 import { useClient } from '@/hooks/useClient'
 import { signOut } from '@/lib/supabase/queries/auth'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -132,7 +133,7 @@ setCodex(hasSetup)
           </p>
           <button
             onClick={() => window.location.href = '/onboarding'}
-            className="bg-[#00d4d4] text-[#1a1f3a] px-8 py-3 rounded-xl text-sm font-medium hover:bg-[#00bcbc] transition-colors"
+            className="bg-[#00D4E8] text-[#1a1f3a] px-8 py-3 rounded-xl text-sm font-medium hover:bg-[#00BED1] transition-colors"
           >
             Start Onboarding →
           </button>
@@ -159,7 +160,7 @@ setCodex(hasSetup)
     label: 'Commitment Pledge',
     description: 'Sign your promise to yourself',
     href: '/pledge',
-    color: '#00d4d4',
+    color: '#00D4E8',
   })
   if (!identity) pendingItems.push({
     emoji: '🎯',
@@ -192,7 +193,7 @@ if (!codex) pendingItems.push({
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="GetFittWithMohit" className="w-10 h-10 object-contain" />
             <div>
-              <p className="text-[#00d4d4] text-xs font-medium tracking-widest uppercase">
+              <p className="text-[#00D4E8] text-xs font-medium tracking-widest uppercase">
                 GetFittWithMohit
               </p>
               <p className="text-white/40 text-xs mt-0.5">Transform to Inspire</p>
@@ -219,6 +220,9 @@ if (!codex) pendingItems.push({
             {client?.phase !== 'Onboarding' && ` · Week ${client?.current_week || 1}`}
           </p>
         </div>
+        {/* Today's workout */}
+        {client && <WorkoutCard clientId={client.id} />}
+
         {/* Daily check-in card */}
         {client && <DailyCheckinCard clientId={client.id} />}
 
@@ -229,7 +233,7 @@ if (!codex) pendingItems.push({
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[#00d4d4] text-xs tracking-widest uppercase mb-1">Daily Ritual</p>
+              <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-1">Daily Ritual</p>
               <p className="text-white text-base font-medium">Begin your morning ritual</p>
               <p className="text-white/40 text-xs mt-0.5">Strangest Secret · Goals · Affirmations · Codex</p>
             </div>
@@ -264,13 +268,13 @@ if (!codex) pendingItems.push({
           {pledge?.doing_this_for && (
             <div className="mb-4">
               <p className="text-xs text-[#94a3b8] mb-1">Doing this for</p>
-              <p className="text-sm font-medium text-[#00d4d4] leading-relaxed">
+              <p className="text-sm font-medium text-[#00D4E8] leading-relaxed">
                 "{pledge.doing_this_for}"
               </p>
             </div>
           )}
 
-          <div className="border-l-2 border-[#00d4d4]/30 pl-3 mb-4">
+          <div className="border-l-2 border-[#00D4E8]/30 pl-3 mb-4">
             <p className="text-xs text-[#64748b] italic leading-relaxed">
               "{quote}"
             </p>
@@ -283,7 +287,7 @@ if (!codex) pendingItems.push({
             <span className="text-xs text-[#94a3b8]">
               🌅 {dayName} · Have you done your SAVER today?
             </span>
-            <span className="text-xs text-[#00d4d4] underline underline-offset-2 flex-shrink-0">
+            <span className="text-xs text-[#00D4E8] underline underline-offset-2 flex-shrink-0">
               What is SAVER?
             </span>
           </button>
@@ -304,7 +308,7 @@ if (!codex) pendingItems.push({
                 <button
                   key={item.href}
                   onClick={() => window.location.href = item.href}
-                  className="flex items-center gap-4 bg-white border border-[#e2e8f0] rounded-xl p-4 text-left hover:border-[#00d4d4] transition-colors"
+                  className="flex items-center gap-4 bg-white border border-[#e2e8f0] rounded-xl p-4 text-left hover:border-[#00D4E8] transition-colors"
                 >
                   <div
                     className="w-9 h-9 rounded-lg flex items-center justify-center text-base flex-shrink-0"
@@ -349,7 +353,7 @@ if (!codex) pendingItems.push({
               <button
                 key={item.href}
                 onClick={() => window.location.href = item.href}
-                className="flex flex-col items-center gap-1.5 bg-white border border-[#e2e8f0] rounded-xl py-3 px-1 hover:border-[#00d4d4] transition-colors"
+                className="flex flex-col items-center gap-1.5 bg-white border border-[#e2e8f0] rounded-xl py-3 px-1 hover:border-[#00D4E8] transition-colors"
               >
                 <span className="text-xl">{item.emoji}</span>
                 <span className="text-xs text-[#64748b] text-center leading-tight">
@@ -365,9 +369,9 @@ if (!codex) pendingItems.push({
       {/* Floating SAVER button */}
       <button
         onClick={() => setSaverOpen(true)}
-        className="fixed bottom-6 right-6 w-12 h-12 bg-[#1a1f3a] border border-[#00d4d4]/30 rounded-full flex items-center justify-center shadow-lg hover:border-[#00d4d4] transition-colors z-40"
+        className="fixed bottom-6 right-6 w-12 h-12 bg-[#1a1f3a] border border-[#00D4E8]/30 rounded-full flex items-center justify-center shadow-lg hover:border-[#00D4E8] transition-colors z-40"
       >
-        <span className="text-sm font-bold text-[#00d4d4]">S</span>
+        <span className="text-sm font-bold text-[#00D4E8]">S</span>
       </button>
 
       {/* SAVER modal */}
@@ -407,7 +411,7 @@ if (!codex) pendingItems.push({
                   ],
                 },
                 {
-                  letter: 'A', word: 'Affirmations', duration: '5 mins', color: '#00d4d4',
+                  letter: 'A', word: 'Affirmations', duration: '5 mins', color: '#00D4E8',
                   steps: [
                     'Write or speak 5–10 statements about who you are becoming',
                     'Use present tense: "I am strong. I am consistent."',
@@ -470,7 +474,7 @@ if (!codex) pendingItems.push({
             <div className="mt-6 bg-[#1a1f3a] rounded-xl p-4 text-center">
               <p className="text-xs text-white/50 leading-relaxed">
                 Track how many days you completed SAVER in your{' '}
-                <span className="text-[#00d4d4]">weekly check-in</span>
+                <span className="text-[#00D4E8]">weekly check-in</span>
               </p>
             </div>
           </div>

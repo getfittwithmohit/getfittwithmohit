@@ -115,7 +115,7 @@ export default function CodexViewPage() {
               className={`w-full py-4 rounded-2xl text-sm font-medium transition-colors ${
                 storyDone
                   ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-800'
-                  : 'bg-[#00d4d4] text-[#0a0a0f]'
+                  : 'bg-[#00D4E8] text-[#0a0a0f]'
               }`}
             >
               {storyDone ? '✓ Your Story — Done' : 'Step 1: Your Story →'}
@@ -126,7 +126,7 @@ export default function CodexViewPage() {
                 setupDone
                   ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-800'
                   : storyDone
-                    ? 'bg-[#00d4d4] text-[#0a0a0f]'
+                    ? 'bg-[#00D4E8] text-[#0a0a0f]'
                     : 'bg-white/5 text-white/30 cursor-not-allowed'
               }`}
               disabled={!storyDone}
@@ -153,7 +153,7 @@ export default function CodexViewPage() {
           </p>
           <button
             onClick={generate}
-            className="w-full bg-[#00d4d4] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3"
+            className="w-full bg-[#00D4E8] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3"
           >
             Write My Codex →
           </button>
@@ -173,7 +173,7 @@ export default function CodexViewPage() {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-6">
         <div className="max-w-sm w-full text-center">
-          <div className="w-16 h-16 border-2 border-white/10 border-t-[#00d4d4] rounded-full animate-spin mx-auto mb-8" />
+          <div className="w-16 h-16 border-2 border-white/10 border-t-[#00D4E8] rounded-full animate-spin mx-auto mb-8" />
           <h1 className="text-xl font-medium text-white mb-3">Writing your Codex...</h1>
           <p className="text-white/30 text-sm leading-relaxed">
             Every word is being crafted specifically for you. This takes about 30 seconds.
@@ -194,7 +194,7 @@ export default function CodexViewPage() {
           </p>
           <button
             onClick={generate}
-            className="w-full bg-[#00d4d4] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3"
+            className="w-full bg-[#00D4E8] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3"
           >
             Yes, regenerate →
           </button>
@@ -218,7 +218,7 @@ export default function CodexViewPage() {
     return text.split('\n\n').map((para, i) => {
       if (para.startsWith('*') && para.endsWith('*')) {
         return (
-          <p key={i} className="text-[#00d4d4] italic text-base leading-relaxed mt-6 font-medium">
+          <p key={i} className="text-[#00D4E8] italic text-base leading-relaxed mt-6 font-medium">
             {para.slice(1, -1)}
           </p>
         )
@@ -266,7 +266,7 @@ export default function CodexViewPage() {
             style={{
               width: i === currentSection ? 20 : 6,
               height: 6,
-              background: i <= currentSection ? '#00d4d4' : 'rgba(255,255,255,0.08)',
+              background: i <= currentSection ? '#00D4E8' : 'rgba(255,255,255,0.08)',
             }}
           />
         ))}
@@ -282,7 +282,7 @@ export default function CodexViewPage() {
         }}
       >
         {/* Section title */}
-        <p className="text-[#00d4d4] text-xs font-medium tracking-widest uppercase mb-2">
+        <p className="text-[#00D4E8] text-xs font-medium tracking-widest uppercase mb-2">
           Chapter {currentSection + 1}
         </p>
         <h2 className="text-white text-2xl font-semibold leading-tight mb-8">
@@ -290,7 +290,7 @@ export default function CodexViewPage() {
         </h2>
 
         {/* Divider */}
-        <div className="w-12 h-0.5 bg-[#00d4d4]/30 mb-8" />
+        <div className="w-12 h-0.5 bg-[#00D4E8]/30 mb-8" />
 
         {/* Content */}
         <div className="pb-8">
@@ -330,7 +330,7 @@ export default function CodexViewPage() {
         {isLast ? (
           <button
             onClick={() => window.location.href = '/home'}
-            className="bg-[#00d4d4] text-[#0a0a0f] px-5 py-2.5 rounded-full text-xs font-semibold"
+            className="bg-[#00D4E8] text-[#0a0a0f] px-5 py-2.5 rounded-full text-xs font-semibold"
           >
             Close
           </button>

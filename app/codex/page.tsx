@@ -192,7 +192,7 @@ export default function CodexSetupPage() {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-6">
         <div className="max-w-sm w-full text-center">
-          <div className="w-20 h-20 rounded-full bg-[#00d4d4] flex items-center justify-center mx-auto mb-8">
+          <div className="w-20 h-20 rounded-full bg-[#00D4E8] flex items-center justify-center mx-auto mb-8">
             <svg viewBox="0 0 32 32" width="32" height="32" fill="none">
               <path d="M8 16l5 5 11-11" stroke="#0a0a0f" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -205,7 +205,7 @@ export default function CodexSetupPage() {
           </p>
           <button
             onClick={() => window.location.href = '/codex/view'}
-            className="w-full bg-[#00d4d4] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3 hover:bg-[#00bcbc] transition-colors"
+            className="w-full bg-[#00D4E8] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3 hover:bg-[#00BED1] transition-colors"
           >
             Open My Codex →
           </button>
@@ -231,7 +231,7 @@ export default function CodexSetupPage() {
           </p>
           <button
             onClick={() => window.location.href = '/codex/view'}
-            className="w-full bg-[#00d4d4] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3"
+            className="w-full bg-[#00D4E8] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3"
           >
             Open My Codex →
           </button>
@@ -252,7 +252,7 @@ export default function CodexSetupPage() {
       {/* Progress bar */}
       <div className="h-0.5 bg-white/5 w-full">
         <div
-          className="h-full bg-[#00d4d4] transition-all duration-700"
+          className="h-full bg-[#00D4E8] transition-all duration-700"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -281,7 +281,7 @@ export default function CodexSetupPage() {
         }}
       >
         {/* Category */}
-        <p className="text-[#00d4d4] text-xs font-medium tracking-widest uppercase mb-4">
+        <p className="text-[#00D4E8] text-xs font-medium tracking-widest uppercase mb-4">
           {q.category}
         </p>
 
@@ -314,7 +314,7 @@ export default function CodexSetupPage() {
             placeholder={q.placeholder as string}
             autoFocus
             onKeyDown={(e) => e.key === 'Enter' && handleNext()}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-base placeholder:text-white/20 focus:outline-none focus:border-[#00d4d4]/50 transition-colors"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-base placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50 transition-colors"
           />
         )}
 
@@ -325,7 +325,7 @@ export default function CodexSetupPage() {
             placeholder={q.placeholder as string}
             autoFocus
             rows={5}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00d4d4]/50 resize-none transition-colors leading-relaxed"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50 resize-none transition-colors leading-relaxed"
           />
         )}
 
@@ -333,7 +333,7 @@ export default function CodexSetupPage() {
           <div className="flex flex-col gap-3">
             {(q.placeholder as string[]).map((ph, i) => (
               <div key={i} className="flex items-center gap-3">
-                <span className="text-[#00d4d4] text-sm font-medium w-5 flex-shrink-0">
+                <span className="text-[#00D4E8] text-sm font-medium w-5 flex-shrink-0">
                   {i + 1}.
                 </span>
                 <input
@@ -346,7 +346,7 @@ export default function CodexSetupPage() {
                   }}
                   placeholder={ph}
                   autoFocus={i === 0}
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00d4d4]/50 transition-colors"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50 transition-colors"
                 />
               </div>
             ))}
@@ -359,7 +359,7 @@ export default function CodexSetupPage() {
           disabled={!isAnswered() || submitting}
           className="mt-8 w-full py-4 rounded-2xl text-sm font-semibold transition-all duration-200 disabled:opacity-20"
           style={{
-            background: isAnswered() ? '#00d4d4' : 'rgba(255,255,255,0.05)',
+            background: isAnswered() ? '#00D4E8' : 'rgba(255,255,255,0.05)',
             color: isAnswered() ? '#0a0a0f' : 'white',
           }}
         >
@@ -392,9 +392,9 @@ export default function CodexSetupPage() {
               width: i === currentQ ? 20 : 6,
               height: 6,
               background: i < currentQ
-                ? '#00d4d4'
+                ? '#00D4E8'
                 : i === currentQ
-                  ? '#00d4d4'
+                  ? '#00D4E8'
                   : 'rgba(255,255,255,0.1)',
             }}
           />

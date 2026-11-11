@@ -30,8 +30,8 @@ export function Step07IdentityStatement({ onNext, onBack }: Props) {
       title="Complete this sentence — and mean it."
       subtitle="Goals are outcomes. Identity is who you are. When things get hard, your identity answers the question."
     >
-      <div className="bg-gradient-to-br from-[#00d4d4]/5 to-[#4a7fd4]/5 border border-[#00d4d4]/15 rounded-xl p-4">
-        <p className="text-xs font-medium text-[#00d4d4] mb-1">
+      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
+        <p className="text-xs font-medium text-[#00D4E8] mb-1">
           Phase 3 — Commitment
         </p>
         <p className="text-sm text-[#64748b] leading-relaxed">
@@ -48,7 +48,7 @@ export function Step07IdentityStatement({ onNext, onBack }: Props) {
           Complete this sentence
         </p>
         <div className="flex items-start gap-2">
-          <span className="text-sm font-medium text-[#00d4d4] mt-2.5 flex-shrink-0">
+          <span className="text-sm font-medium text-[#00D4E8] mt-2.5 flex-shrink-0">
             I am someone who...
           </span>
         </div>

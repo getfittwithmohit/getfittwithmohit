@@ -232,7 +232,7 @@ export default function AudioLibraryPage() {
       <div className="px-6 pt-5 pb-4">
         <div className="max-w-2xl mx-auto">
           <HomeButton />
-          <p className="text-[#00d4d4] text-xs tracking-widest uppercase mb-1">Audio Library</p>
+          <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-1">Audio Library</p>
           <h1 className="text-white text-2xl font-semibold">Listen &amp; grow</h1>
           <p className="text-white/40 text-xs mt-1">Picks up where you left off</p>
         </div>
@@ -263,7 +263,7 @@ export default function AudioLibraryPage() {
                 onClick={() => setCategory(c.value)}
                 className={`flex-shrink-0 text-xs font-medium px-3.5 py-2 rounded-full border transition-colors ${
                   currentCategory === c.value
-                    ? 'bg-[#00d4d4] border-[#00d4d4] text-[#0a0a0f]'
+                    ? 'bg-[#00D4E8] border-[#00D4E8] text-[#0a0a0f]'
                     : 'border-white/10 text-white/50 hover:text-white/80'
                 }`}
               >
@@ -298,13 +298,13 @@ export default function AudioLibraryPage() {
                   >
                     <span
                       className={`w-9 h-9 rounded-full flex items-center justify-center text-xs flex-shrink-0 ${
-                        isActive ? 'bg-[#00d4d4] text-[#0a0a0f]' : 'bg-white/10 text-white/60'
+                        isActive ? 'bg-[#00D4E8] text-[#0a0a0f]' : 'bg-white/10 text-white/60'
                       }`}
                     >
                       {isActive && playing ? '❚❚' : saved?.completed && !isActive ? '✓' : group.name ? index + 1 : '▶'}
                     </span>
                     <span className="flex-1 min-w-0">
-                      <span className={`block text-sm truncate ${isActive ? 'text-[#00d4d4]' : 'text-white'}`}>
+                      <span className={`block text-sm truncate ${isActive ? 'text-[#00D4E8]' : 'text-white'}`}>
                         {audio.title}
                       </span>
                       <span className="block text-xs text-white/30 mt-0.5 truncate">
@@ -317,7 +317,7 @@ export default function AudioLibraryPage() {
                       {inProgress && (
                         <span className="block w-full h-0.5 bg-white/10 rounded-full mt-2 overflow-hidden">
                           <span
-                            className="block h-full bg-[#00d4d4] rounded-full"
+                            className="block h-full bg-[#00D4E8] rounded-full"
                             style={{ width: `${Math.min(100, (listened / total) * 100)}%` }}
                           />
                         </span>
@@ -365,7 +365,7 @@ export default function AudioLibraryPage() {
               onChange={(e) => seekTo(Number(e.target.value))}
               disabled={!duration || preparing}
               aria-label="Seek"
-              className="w-full accent-[#00d4d4]"
+              className="w-full accent-[#00D4E8]"
             />
             <div className="flex justify-between text-xs text-white/30 mt-1 mb-3">
               <span>{formatDuration(time)}</span>
@@ -388,7 +388,7 @@ export default function AudioLibraryPage() {
                   onClick={() => start(active)}
                   disabled={preparing}
                   aria-label={playing ? 'Pause' : 'Play'}
-                  className="w-14 h-14 rounded-full bg-[#00d4d4] flex items-center justify-center transition-transform active:scale-95 disabled:opacity-50"
+                  className="w-14 h-14 rounded-full bg-[#00D4E8] flex items-center justify-center transition-transform active:scale-95 disabled:opacity-50"
                 >
                   {preparing ? (
                     <span className="w-5 h-5 border-2 border-[#0a0a0f] border-t-transparent rounded-full animate-spin" />

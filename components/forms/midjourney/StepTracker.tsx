@@ -21,7 +21,7 @@ export function StepTracker({ currentStep, totalSteps }: Props) {
                 ${isDone
                   ? 'bg-purple-600 text-white'
                   : isActive
-                    ? 'bg-[#1a1f3a] text-[#00d4d4] border-2 border-[#00d4d4]'
+                    ? 'bg-[#1a1f3a] text-[#00D4E8] border-2 border-[#00D4E8]'
                     : 'bg-[#f8fafc] text-[#94a3b8] border border-[#e2e8f0]'
                 }
               `}

@@ -188,7 +188,7 @@ if (clientId) {
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${testProgress}%`,
-                background: 'linear-gradient(90deg, #00d4d4, #4a7fd4)',
+                background: 'linear-gradient(90deg, #00D4E8, #4a7fd4)',
               }}
             />
           </div>

@@ -16,7 +16,7 @@ export function EnvironmentSelector({ selected, onSelect, onNext }: Props) {
 
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#e2e8f0]">
-      <span className="inline-block bg-[#1a1f3a] text-[#00d4d4] text-xs px-3 py-1 rounded-full mb-4 tracking-wide">
+      <span className="inline-block bg-[#1a1f3a] text-[#00D4E8] text-xs px-3 py-1 rounded-full mb-4 tracking-wide">
         Step 1 — Choose Environment
       </span>
       <h3 className="text-lg font-medium text-[#0f172a] mb-1">
@@ -36,19 +36,19 @@ export function EnvironmentSelector({ selected, onSelect, onNext }: Props) {
             className={`
               p-4 rounded-xl border text-center transition-all duration-150
               ${selected === key
-                ? 'bg-[#1a1f3a] border-[#00d4d4]'
-                : 'bg-white border-[#e2e8f0] hover:border-[#00d4d4]'
+                ? 'bg-[#1a1f3a] border-[#00D4E8]'
+                : 'bg-white border-[#e2e8f0] hover:border-[#00D4E8]'
               }
             `}
           >
             <div className="text-2xl mb-1">{protocol.emoji}</div>
             <div className={`text-sm font-medium mb-0.5 ${
-              selected === key ? 'text-[#00d4d4]' : 'text-[#0f172a]'
+              selected === key ? 'text-[#00D4E8]' : 'text-[#0f172a]'
             }`}>
               {protocol.label}
             </div>
             <div className={`text-xs ${
-              selected === key ? 'text-[#00d4d4]/60' : 'text-[#94a3b8]'
+              selected === key ? 'text-[#00D4E8]/60' : 'text-[#94a3b8]'
             }`}>
               {protocol.description}
             </div>
@@ -60,7 +60,7 @@ export function EnvironmentSelector({ selected, onSelect, onNext }: Props) {
         <button
           onClick={onNext}
           disabled={!selected}
-          className="bg-[#00d4d4] text-[#1a1f3a] px-8 py-2.5 rounded-lg text-sm font-medium hover:bg-[#00bcbc] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-[#00D4E8] text-[#1a1f3a] px-8 py-2.5 rounded-lg text-sm font-medium hover:bg-[#00BED1] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Start Assessment
         </button>

@@ -29,8 +29,8 @@ export function ClientStep04({ onNext, onBack }: Props) {
       subtitle="The final piece — and the most powerful one."
     >
       {/* What they'll create */}
-      <div className="bg-gradient-to-br from-[#00d4d4]/5 to-[#4a7fd4]/5 border border-[#00d4d4]/15 rounded-xl p-4">
-        <p className="text-xs font-medium text-[#00d4d4] mb-2 uppercase tracking-wide">
+      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
+        <p className="text-xs font-medium text-[#00D4E8] mb-2 uppercase tracking-wide">
           What you'll create next
         </p>
         <p className="text-sm font-medium text-[#0f172a] mb-1">
@@ -51,7 +51,7 @@ export function ClientStep04({ onNext, onBack }: Props) {
           ].map((item) => (
             <span
               key={item}
-              className="text-xs bg-[#1a1f3a] text-[#00d4d4] px-2.5 py-1 rounded-full"
+              className="text-xs bg-[#1a1f3a] text-[#00D4E8] px-2.5 py-1 rounded-full"
             >
               {item}
             </span>
@@ -79,7 +79,7 @@ export function ClientStep04({ onNext, onBack }: Props) {
           ref={anythingElseRef}
           placeholder="Anything at all — personal, professional, physical or mental..."
           rows={3}
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
         />
       </div>
 

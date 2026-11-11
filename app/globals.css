@@ -4,8 +4,8 @@
 :root {
   /* Brand colours */
   --gfm-primary:       #1a1f3a;
-  --gfm-accent:        #00d4d4;
-  --gfm-accent-hover:  #00bcbc;
+  --gfm-accent:        #00D4E8;
+  --gfm-accent-hover:  #00BED1;
   --gfm-blue:          #4a7fd4;
   --gfm-success:       #22c55e;
   --gfm-warning:       #f59e0b;
@@ -16,7 +16,7 @@
   --gfm-bg:            #f8fafc;
   --gfm-card:          #ffffff;
   --gfm-border:        #e2e8f0;
-  --gfm-border-focus:  #00d4d4;
+  --gfm-border-focus:  #00D4E8;
 
   /* Typography */
   --gfm-text-primary:   #0f172a;

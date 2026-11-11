@@ -20,7 +20,7 @@ export const PHASES = {
     emoji: '💪',
     weeks: '5–12',
     description: 'Progressive overload',
-    color: '#00d4d4',
+    color: '#00D4E8',
     retentionRiskWeeks: [7],
   },
   Performance: {

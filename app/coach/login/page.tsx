@@ -85,13 +85,13 @@ export default function CoachLoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="coach@getfittwithmohit.com"
                 onKeyDown={(e) => e.key === 'Enter' && handleSendOTP()}
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
               />
               {error && <p className="text-xs text-[#ef4444]">{error}</p>}
               <button
                 onClick={handleSendOTP}
                 disabled={loading}
-                className="w-full py-2.5 bg-[#1a1f3a] text-[#00d4d4] rounded-lg text-sm font-medium hover:bg-[#141930] transition-colors disabled:opacity-50"
+                className="w-full py-2.5 bg-[#1a1f3a] text-[#00D4E8] rounded-lg text-sm font-medium hover:bg-[#141930] transition-colors disabled:opacity-50"
               >
                 {loading ? 'Sending...' : 'Send code →'}
               </button>
@@ -116,13 +116,13 @@ export default function CoachLoginPage() {
                 placeholder="123456"
                 maxLength={6}
                 onKeyDown={(e) => e.key === 'Enter' && handleVerifyOTP()}
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors tracking-widest text-center text-lg font-medium"
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors tracking-widest text-center text-lg font-medium"
               />
               {error && <p className="text-xs text-[#ef4444]">{error}</p>}
               <button
                 onClick={handleVerifyOTP}
                 disabled={loading}
-                className="w-full py-2.5 bg-[#1a1f3a] text-[#00d4d4] rounded-lg text-sm font-medium hover:bg-[#141930] transition-colors disabled:opacity-50"
+                className="w-full py-2.5 bg-[#1a1f3a] text-[#00D4E8] rounded-lg text-sm font-medium hover:bg-[#141930] transition-colors disabled:opacity-50"
               >
                 {loading ? 'Verifying...' : 'Sign in →'}
               </button>

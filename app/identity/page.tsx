@@ -26,10 +26,10 @@ const PHASE_LABELS: Record<number, { phase: string; color: string }> = {
   1: { phase: 'Reflect', color: '#4a7fd4' },
   2: { phase: 'Reflect', color: '#4a7fd4' },
   3: { phase: 'Reflect', color: '#4a7fd4' },
-  4: { phase: 'Identity', color: '#00d4d4' },
-  5: { phase: 'Identity', color: '#00d4d4' },
+  4: { phase: 'Identity', color: '#00D4E8' },
+  5: { phase: 'Identity', color: '#00D4E8' },
   6: { phase: 'Reflect', color: '#4a7fd4' },
-  7: { phase: 'Identity', color: '#00d4d4' },
+  7: { phase: 'Identity', color: '#00D4E8' },
   8: { phase: 'Commitment', color: '#22c55e' },
   9: { phase: 'Commitment', color: '#22c55e' },
 }

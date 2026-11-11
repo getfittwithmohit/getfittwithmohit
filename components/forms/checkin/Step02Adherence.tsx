@@ -73,7 +73,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
       <div>
         <p className="text-xs font-medium text-[#64748b] mb-2">
           Workouts completed this week
-          <span className="text-[#00d4d4] ml-0.5">*</span>
+          <span className="text-[#00D4E8] ml-0.5">*</span>
         </p>
         <div className="flex gap-2">
           {WORKOUT_DAYS.map((day) => (
@@ -83,8 +83,8 @@ export function Step02Adherence({ onNext, onBack }: Props) {
               onClick={() => { setValue('workouts_completed', day); setError('') }}
               className={`w-10 h-10 rounded-lg text-sm font-medium border transition-all duration-150 ${
                 workoutsCompleted === day
-                  ? 'bg-[#1a1f3a] text-[#00d4d4] border-[#00d4d4]'
-                  : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00d4d4]'
+                  ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#00D4E8]'
+                  : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00D4E8]'
               }`}
             >
               {day}
@@ -129,7 +129,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
       <div>
         <p className="text-xs font-medium text-[#64748b] mb-2">
           How many days did you complete your SAVER routine?
-          <span className="text-[#00d4d4] ml-0.5">*</span>
+          <span className="text-[#00D4E8] ml-0.5">*</span>
         </p>
         <div className="flex gap-2">
           {SAVER_DAYS.map((day) => (
@@ -139,8 +139,8 @@ export function Step02Adherence({ onNext, onBack }: Props) {
               onClick={() => setValue('saver_days', day)}
               className={`w-10 h-10 rounded-lg text-sm font-medium border transition-all duration-150 ${
                 saverDays === day
-                  ? 'bg-[#1a1f3a] text-[#00d4d4] border-[#00d4d4]'
-                  : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00d4d4]'
+                  ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#00D4E8]'
+                  : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00D4E8]'
               }`}
             >
               {day}

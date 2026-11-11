@@ -97,7 +97,7 @@ export default function ClientReportPage() {
           </p>
           <button
             onClick={() => window.location.href = '/checkin'}
-            className="mt-6 bg-[#00d4d4] text-[#1a1f3a] px-6 py-3 rounded-xl text-sm font-medium hover:bg-[#00bcbc] transition-colors"
+            className="mt-6 bg-[#00D4E8] text-[#1a1f3a] px-6 py-3 rounded-xl text-sm font-medium hover:bg-[#00BED1] transition-colors"
           >
             Go to Check-in →
           </button>

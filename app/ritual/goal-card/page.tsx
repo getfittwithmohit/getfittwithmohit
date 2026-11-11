@@ -79,7 +79,7 @@ export default function GoalCardPage() {
     <div className="min-h-screen bg-[#0a0a0f] flex flex-col px-6 py-8 max-w-lg mx-auto">
       <button onClick={() => window.location.href = '/ritual'} className="text-white/30 text-xs mb-8 text-left hover:text-white/50 transition-colors">← Back</button>
 
-      <p className="text-[#00d4d4] text-xs font-medium tracking-widest uppercase mb-2">GOAL CARD</p>
+      <p className="text-[#00D4E8] text-xs font-medium tracking-widest uppercase mb-2">GOAL CARD</p>
       <h1 className="text-white text-2xl font-medium mb-2">Your {quarter} Goals</h1>
       <p className="text-white/40 text-sm leading-relaxed mb-10">
         Two goals. Specific. Realistic. With a deadline. You will read these every morning with full conviction that they are already done.
@@ -93,14 +93,14 @@ export default function GoalCardPage() {
           onChange={e => setForm(p => ({ ...p, goal1_text: e.target.value }))}
           placeholder="In 90 days I will have lost 8kg and be training 5 days a week consistently..."
           rows={4}
-          className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00d4d4]/50 resize-none leading-relaxed mb-3"
+          className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50 resize-none leading-relaxed mb-3"
         />
         <input
           type="text"
           value={form.goal1_deadline}
           onChange={e => setForm(p => ({ ...p, goal1_deadline: e.target.value }))}
           placeholder="By when? e.g. 30 June 2025"
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00d4d4]/50"
+          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50"
         />
       </div>
 
@@ -112,14 +112,14 @@ export default function GoalCardPage() {
           onChange={e => setForm(p => ({ ...p, goal2_text: e.target.value }))}
           placeholder="By end of quarter I will have built a morning routine I follow 6 days a week..."
           rows={4}
-          className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00d4d4]/50 resize-none leading-relaxed mb-3"
+          className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50 resize-none leading-relaxed mb-3"
         />
         <input
           type="text"
           value={form.goal2_deadline}
           onChange={e => setForm(p => ({ ...p, goal2_deadline: e.target.value }))}
           placeholder="By when? e.g. 30 June 2025"
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00d4d4]/50"
+          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50"
         />
       </div>
 
@@ -127,7 +127,7 @@ export default function GoalCardPage() {
         onClick={handleSave}
         disabled={!form.goal1_text.trim() || !form.goal2_text.trim() || saving}
         className="w-full py-4 rounded-2xl text-sm font-semibold transition-all disabled:opacity-30"
-        style={{ background: '#00d4d4', color: '#0a0a0f' }}
+        style={{ background: '#00D4E8', color: '#0a0a0f' }}
       >
         {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save My Goal Card →'}
       </button>

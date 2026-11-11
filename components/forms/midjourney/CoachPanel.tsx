@@ -113,7 +113,7 @@ export function CoachPanel({ onSend }: Props) {
                 defaultValue={coach.full_name}
                 placeholder="e.g. Vikram Nair"
                 onChange={handleChange}
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
               />
             </div>
             <div>
@@ -126,7 +126,7 @@ export function CoachPanel({ onSend }: Props) {
                 defaultValue={coach.phone}
                 placeholder="+91 98765 43210"
                 onChange={handleChange}
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
               />
             </div>
           </div>
@@ -141,7 +141,7 @@ export function CoachPanel({ onSend }: Props) {
               defaultValue={coach.email}
               placeholder="client@email.com"
               onChange={handleChange}
-              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
             />
           </div>
 
@@ -155,7 +155,7 @@ export function CoachPanel({ onSend }: Props) {
                 type="date"
                 defaultValue={coach.start_date}
                 onChange={handleChange}
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
               />
             </div>
             <div>
@@ -238,7 +238,7 @@ export function CoachPanel({ onSend }: Props) {
                 defaultValue={coach.starting_weight}
                 placeholder="e.g. 88"
                 onChange={handleChange}
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
               />
             </div>
             <div>
@@ -251,7 +251,7 @@ export function CoachPanel({ onSend }: Props) {
                 defaultValue={coach.current_weight}
                 placeholder="e.g. 83.5"
                 onChange={handleChange}
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
               />
             </div>
             <div>
@@ -264,7 +264,7 @@ export function CoachPanel({ onSend }: Props) {
                 defaultValue={coach.target_weight}
                 placeholder="e.g. 75"
                 onChange={handleChange}
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
               />
             </div>
           </div>
@@ -315,7 +315,7 @@ export function CoachPanel({ onSend }: Props) {
               onChange={handleChange}
               placeholder="Any injuries, conditions or flags you're already aware of..."
               rows={2}
-              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
             />
           </div>
         </div>
@@ -344,7 +344,7 @@ export function CoachPanel({ onSend }: Props) {
               onChange={handleChange}
               placeholder="e.g. Responds well to daily check-ins, performs better with home workouts..."
               rows={3}
-              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
             />
           </div>
 
@@ -358,7 +358,7 @@ export function CoachPanel({ onSend }: Props) {
               onChange={handleChange}
               placeholder="e.g. Misses workouts on travel weeks, eats off-plan on weekends..."
               rows={3}
-              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] resize-none transition-colors"
+              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
             />
           </div>
 
