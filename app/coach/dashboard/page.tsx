@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { RenewalsPanel } from '@/components/dashboard/RenewalsPanel'
 import { useClients, ClientSummary } from '@/hooks/useClients'
 import { ClientList } from '@/components/dashboard/ClientList'
 import { DetailPanel } from '@/components/dashboard/DetailPanel'
@@ -129,6 +130,9 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {/* Subscriptions ending soon */}
+      <RenewalsPanel />
 
       {/* Main split view */}
       <div className="flex flex-1 overflow-hidden">
