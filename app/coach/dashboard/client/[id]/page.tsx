@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { subscriptionEndDate, weeksToCover } from '@/lib/utils/subscription'
+import { formatDayLabel } from '@/lib/utils/istDate'
 import { DailyHistory } from '@/components/coach/DailyHistory'
 import { useParams } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
@@ -153,6 +155,7 @@ export default function ClientProgressPage() {
         start_date: data.client?.start_date || '',
         current_week: data.client?.current_week || 1,
         program_duration_weeks: data.client?.program_duration_weeks || 12,
+        subscription_end_date: data.client?.subscription_end_date || '',
       })
 
       const metrics = data.client?.body_metrics?.[0] || {}
@@ -266,7 +269,12 @@ export default function ClientProgressPage() {
           risk_status: editData.risk_status,
           start_date: editData.start_date || null,
           current_week: currentWeekCalc,
-          program_duration_weeks: parseInt(editData.program_duration_weeks) || 12,
+          subscription_end_date: editData.subscription_end_date || null,
+          // A custom end date decides the programme length, so weekly review
+          // calls and "Week X of Y" run right up to it
+          program_duration_weeks:
+            (editData.subscription_end_date && weeksToCover(editData.start_date, editData.subscription_end_date)) ||
+            parseInt(editData.program_duration_weeks) || 12,
         })
         .eq('id', clientId)
 
@@ -708,8 +716,39 @@ export default function ClientProgressPage() {
                   value={editData.program_duration_weeks || ''}
                   onChange={(e) => setEditData((p: any) => ({ ...p, program_duration_weeks: e.target.value }))}
                   placeholder="12"
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                  disabled={!!editData.subscription_end_date}
+                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors disabled:bg-[#f8fafc] disabled:text-[#94a3b8]"
                 />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+                  Subscription end date (optional — custom ends, renewals, pauses)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={editData.subscription_end_date || ''}
+                    onChange={(e) => setEditData((p: any) => ({ ...p, subscription_end_date: e.target.value }))}
+                    className="flex-1 px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00d4d4] transition-colors"
+                  />
+                  {editData.subscription_end_date && (
+                    <button
+                      type="button"
+                      onClick={() => setEditData((p: any) => ({ ...p, subscription_end_date: '' }))}
+                      className="text-xs text-[#94a3b8] underline"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <p className="text-xs text-[#94a3b8] mt-1">
+                  {editData.subscription_end_date
+                    ? 'Programme length will be set to cover this date when you save.'
+                    : (() => {
+                        const end = subscriptionEndDate(editData)
+                        return end ? `Blank = start date + programme length → ends ${formatDayLabel(end)}` : 'Blank = start date + programme length'
+                      })()}
+                </p>
               </div>
             </div>
           </div>
