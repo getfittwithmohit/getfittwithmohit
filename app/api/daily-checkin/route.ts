@@ -81,6 +81,8 @@ export async function POST(req: NextRequest) {
       sleep_quality: answers.sleep_quality,
       energy: answers.energy,
       water_litres: answers.water_litres,
+      goal_writing_done: answers.goal_writing_done,
+      affirmations_done: answers.affirmations_done,
       gratitude_done: answers.gratitude_done,
       support_needed: answers.support_needed,
       support_message: answers.support_needed ? answers.support_message?.trim() || null : null,

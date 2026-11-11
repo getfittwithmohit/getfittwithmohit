@@ -216,7 +216,7 @@ export default function CoachDailyPage() {
                 <th className="px-2 py-2.5 font-medium">Sleep</th>
                 <th className="px-2 py-2.5 font-medium">Energy</th>
                 <th className="px-2 py-2.5 font-medium">Water</th>
-                <th className="px-2 py-2.5 font-medium">🙏</th>
+                <th className="px-2 py-2.5 font-medium">Rituals</th>
               </tr>
             </thead>
             <tbody>
@@ -241,7 +241,7 @@ export default function CoachDailyPage() {
                     <td className={`px-2 py-2.5 ${red((r.sleep_hours ?? 0) >= DAILY_TARGETS.sleepHours)}`}>{r.sleep_hours}h · {r.sleep_quality}/10</td>
                     <td className="px-2 py-2.5">{r.energy}/10</td>
                     <td className={`px-2 py-2.5 ${red((r.water_litres ?? 0) >= DAILY_TARGETS.waterLitres)}`}>{r.water_litres}L</td>
-                    <td className="px-2 py-2.5">{r.gratitude_done ? '✓' : '–'}</td>
+                    <td className="px-2 py-2.5 text-xs" title="Goal writing · Affirmations · Gratitude">{[r.goal_writing_done, r.affirmations_done, r.gratitude_done].filter(Boolean).length}/3</td>
                   </tr>
                 )
               })}

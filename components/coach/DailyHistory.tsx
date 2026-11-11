@@ -102,7 +102,7 @@ export function DailyHistory({ clientId }: { clientId: string }) {
                 <div className="px-3 pb-3 text-xs text-[#64748b] flex flex-col gap-1">
                   {r.workout_note && <p>🏋️ {r.workout_note}</p>}
                   {r.nutrition_note && <p>🍽️ {r.nutrition_note}</p>}
-                  <p>🙏 Gratitude {r.gratitude_done ? 'done' : 'not done'}</p>
+                  <p>Rituals: ✍️ Goal writing {r.goal_writing_done ? '✓' : '✗'} · 🎙️ Affirmations {r.affirmations_done ? '✓' : '✗'} · 🙏 Gratitude {r.gratitude_done ? '✓' : '✗'}</p>
                   {r.support_needed && (
                     <p className="text-[#ef4444]">🆘 {r.support_message} {r.support_resolved ? '(resolved)' : ''}</p>
                   )}
