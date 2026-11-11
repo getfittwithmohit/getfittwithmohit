@@ -10,9 +10,10 @@ import { dailyCheckinSchema, type DailyCheckinInput } from '@/lib/validation/dai
 import {
   getClientXp,
   getDailyCheckins,
-  getTodayRitualDone,
+  getRitualStatus,
   submitDailyCheckin,
   type DailyCheckin,
+  type RitualStatus,
   type XpEvent,
 } from '@/lib/supabase/queries/dailyCheckin'
 import { addDaysIST, formatDayLabel, todayIST } from '@/lib/utils/istDate'
@@ -64,6 +65,28 @@ function fromSaved(c: DailyCheckin): Draft {
   }
 }
 
+// Unsaved answers are kept in the browser so a client who taps "Do it now"
+// to finish their ritual comes back to a half-filled form, not an empty one.
+const draftKey = (date: string) => `daily-checkin-draft:${date}`
+
+function loadDraft(date: string): Draft | null {
+  try {
+    const raw = sessionStorage.getItem(draftKey(date))
+    return raw ? { ...EMPTY, ...(JSON.parse(raw) as Partial<Draft>) } : null
+  } catch {
+    return null
+  }
+}
+
+function storeDraft(date: string, draft: Draft | null) {
+  try {
+    if (draft) sessionStorage.setItem(draftKey(date), JSON.stringify(draft))
+    else sessionStorage.removeItem(draftKey(date))
+  } catch {
+    // Storage can be unavailable (private mode); the form still works
+  }
+}
+
 // Counts consecutive days with a check-in, ending today (or yesterday if
 // today isn't in yet — the streak is still alive until midnight).
 function currentStreak(dates: Set<string>, today: string): number {
@@ -84,7 +107,7 @@ export default function DailyCheckinPage() {
   const yesterday = useMemo(() => addDaysIST(today, -1), [today])
 
   const [history, setHistory] = useState<DailyCheckin[]>([])
-  const [ritualDone, setRitualDone] = useState(false)
+  const [rituals, setRituals] = useState<Record<string, RitualStatus>>({})
   const [xp, setXp] = useState<XpEvent[]>([])
   const [date, setDate] = useState(today)
   const [draft, setDraft] = useState<Draft>(EMPTY)
@@ -105,16 +128,21 @@ export default function DailyCheckinPage() {
     async function load() {
       try {
         if (!client) throw new Error('We could not find your client profile. Please sign out and sign in again.')
-        const [rows, ritual, xpRows] = await Promise.all([
+        const [rows, ritualToday, ritualYesterday, xpRows] = await Promise.all([
           getDailyCheckins(client.id, addDaysIST(today, -60)),
-          getTodayRitualDone(client.id, today),
+          getRitualStatus(client.id, today),
+          getRitualStatus(client.id, yesterday),
           getClientXp(client.id),
         ])
         setHistory(rows)
-        setRitualDone(ritual)
+        setRituals({ [today]: ritualToday, [yesterday]: ritualYesterday })
         setXp(xpRows)
         const todays = rows.find((r) => r.checkin_date === today)
-        if (todays) {
+        const pending = loadDraft(today)
+        if (pending) {
+          setDraft(pending)
+          setEditing(true)
+        } else if (todays) {
           setDraft(fromSaved(todays))
           setEditing(false)
         }
@@ -125,7 +153,7 @@ export default function DailyCheckinPage() {
       }
     }
     load()
-  }, [client, clientLoading, today])
+  }, [client, clientLoading, today, yesterday])
 
   const switchDate = (next: string) => {
     setDate(next)
@@ -133,12 +161,17 @@ export default function DailyCheckinPage() {
     setFieldErrors({})
     setError(null)
     const saved = byDate.get(next)
-    setDraft(saved ? fromSaved(saved) : EMPTY)
-    setEditing(!saved)
+    const pending = loadDraft(next)
+    setDraft(pending || (saved ? fromSaved(saved) : EMPTY))
+    setEditing(!!pending || !saved)
   }
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
-    setDraft((d) => ({ ...d, [key]: value }))
+    setDraft((d) => {
+      const next = { ...d, [key]: value }
+      storeDraft(date, next)
+      return next
+    })
     if (fieldErrors[key]) setFieldErrors((e) => ({ ...e, [key]: '' }))
   }
 
@@ -177,6 +210,7 @@ export default function DailyCheckinPage() {
     setSaving(true)
     try {
       const result = await submitDailyCheckin(client.id, date, parsed.data)
+      storeDraft(date, null)
       const [rows, xpRows] = await Promise.all([
         getDailyCheckins(client.id, addDaysIST(today, -60)),
         getClientXp(client.id),
@@ -383,31 +417,40 @@ export default function DailyCheckinPage() {
               <p className="text-xs text-[#94a3b8] mt-1.5">Target: {DAILY_TARGETS.waterLitres} L</p>
             </Question>
 
-            <Question n={7} title="Rituals">
+            <Question n={7} title="Rituals completed?">
               <div className="flex flex-col gap-2">
-                {isToday ? (
-                  ritualDone ? (
-                    <p className="text-sm text-[#16a34a]">✓ Daily ritual completed in the app — goals and affirmations done</p>
-                  ) : (
-                    <button
-                      onClick={() => window.location.href = '/ritual'}
-                      className="text-left text-sm text-[#4a7fd4] underline underline-offset-2"
-                    >
-                      Daily ritual not done yet — open it now →
-                    </button>
-                  )
-                ) : (
-                  <p className="text-xs text-[#94a3b8]">Your ritual is tracked automatically in the app.</p>
-                )}
-                <label className="flex items-center gap-3 border border-[#e2e8f0] rounded-lg px-3 py-2.5 cursor-pointer">
+                {/* Goal writing + affirmations come from the in-app daily ritual */}
+                <RitualRow
+                  emoji="✍️"
+                  label="Goal writing"
+                  done={!!rituals[date]?.goalWriting}
+                  canOpen={isToday}
+                />
+                <RitualRow
+                  emoji="🎙️"
+                  label="Affirmations"
+                  done={!!rituals[date]?.affirmations}
+                  canOpen={isToday}
+                />
+                {/* Gratitude isn't part of the in-app ritual, so the client ticks it */}
+                <label
+                  className={`flex items-center gap-3 border rounded-lg px-3 py-2.5 cursor-pointer transition-colors ${
+                    draft.gratitude_done ? 'border-[#22c55e]/40 bg-[#22c55e]/5' : 'border-[#e2e8f0]'
+                  }`}
+                >
+                  <span className="text-base">🙏</span>
+                  <span className="flex-1 text-sm text-[#0f172a]">Gratitude practice</span>
                   <input
                     type="checkbox"
                     checked={draft.gratitude_done}
                     onChange={(e) => set('gratitude_done', e.target.checked)}
-                    className="w-4 h-4 accent-[#00d4d4]"
+                    className="w-5 h-5 accent-[#22c55e]"
                   />
-                  <span className="text-sm text-[#0f172a]">🙏 Gratitude practice done</span>
                 </label>
+                <p className="text-xs text-[#94a3b8] mt-1">
+                  Goal writing and affirmations tick automatically when you do them in your Daily Ritual.
+                  {' '}Full ritual ({rituals[date]?.stepsDone ?? 0}/5 steps today) earns +10 XP.
+                </p>
               </div>
             </Question>
 
@@ -442,13 +485,49 @@ export default function DailyCheckinPage() {
               {saving ? 'Saving…' : savedForDate ? 'Save changes' : 'Submit check-in'}
             </button>
             {savedForDate && (
-              <button onClick={() => { setDraft(fromSaved(savedForDate)); setEditing(false) }} className="text-sm text-[#94a3b8]">
+              <button onClick={() => { storeDraft(date, null); setDraft(fromSaved(savedForDate)); setEditing(false) }} className="text-sm text-[#94a3b8]">
                 Cancel
               </button>
             )}
           </>
         )}
       </div>
+    </div>
+  )
+}
+
+function RitualRow({
+  emoji,
+  label,
+  done,
+  canOpen,
+}: {
+  emoji: string
+  label: string
+  done: boolean
+  canOpen: boolean
+}) {
+  return (
+    <div
+      className={`flex items-center gap-3 border rounded-lg px-3 py-2.5 ${
+        done ? 'border-[#22c55e]/40 bg-[#22c55e]/5' : 'border-[#e2e8f0]'
+      }`}
+    >
+      <span className="text-base">{emoji}</span>
+      <span className="flex-1 text-sm text-[#0f172a]">{label}</span>
+      {done ? (
+        <span className="text-sm font-medium text-[#16a34a]">✓ Done</span>
+      ) : canOpen ? (
+        <button
+          type="button"
+          onClick={() => window.location.href = '/ritual'}
+          className="text-xs font-medium text-[#4a7fd4] underline underline-offset-2"
+        >
+          Do it now →
+        </button>
+      ) : (
+        <span className="text-xs text-[#94a3b8]">Not done</span>
+      )}
     </div>
   )
 }

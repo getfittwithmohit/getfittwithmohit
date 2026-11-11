@@ -10,7 +10,7 @@
 --
 -- Existing tables it READS (columns verified against the app code):
 --   clients(id, auth_user_id, full_name, status, leaderboard_hidden)
---   weekly_checkins(client_id, submitted_at)
+--   weekly_checkins(client_id, submitted_at timestamp without time zone, UTC)
 --   daily_rituals(client_id, date, strangest_secret_done, goal_card_done,
 --                 affirmations_done, goals_done, codex_done)
 --   lesson_progress(client_id, completed_at), audio_progress(client_id, completed, updated_at)
@@ -144,7 +144,8 @@ as $$
     and coalesce(r.affirmations_done, false) and coalesce(r.goals_done, false)
     and coalesce(r.codex_done, false)
   union all
-  select w.client_id, gfm_ist_date(w.submitted_at::timestamptz), 'Weekly check-in', 25
+  -- weekly_checkins.submitted_at is 'timestamp without time zone' holding UTC
+  select w.client_id, gfm_ist_date(w.submitted_at at time zone 'UTC'), 'Weekly check-in', 25
   from weekly_checkins w
   where (p_client_id is null or w.client_id = p_client_id)
     and w.submitted_at is not null
