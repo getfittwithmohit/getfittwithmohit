@@ -1,0 +1,4 @@
+Poppins (Regular, Medium, Bold) — used to build the downloadable pledge PDF.
+
+Copyright 2020 The Poppins Project Authors (https://github.com/itfoundry/Poppins).
+Licensed under the SIL Open Font License, Version 1.1: https://openfontlicense.org
