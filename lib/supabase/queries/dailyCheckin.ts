@@ -21,6 +21,7 @@ export interface LeaderboardRow {
   client_id: string
   display_name: string
   xp: number
+  checkin_days: number
   is_me: boolean
   is_hidden: boolean
 }
@@ -103,7 +104,9 @@ export async function getClientXp(clientId: string): Promise<XpEvent[]> {
   return (data || []) as XpEvent[]
 }
 
-export async function getLeaderboard(period: 'week' | 'all'): Promise<LeaderboardRow[]> {
+export type LeaderboardPeriod = 'week' | 'last_week' | 'all'
+
+export async function getLeaderboard(period: LeaderboardPeriod): Promise<LeaderboardRow[]> {
   const { data, error } = await supabase.rpc('gfm_leaderboard', { p_period: period })
   if (error) fail('Could not load the leaderboard', error)
   return (data || []) as LeaderboardRow[]

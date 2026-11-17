@@ -11,9 +11,11 @@ import {
   getLeaderboard,
   setLeaderboardHidden,
   type LeaderboardRow,
+  type LeaderboardPeriod,
 } from '@/lib/supabase/queries/dailyCheckin'
+import { lastWeekLabel } from '@/lib/utils/leaderboard'
 
-type Period = 'week' | 'all'
+type Period = LeaderboardPeriod
 
 const MEDALS = ['🥇', '🥈', '🥉']
 
@@ -22,7 +24,7 @@ export default function LeaderboardPage() {
   const { client, loading: clientLoading } = useClient()
 
   const [period, setPeriod] = useState<Period>('week')
-  const [boards, setBoards] = useState<Record<Period, LeaderboardRow[]>>({ week: [], all: [] })
+  const [boards, setBoards] = useState<Record<Period, LeaderboardRow[]>>({ week: [], last_week: [], all: [] })
   const [totalXp, setTotalXp] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -33,12 +35,13 @@ export default function LeaderboardPage() {
     async function load() {
       try {
         if (!client) throw new Error('We could not find your client profile. Please sign out and sign in again.')
-        const [week, all, xp] = await Promise.all([
+        const [week, last_week, all, xp] = await Promise.all([
           getLeaderboard('week'),
+          getLeaderboard('last_week'),
           getLeaderboard('all'),
           getClientXp(client.id),
         ])
-        setBoards({ week, all })
+        setBoards({ week, last_week, all })
         setTotalXp(xp.reduce((sum, e) => sum + e.points, 0))
       } catch (err) {
         setError((err as Error).message)
@@ -60,8 +63,12 @@ export default function LeaderboardPage() {
     setError(null)
     try {
       await setLeaderboardHidden(client.id, !iAmHidden)
-      const [week, all] = await Promise.all([getLeaderboard('week'), getLeaderboard('all')])
-      setBoards({ week, all })
+      const [week, last_week, all] = await Promise.all([
+        getLeaderboard('week'),
+        getLeaderboard('last_week'),
+        getLeaderboard('all'),
+      ])
+      setBoards({ week, last_week, all })
     } catch (err) {
       setError((err as Error).message)
     } finally {
@@ -109,6 +116,7 @@ export default function LeaderboardPage() {
         <div className="flex bg-white border border-[#e2e8f0] rounded-xl p-1 mb-4">
           {([
             { key: 'week', label: 'This week' },
+            { key: 'last_week', label: 'Last week' },
             { key: 'all', label: 'All time' },
           ] as const).map((t) => (
             <button
@@ -123,7 +131,10 @@ export default function LeaderboardPage() {
           ))}
         </div>
         {period === 'week' && (
-          <p className="text-xs text-[#94a3b8] mb-3 px-1">Resets every Monday. Everyone starts level.</p>
+          <p className="text-xs text-[#94a3b8] mb-3 px-1">Monday to Sunday. Resets every Monday. Everyone starts level.</p>
+        )}
+        {period === 'last_week' && (
+          <p className="text-xs text-[#94a3b8] mb-3 px-1">Final standings for {lastWeekLabel()}.</p>
         )}
 
         {/* Rankings */}
@@ -143,6 +154,9 @@ export default function LeaderboardPage() {
                 {row.display_name}
                 {row.is_me && <span className="text-xs text-[#0095A8] ml-2">You{row.is_hidden ? ' · hidden' : ''}</span>}
               </span>
+              {period !== 'all' && (
+                <span className="text-xs text-[#94a3b8] whitespace-nowrap">{row.checkin_days ?? 0}/7 days</span>
+              )}
               <span className="text-sm font-semibold text-[#1a1f3a]">{row.xp.toLocaleString('en-IN')} XP</span>
             </div>
           ))}
