@@ -3,9 +3,15 @@
 import { useEffect, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
-import { getLeaderboard, setLeaderboardHidden, type LeaderboardRow } from '@/lib/supabase/queries/dailyCheckin'
+import {
+  getLeaderboard,
+  setLeaderboardHidden,
+  type LeaderboardRow,
+  type LeaderboardPeriod,
+} from '@/lib/supabase/queries/dailyCheckin'
+import { lastWeekLabel } from '@/lib/utils/leaderboard'
 
-type Period = 'week' | 'all'
+type Period = LeaderboardPeriod
 
 // Coach view: every active client with full names, including hidden ones,
 // with a toggle to hide or show each (e.g. hide the demo profiles).
@@ -76,6 +82,7 @@ export default function CoachLeaderboardPage() {
         <div className="flex bg-white border border-[#e2e8f0] rounded-xl p-1 mb-4">
           {([
             { key: 'week', label: 'This week' },
+            { key: 'last_week', label: 'Last week' },
             { key: 'all', label: 'All time' },
           ] as const).map((t) => (
             <button
@@ -90,6 +97,13 @@ export default function CoachLeaderboardPage() {
           ))}
         </div>
 
+        {period !== 'all' && (
+          <p className="text-xs text-[#94a3b8] mb-3 px-1">
+            {period === 'week' ? 'Monday to Sunday, India time.' : `Final standings for ${lastWeekLabel()}.`}
+            {' '}Days = on-time daily check-ins out of 7.
+          </p>
+        )}
+
         <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden divide-y divide-[#f1f5f9]">
           {rows.length === 0 && <p className="text-sm text-[#94a3b8] text-center py-10">No active clients</p>}
           {rows.map((row) => (
@@ -102,6 +116,9 @@ export default function CoachLeaderboardPage() {
                 {row.display_name}
                 {row.is_hidden && <span className="text-xs text-[#94a3b8] ml-2">hidden</span>}
               </button>
+              {period !== 'all' && (
+                <span className="text-xs text-[#94a3b8] w-14 text-right whitespace-nowrap">{row.checkin_days ?? 0}/7 days</span>
+              )}
               <span className="text-sm font-semibold text-[#1a1f3a] w-20 text-right">{row.xp.toLocaleString('en-IN')} XP</span>
               <button
                 onClick={() => toggle(row)}
