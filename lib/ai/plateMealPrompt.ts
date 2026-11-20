@@ -60,5 +60,5 @@ HEADLINE — one warm, direct line in the voice of a coach (max ~18 words), e.g.
 
 If the photo or description is not food or drink, set is_food to false and fill the other fields with placeholders.
 
-Answer by calling the report_meal tool. per_unit values are for ONE unit; quantity is how many units.`
+Reply with the JSON only. per_unit values are for ONE unit; quantity is how many units.`
 }
