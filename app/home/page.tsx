@@ -43,6 +43,7 @@ const QUICK_LINKS = [
   { emoji: '🏆', label: 'Leaderboard', href: '/leaderboard' },
   { emoji: '🎓', label: 'Courses', href: '/courses' },
   { emoji: '🎧', label: 'Audios', href: '/audios' },
+  { emoji: '🍽️', label: 'PEAK Plate', href: '/plate' },
 ]
 
 export default function ClientHomePage() {
@@ -229,6 +230,21 @@ if (!codex) pendingItems.push({
 
         {/* Daily check-in card */}
         {client && <DailyCheckinCard clientId={client.id} />}
+
+        {/* PEAK Plate — AI meal scan */}
+        <button
+          onClick={() => window.location.href = '/plate'}
+          className="w-full bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-3 text-left hover:border-[#00D4E8] transition-colors"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs tracking-widest uppercase mb-1 text-[#0095A8]">PEAK Plate</p>
+              <p className="text-base font-medium text-[#0f172a]">Snap your meal — is it PEAK?</p>
+              <p className="text-xs mt-0.5 text-[#94a3b8]">Calories · Macros · Score · Smarter swaps</p>
+            </div>
+            <div className="text-3xl">📸</div>
+          </div>
+        </button>
 
         {/* Daily ritual card */}
         <button

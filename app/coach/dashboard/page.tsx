@@ -98,6 +98,12 @@ export default function DashboardPage() {
             📚 Courses &amp; Audios
           </button>
           <button
+            onClick={() => window.location.href = '/plate'}
+            className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors"
+          >
+            🍽️ PEAK Plate
+          </button>
+          <button
             onClick={() => window.location.href = '/coach/dashboard/blueprint-calculator'}
             className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors"
           >

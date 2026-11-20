@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 
-export function useAuthGuard(role?: 'coach') {
+// role 'any': coach and clients may both use the page (e.g. PEAK Plate).
+export function useAuthGuard(role?: 'coach' | 'any') {
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
@@ -20,6 +21,11 @@ export function useAuthGuard(role?: 'coach') {
       if (role === 'coach' && !isCoach) {
         // Non-coach trying to access coach page
         window.location.href = '/home'
+        return
+      }
+
+      if (role === 'any') {
+        setChecking(false)
         return
       }
 
