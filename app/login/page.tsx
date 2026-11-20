@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/Button'
 
@@ -12,6 +12,16 @@ export default function LoginPage() {
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Already logged in (e.g. bounced here by a slow network)? Skip the OTP.
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) return
+      const coachEmail = process.env.NEXT_PUBLIC_COACH_EMAIL?.toLowerCase()
+      window.location.href =
+        session.user.email?.toLowerCase() === coachEmail ? '/coach/dashboard' : '/home'
+    })
+  }, [])
 
   const handleSendOTP = async () => {
     if (!email) {
