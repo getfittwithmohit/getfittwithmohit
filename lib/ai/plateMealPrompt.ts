@@ -58,21 +58,7 @@ SAFETY
 
 HEADLINE — one warm, direct line in the voice of a coach (max ~18 words), e.g. "Solid base — add a protein and this becomes a PEAK meal."
 
-If the photo or description is not food or drink, return {"is_food": false} with the other fields filled with placeholders.
+If the photo or description is not food or drink, set is_food to false and fill the other fields with placeholders.
 
-Return ONLY valid JSON, no markdown:
-{
-  "is_food": true,
-  "title": "short dish name, e.g. Dal, roti & bhindi",
-  "emoji": "one emoji",
-  "items": [
-    {"name": "Phulka", "unit": "roti", "quantity": 2, "per_unit": {"calories": 75, "protein_g": 2.5, "carbs_g": 15, "fat_g": 0.5, "fibre_g": 2}}
-  ],
-  "score": 7,
-  "headline": "...",
-  "flags": [{"label": "Low protein", "detail": "..."}],
-  "swaps": [{"change": "...", "impact": "..."}],
-  "assumptions": "...",
-  "confidence": "high | medium | low"
-}`
+Answer by calling the report_meal tool. per_unit values are for ONE unit; quantity is how many units.`
 }

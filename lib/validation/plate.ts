@@ -8,8 +8,8 @@ export type MealType = (typeof MEAL_TYPES)[number]
 const macro = z.coerce.number().min(0).max(5000)
 
 export const plateItemSchema = z.object({
-  name: z.string().trim().min(1).max(80),
-  unit: z.string().trim().min(1).max(30),             // "roti", "katori", "piece", "g", "glass"
+  name: z.string().trim().min(1).transform((s) => s.slice(0, 80)),
+  unit: z.string().trim().min(1).transform((s) => s.slice(0, 30)),             // "roti", "katori", "piece", "g", "glass"
   quantity: z.coerce.number().min(0).max(50),
   per_unit: z.object({
     calories: macro,
@@ -21,18 +21,22 @@ export const plateItemSchema = z.object({
 })
 export type PlateItem = z.infer<typeof plateItemSchema>
 
-// What the AI must return (see lib/ai/plateMealPrompt.ts).
+// What the AI must return (see lib/ai/plateMealPrompt.ts). Forgiving on
+// purpose: over-long text is trimmed and extra list entries dropped, rather
+// than failing the whole scan.
+const clip = (max: number) => z.string().trim().transform((s) => s.slice(0, max))
+
 export const plateAnalysisSchema = z.object({
   is_food: z.boolean(),
-  title: z.string().trim().min(1).max(80),
-  emoji: z.string().trim().min(1).max(8),
-  items: z.array(plateItemSchema).min(1).max(15),
-  score: z.coerce.number().int().min(1).max(10),
-  headline: z.string().trim().max(160),
-  flags: z.array(z.object({ label: z.string().trim().max(40), detail: z.string().trim().max(160) })).max(4),
-  swaps: z.array(z.object({ change: z.string().trim().max(140), impact: z.string().trim().max(80) })).max(3),
-  assumptions: z.string().trim().max(240).optional().default(''),
-  confidence: z.enum(['high', 'medium', 'low']),
+  title: clip(80).pipe(z.string().min(1)),
+  emoji: z.string().trim().transform((s) => Array.from(s).slice(0, 2).join('') || '🍽️'),
+  items: z.array(plateItemSchema).min(1).transform((a) => a.slice(0, 15)),
+  score: z.coerce.number().transform((n) => Math.min(10, Math.max(1, Math.round(n)))),
+  headline: clip(200),
+  flags: z.array(z.object({ label: clip(40), detail: clip(200) })).transform((a) => a.slice(0, 4)),
+  swaps: z.array(z.object({ change: clip(160), impact: clip(100) })).transform((a) => a.slice(0, 3)),
+  assumptions: clip(300).optional().default(''),
+  confidence: z.enum(['high', 'medium', 'low']).catch('medium'),
 })
 export type PlateAnalysis = z.infer<typeof plateAnalysisSchema>
 
