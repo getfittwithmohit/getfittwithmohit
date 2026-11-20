@@ -121,6 +121,53 @@ export async function getScansUsedToday(userId: string): Promise<number> {
 
 const MODEL = process.env.PEAK_PLATE_MODEL || 'claude-sonnet-5-5'
 
+// The AI must answer by "filling in" this form (a forced tool call), so the
+// reply is always structured data — never free text that has to be parsed.
+const NUM = { type: 'number' }
+const STR = { type: 'string' }
+const MEAL_TOOL = {
+  name: 'report_meal',
+  description: 'Report the analysed meal.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      is_food: { type: 'boolean' },
+      title: STR,
+      emoji: STR,
+      items: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: STR,
+            unit: STR,
+            quantity: NUM,
+            per_unit: {
+              type: 'object',
+              properties: { calories: NUM, protein_g: NUM, carbs_g: NUM, fat_g: NUM, fibre_g: NUM },
+              required: ['calories', 'protein_g', 'carbs_g', 'fat_g', 'fibre_g'],
+            },
+          },
+          required: ['name', 'unit', 'quantity', 'per_unit'],
+        },
+      },
+      score: { type: 'integer', minimum: 1, maximum: 10 },
+      headline: STR,
+      flags: {
+        type: 'array',
+        items: { type: 'object', properties: { label: STR, detail: STR }, required: ['label', 'detail'] },
+      },
+      swaps: {
+        type: 'array',
+        items: { type: 'object', properties: { change: STR, impact: STR }, required: ['change', 'impact'] },
+      },
+      assumptions: STR,
+      confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+    },
+    required: ['is_food', 'title', 'emoji', 'items', 'score', 'headline', 'flags', 'swaps', 'confidence'],
+  },
+}
+
 // One Claude call. Pass a JPEG/PNG data URL to include the photo.
 export async function askClaudeAboutMeal(prompt: string, imageDataUrl?: string): Promise<unknown> {
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -141,27 +188,30 @@ export async function askClaudeAboutMeal(prompt: string, imageDataUrl?: string):
       'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
     },
-    body: JSON.stringify({ model: MODEL, max_tokens: 2000, messages: [{ role: 'user', content }] }),
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 4000,
+      tools: [MEAL_TOOL],
+      tool_choice: { type: 'tool', name: MEAL_TOOL.name },
+      messages: [{ role: 'user', content }],
+    }),
   })
   if (!res.ok) {
     console.error('PEAK Plate Claude API error:', res.status, await res.text())
     throw new Error(`The meal scanner is busy right now (${res.status}). Please try again in a minute.`)
   }
   const data = await res.json()
-  const raw: string = (data.content || [])
-    .filter((b: { type: string }) => b.type === 'text')
-    .map((b: { text: string }) => b.text)
-    .join('')
-    .replace(/```json|```/g, '')
-    .trim()
-  const start = raw.indexOf('{')
-  const end = raw.lastIndexOf('}')
-  if (start < 0 || end < start) throw new Error('The meal scanner returned something unreadable. Please try again.')
-  try {
-    return JSON.parse(raw.slice(start, end + 1))
-  } catch {
+  const toolUse = (data.content || []).find((b: { type: string; name?: string }) => b.type === 'tool_use' && b.name === MEAL_TOOL.name)
+  if (!toolUse?.input) {
+    // Log what actually came back so the cause is visible in Vercel logs
+    console.error('PEAK Plate: no structured reply', {
+      model: data.model,
+      stop_reason: data.stop_reason,
+      content: JSON.stringify(data.content || []).slice(0, 1500),
+    })
     throw new Error('The meal scanner returned something unreadable. Please try again.')
   }
+  return toolUse.input
 }
 
 // An error whose message is safe and useful to show the person as-is (HTTP 422).
