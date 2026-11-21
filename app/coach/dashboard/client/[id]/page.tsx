@@ -7,6 +7,7 @@ import { formatDayLabel } from '@/lib/utils/istDate'
 import { DailyHistory } from '@/components/coach/DailyHistory'
 import { ClientWorkouts } from '@/components/coach/ClientWorkouts'
 import { ClientPhotos } from '@/components/coach/ClientPhotos'
+import { ClientBrief } from '@/components/coach/ClientBrief'
 import { useParams } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -31,7 +32,7 @@ import { WHtRCard } from '@/components/blueprint/WHtRCard'
 import { WHtRTrendChart } from '@/components/progress/WHtRTrendChart'
 import { calcCurrentWeek } from '@/lib/supabase/queries/clients'
 
-type Tab = 'progress' | 'edit' | 'calls' | 'report' | 'checkins' | 'daily' | 'workouts' | 'photos'
+type Tab = 'brief' | 'progress' | 'edit' | 'calls' | 'report' | 'checkins' | 'daily' | 'workouts' | 'photos'
 
 const FEET_OPTIONS = [3, 4, 5, 6, 7]
 const INCH_OPTIONS = Array.from({ length: 12 }, (_, i) => i)
@@ -557,6 +558,7 @@ export default function ClientProgressPage() {
       <div className="bg-white border-b border-[#e2e8f0] sticky top-0 z-20">
         <div className="max-w-3xl mx-auto px-2 md:px-4 flex gap-0 overflow-x-auto" role="tablist">
           {[
+            { key: 'brief', label: 'Brief' },
             { key: 'progress', label: 'Progress' },
             { key: 'edit', label: 'Profile' },
             { key: 'calls', label: 'Calls' },
@@ -1303,6 +1305,12 @@ export default function ClientProgressPage() {
       {tab === 'daily' && <DailyHistory clientId={clientId} />}
 
       {tab === 'workouts' && <ClientWorkouts clientId={clientId} />}
+
+      {tab === 'brief' && (
+        <div className="max-w-3xl mx-auto px-4 py-6">
+          <ClientBrief clientId={clientId} clientName={client?.full_name || ''} />
+        </div>
+      )}
 
       {tab === 'photos' && (
         <div className="max-w-3xl mx-auto px-4 py-6">
