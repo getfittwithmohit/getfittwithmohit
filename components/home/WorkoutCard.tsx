@@ -75,6 +75,9 @@ export function WorkoutCard({ clientId }: { clientId: string }) {
       {session?.coach_note && state.kind !== 'done_today' && (
         <p className="text-sm text-[#e2e8f0] leading-snug"><span className="text-[#94a3b8]">Coach Mohit: </span>{session.coach_note}</p>
       )}
+      <a href="/workout/plan" className="text-sm font-semibold self-start" style={{ color: CYAN }}>
+        View full plan →
+      </a>
       {lastHighFive && (
         <p className="text-sm text-[#e2e8f0]">🔥 Coach Mohit high-fived your {lastHighFive.session_name} session</p>
       )}
