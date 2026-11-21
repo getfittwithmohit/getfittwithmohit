@@ -7,14 +7,16 @@ import { RadioGroup } from '@/components/ui/RadioGroup'
 import { ScaleSelect } from '@/components/ui/ScaleSelect'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { NavButtons } from '@/components/ui/NavButtons'
-import { SLEEP_DURATION, SLEEP_QUALITY, MOOD_OPTIONS } from '@/lib/constants/options'
+import { SLEEP_DURATION, SLEEP_QUALITY, MOOD_OPTIONS, CYCLE_PHASE } from '@/lib/constants/options'
 
 interface Props {
   onNext: () => void
   onBack: () => void
+  prefilled?: boolean
+  askCycle?: boolean
 }
 
-export function Step03Wellbeing({ onNext, onBack }: Props) {
+export function Step03Wellbeing({ onNext, onBack, prefilled = false, askCycle = false }: Props) {
   const { data, updateData } = useCheckinStore()
   const [error, setError] = useState('')
 
@@ -25,6 +27,8 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
       sleep_duration: data.sleep_duration,
       sleep_quality: data.sleep_quality,
       stress_level: data.stress_level,
+      hunger_level: data.hunger_level || '',
+      cycle_phase: data.cycle_phase || '',
     },
   })
 
@@ -33,6 +37,8 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
   const sleepDuration = watch('sleep_duration')
   const sleepQuality = watch('sleep_quality')
   const stressLevel = watch('stress_level')
+  const hungerLevel = watch('hunger_level')
+  const cyclePhase = watch('cycle_phase')
 
   const onSubmit = (values: any) => {
     if (!mood) {
@@ -51,6 +57,8 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
       sleep_duration: sleepDuration,
       sleep_quality: sleepQuality,
       stress_level: stressLevel,
+      hunger_level: hungerLevel,
+      cycle_phase: cyclePhase,
     })
     onNext()
   }
@@ -62,6 +70,11 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
       title="How did you feel this week?"
       subtitle="Your body is always telling you something. These signals matter as much as the numbers."
     >
+      {prefilled && (
+        <div className="bg-[#E6F7F9] rounded-xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed">
+          <strong>Pre-filled from your daily check-ins.</strong> Just check it and change anything that’s off.
+        </div>
+      )}
       <div>
         <p className="text-sm font-medium text-[#64748b] mb-2">
           Overall mood this week
@@ -116,6 +129,23 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
         lowLabel="Very low"
         highLabel="Extremely high"
       />
+
+      <ScaleSelect
+        label="Hunger & cravings this week (1 = barely, 10 = constant)"
+        value={hungerLevel}
+        onChange={(v) => setValue('hunger_level', v)}
+        lowLabel="Barely hungry"
+        highLabel="Constant cravings"
+      />
+
+      {askCycle && (
+        <RadioGroup
+          label="Where were you in your cycle this week? (optional)"
+          options={CYCLE_PHASE}
+          value={cyclePhase}
+          onChange={(v) => setValue('cycle_phase', v)}
+        />
+      )}
 
       {error && (
         <p className="text-sm text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">

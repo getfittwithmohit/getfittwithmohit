@@ -8,17 +8,18 @@ import { RadioGroup } from '@/components/ui/RadioGroup'
 import { ScaleSelect } from '@/components/ui/ScaleSelect'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { NavButtons } from '@/components/ui/NavButtons'
-import { WORKOUT_INTENSITY, MEALS_FOLLOWED, WATER_INTAKE } from '@/lib/constants/options'
+import { WORKOUT_INTENSITY, MEALS_FOLLOWED, WATER_INTAKE, DRINKS_THIS_WEEK } from '@/lib/constants/options'
 
 interface Props {
   onNext: () => void
   onBack: () => void
+  prefilled?: boolean
 }
 
 const WORKOUT_DAYS = ['0', '1', '2', '3', '4', '5', '6'] as const
 const SAVER_DAYS = ['0', '1', '2', '3', '4', '5', '6', '7'] as const
 
-export function Step02Adherence({ onNext, onBack }: Props) {
+export function Step02Adherence({ onNext, onBack, prefilled = false }: Props) {
   const { data, updateData } = useCheckinStore()
   const [error, setError] = useState('')
 
@@ -31,6 +32,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
       meals_followed: data.meals_followed,
       off_plan_foods: data.off_plan_foods,
       saver_days: data.saver_days,
+      drinks_this_week: data.drinks_this_week || '',
     },
   })
 
@@ -40,6 +42,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
   const waterIntake = watch('water_intake')
   const mealsFollowed = watch('meals_followed')
   const saverDays = watch('saver_days')
+  const drinks = watch('drinks_this_week')
 
   const onSubmit = (values: any) => {
     if (!workoutsCompleted) {
@@ -59,6 +62,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
       water_intake: waterIntake,
       meals_followed: mealsFollowed,
       saver_days: saverDays,
+      drinks_this_week: drinks,
     })
     onNext()
   }
@@ -70,6 +74,11 @@ export function Step02Adherence({ onNext, onBack }: Props) {
       title="How did you show up this week?"
       subtitle="Honest numbers only. Coach Mohit can only help you if he knows what actually happened."
     >
+      {prefilled && (
+        <div className="bg-[#E6F7F9] rounded-xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed">
+          <strong>Pre-filled from your daily check-ins.</strong> Just check it and change anything that’s off.
+        </div>
+      )}
       <div>
         <p className="text-sm font-medium text-[#64748b] mb-2">
           Workouts completed this week
@@ -151,6 +160,13 @@ export function Step02Adherence({ onNext, onBack }: Props) {
           <span>None</span><span>Every day</span>
         </div>
       </div>
+
+      <RadioGroup
+        label="Alcoholic drinks this week"
+        options={DRINKS_THIS_WEEK}
+        value={drinks}
+        onChange={(v) => setValue('drinks_this_week', v)}
+      />
 
       <Textarea
         label="Anything you ate off-plan?"

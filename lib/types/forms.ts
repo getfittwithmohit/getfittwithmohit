@@ -17,6 +17,9 @@ export interface MetricsData {
   waist_inches: string
   chest_inches: string
   hip_inches: string
+  lower_belly_inches: string
+  thigh_inches: string
+  trouser_waist_size: string
   primary_goal: string
   target_weight_kg: string
 }
@@ -35,6 +38,8 @@ export interface FitnessData {
   training_days: string
   session_duration: string
   current_activities: string
+  preferred_training_time: string
+  fitness_tracker: string
 }
 
 export interface LifestyleData {
@@ -44,6 +49,8 @@ export interface LifestyleData {
   stress_sources: string[]
   day_in_life: string
   daily_steps: string
+  alcohol_frequency: string
+  smoking: string
 }
 
 export interface NutritionData {
@@ -114,6 +121,7 @@ export const ONBOARDING_DEFAULTS: OnboardingFormData = {
   metrics: {
     height_inches: '', weight_kg: '', age: '',
     waist_inches: '', chest_inches: '', hip_inches: '',
+    lower_belly_inches: '', thigh_inches: '', trouser_waist_size: '',
     primary_goal: '', target_weight_kg: ''
   },
   medical: {
@@ -122,11 +130,13 @@ export const ONBOARDING_DEFAULTS: OnboardingFormData = {
   },
   fitness: {
     fitness_level: '', environments: [], training_days: '',
-    session_duration: '', current_activities: ''
+    session_duration: '', current_activities: '',
+    preferred_training_time: '', fitness_tracker: ''
   },
   lifestyle: {
     sleep_duration: '', sleep_quality: '', stress_level: '',
-    stress_sources: [], day_in_life: '', daily_steps: ''
+    stress_sources: [], day_in_life: '', daily_steps: '',
+    alcohol_frequency: '', smoking: ''
   },
   nutrition: {
     diet_preference: '', allergies: '', disliked_foods: '',
@@ -222,6 +232,12 @@ export interface CheckinFormData {
 
   // Section 6 — Booking
   call_booked: boolean
+
+  // v2 — optional; older saved drafts may not have these
+  trouser_waist_size?: string
+  drinks_this_week?: string
+  hunger_level?: string
+  cycle_phase?: string
 }
 
 export const CHECKIN_DEFAULTS: CheckinFormData = {

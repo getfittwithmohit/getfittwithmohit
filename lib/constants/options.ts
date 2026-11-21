@@ -241,3 +241,49 @@ export const MINDSET_QUESTIONS = [
   'If you coached yourself through this week, what would you say right now?',
   'What does showing up fully look like for you — and did you get there this week?',
 ] as const
+// ── Onboarding / check-in v2 ────────────────────────────────────────────────
+
+export const ALCOHOL_FREQUENCY = [
+  'Never',
+  'Rarely (special occasions)',
+  '1–3 times a month',
+  'Weekly',
+  'Several times a week',
+  'Daily',
+] as const
+
+export const SMOKING = [
+  'No',
+  'Quit',
+  'Occasionally',
+  'Daily',
+] as const
+
+export const TRAINING_TIME = [
+  'Early morning (before 8 am)',
+  'Morning (8–11 am)',
+  'Afternoon',
+  'Evening (5–8 pm)',
+  'Late (after 8 pm)',
+  'It varies',
+] as const
+
+export const FITNESS_TRACKER = [
+  'Apple Watch',
+  'Fitbit',
+  'Garmin',
+  'Samsung',
+  'Other watch / band',
+  'Phone only',
+  'None',
+] as const
+
+export const DRINKS_THIS_WEEK = ['0', '1–2', '3–5', '6–10', '10+'] as const
+
+export const CYCLE_PHASE = [
+  'On my period',
+  'Week after my period',
+  'Mid-cycle',
+  'Week before my period',
+  'Not sure / not applicable',
+] as const

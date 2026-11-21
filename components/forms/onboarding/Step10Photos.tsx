@@ -1,8 +1,9 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { NavButtons } from '@/components/ui/NavButtons'
+import { Icon } from '@/components/ui/Icon'
 
 interface Props {
   onNext: () => void
@@ -14,78 +15,72 @@ interface Props {
   }) => void
 }
 
-interface PhotoUploadProps {
-  label: string
-  hint: string
-  onFileSelect: (file: File | null) => void
-  selectedFile: File | null
-}
-
 function PhotoUpload({
   label,
   hint,
+  required,
   onFileSelect,
   selectedFile,
-}: PhotoUploadProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
+  error,
+}: {
+  label: string
+  hint: string
+  required?: boolean
+  onFileSelect: (file: File | null) => void
+  selectedFile: File | null
+  error?: boolean
+}) {
+  const preview = useMemo(() => (selectedFile ? URL.createObjectURL(selectedFile) : null), [selectedFile])
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium text-[#64748b]">
-        {label}
-        <span className="text-[#64748b] ml-1 font-normal">(optional)</span>
-      </label>
-      <p className="text-xs text-[#64748b]">{hint}</p>
-      <div
-        onClick={() => inputRef.current?.click()}
-        className={`
-          border border-dashed rounded-lg p-5 text-center cursor-pointer
-          transition-colors duration-150
-          ${selectedFile
-            ? 'border-[#00D4E8] bg-[#00D4E8]/5'
-            : 'border-[#e2e8f0] hover:border-[#00D4E8]'
-          }
-        `}
+    <label className="flex gap-4 items-center cursor-pointer">
+      <span
+        className={`w-24 aspect-[3/4] rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center border-2 border-dashed ${
+          selectedFile ? 'border-transparent' : error ? 'border-[#ef4444]' : 'border-[#CBD5E1]'
+        }`}
       >
-        {selectedFile ? (
-          <div>
-            <div className="text-xl mb-1">✅</div>
-            <p className="text-xs text-[#00D4E8] font-medium">
-              {selectedFile.name}
-            </p>
-            <p className="text-xs text-[#64748b] mt-0.5">
-              {(selectedFile.size / 1024).toFixed(0)} KB · tap to change
-            </p>
-          </div>
+        {preview ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={preview} alt={`${label} preview`} className="w-full h-full object-cover" />
         ) : (
-          <div>
-            <div className="text-xl text-[#00D4E8] mb-1">+</div>
-            <p className="text-xs text-[#64748b]">Tap to upload</p>
-          </div>
+          <span className="text-[#007A8A]"><Icon name="camera" size={26} /></span>
         )}
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => onFileSelect(e.target.files?.[0] || null)}
-        />
-      </div>
-    </div>
+      </span>
+      <span className="flex-1 min-w-0 flex flex-col gap-1">
+        <span className="text-base font-semibold text-[#0f172a]">
+          {label}
+          {required ? <span className="text-[#00D4E8] ml-0.5">*</span> : <span className="text-[#64748b] ml-1 text-sm font-normal">(optional)</span>}
+        </span>
+        <span className="text-sm text-[#64748b]">{hint}</span>
+        <span className="text-sm font-semibold text-[#007A8A]">{selectedFile ? 'Tap to retake' : 'Tap to add'}</span>
+      </span>
+      <input
+        type="file"
+        accept="image/*"
+        className="sr-only"
+        onChange={(e) => onFileSelect(e.target.files?.[0] || null)}
+      />
+    </label>
   )
 }
 
+// Front and side are required: they are the "before" every later
+// comparison and transformation card is built on. Back stays optional.
 export function Step10Photos({ onNext, onBack, onPhotosSelect }: Props) {
   const [frontPhoto, setFrontPhoto] = useState<File | null>(null)
   const [sidePhoto, setSidePhoto] = useState<File | null>(null)
   const [backPhoto, setBackPhoto] = useState<File | null>(null)
+  const [tried, setTried] = useState(false)
+
+  const missing = !frontPhoto || !sidePhoto
 
   const handleNext = () => {
-    onPhotosSelect({
-      front: frontPhoto,
-      side: sidePhoto,
-      back: backPhoto,
-    })
+    if (missing) {
+      setTried(true)
+      return
+    }
+    onPhotosSelect({ front: frontPhoto, side: sidePhoto, back: backPhoto })
     onNext()
   }
 
@@ -93,33 +88,25 @@ export function Step10Photos({ onNext, onBack, onPhotosSelect }: Props) {
     <SectionCard
       section={10}
       title="Progress Photos"
-      subtitle="Optional but powerful. Your Week 0 photos become the most motivating thing you'll see at Week 12."
+      subtitle="Your “before”. In 12 weeks these become the most motivating photos you’ll ever see."
     >
-      <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg px-4 py-3 text-sm text-[#64748b] leading-relaxed">
-        Photos are{' '}
-        <strong className="text-[#0f172a]">private</strong> — only
-        visible to you and Coach Mohit. You can also WhatsApp them
-        directly at any time.
+      <div className="bg-[#E6F7F9] rounded-xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed flex gap-3 items-start">
+        <span className="text-[#007A8A] mt-0.5"><Icon name="target" size={18} /></span>
+        <span>
+          <strong>Private.</strong> Only you and Coach Mohit can see these. Fitted clothes or gym wear are perfect.
+          Good light, phone at chest height.
+        </span>
       </div>
 
-      <PhotoUpload
-        label="Front photo"
-        hint="Stand straight, arms at sides, facing the camera"
-        selectedFile={frontPhoto}
-        onFileSelect={setFrontPhoto}
-      />
-      <PhotoUpload
-        label="Side photo"
-        hint="Stand straight, arms at sides, facing left"
-        selectedFile={sidePhoto}
-        onFileSelect={setSidePhoto}
-      />
-      <PhotoUpload
-        label="Back photo"
-        hint="Stand straight, arms at sides, facing away"
-        selectedFile={backPhoto}
-        onFileSelect={setBackPhoto}
-      />
+      <PhotoUpload label="Front photo" required hint="Stand straight, arms at your sides, facing the camera" selectedFile={frontPhoto} onFileSelect={setFrontPhoto} error={tried && !frontPhoto} />
+      <PhotoUpload label="Side photo" required hint="Stand straight, arms at your sides, facing left" selectedFile={sidePhoto} onFileSelect={setSidePhoto} error={tried && !sidePhoto} />
+      <PhotoUpload label="Back photo" hint="Stand straight, arms at your sides, facing away" selectedFile={backPhoto} onFileSelect={setBackPhoto} />
+
+      {tried && missing && (
+        <p className="text-sm text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+          Please add your front and side photos — they’re your starting point.
+        </p>
+      )}
 
       <NavButtons onBack={onBack} onNext={handleNext} />
     </SectionCard>

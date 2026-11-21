@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-type MeasurementType = 'waist' | 'chest' | 'hip' | 'weight'
+type MeasurementType = 'waist' | 'chest' | 'hip' | 'weight' | 'belly' | 'thigh'
 
 interface MeasurementGuideProps {
   type: MeasurementType
@@ -34,6 +34,24 @@ const GUIDES: Record<MeasurementType, { title: string; instructions: string[] }>
       'Find the widest point around your hips and buttocks',
       'Wrap the tape around, keeping it level all the way around',
       'Keep the tape snug but not pulled tight',
+    ],
+  },
+  belly: {
+    title: 'How to measure your lower belly',
+    instructions: [
+      'Stand relaxed, don\'t suck in your stomach',
+      'Measure about two finger-widths below your belly button',
+      'Keep the tape level all the way around',
+      'Breathe out normally, then read the tape',
+    ],
+  },
+  thigh: {
+    title: 'How to measure your thigh',
+    instructions: [
+      'Stand with weight on both feet, legs slightly apart',
+      'Use your right thigh every time',
+      'Measure the widest part, just below the buttock crease',
+      'Keep the tape snug but not pressing into the skin',
     ],
   },
   weight: {
@@ -123,6 +141,8 @@ const ILLUSTRATIONS: Record<MeasurementType, () => React.JSX.Element> = {
   chest: ChestIllustration,
   hip: HipIllustration,
   weight: WeightIllustration,
+  belly: WaistIllustration,
+  thigh: HipIllustration,
 }
 
 export function MeasurementGuide({ type }: MeasurementGuideProps) {
@@ -135,7 +155,7 @@ export function MeasurementGuide({ type }: MeasurementGuideProps) {
       <button
         type="button"
         onClick={() => setOpen((p) => !p)}
-        className="flex items-center gap-1 text-xs text-[#4a7fd4] hover:text-[#3a6fc4] transition-colors"
+        className="flex items-center gap-1 text-sm text-[#3a6fc4] hover:text-[#2f5fb0] min-h-9 transition-colors"
       >
         <span className="w-3.5 h-3.5 rounded-full bg-[#4a7fd4]/15 flex items-center justify-center text-[9px] font-bold flex-shrink-0">
           i
@@ -147,10 +167,10 @@ export function MeasurementGuide({ type }: MeasurementGuideProps) {
         <div className="mt-2 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4 flex gap-4 items-start">
           <Illustration />
           <div className="flex-1">
-            <p className="text-xs font-semibold text-[#0f172a] mb-2">{guide.title}</p>
+            <p className="text-sm font-semibold text-[#0f172a] mb-2">{guide.title}</p>
             <ul className="flex flex-col gap-1.5">
               {guide.instructions.map((line, i) => (
-                <li key={i} className="text-xs text-[#64748b] flex items-start gap-1.5">
+                <li key={i} className="text-sm text-[#475569] flex items-start gap-1.5">
                   <span className="text-[#4a7fd4] mt-0.5 flex-shrink-0">·</span>
                   {line}
                 </li>

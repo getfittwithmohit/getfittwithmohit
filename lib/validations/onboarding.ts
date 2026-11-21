@@ -15,9 +15,13 @@ export const metricsSchema = z.object({
   height_inches: z.string().min(1, 'Height is required'),
   weight_kg: z.string().min(1, 'Weight is required'),
   age: z.string().optional(),
-  waist_inches: z.string().optional(),
-  chest_inches: z.string().optional(),
-  hip_inches: z.string().optional(),
+  // All five sites are required: they are the baseline for inches lost
+  waist_inches: z.string({ message: 'Waist is required' }).min(1, 'Waist is required'),
+  chest_inches: z.string({ message: 'Chest is required' }).min(1, 'Chest is required'),
+  hip_inches: z.string({ message: 'Hips are required' }).min(1, 'Hips are required'),
+  lower_belly_inches: z.string({ message: 'Lower belly is required' }).min(1, 'Lower belly is required'),
+  thigh_inches: z.string({ message: 'Thigh is required' }).min(1, 'Thigh is required'),
+  trouser_waist_size: z.string().optional(),
   primary_goal: z.string().min(1, 'Please select your primary goal'),
   target_weight_kg: z.string().optional(),
 })
@@ -36,6 +40,8 @@ export const fitnessSchema = z.object({
   training_days: z.string().min(1, 'Please select training days'),
   session_duration: z.string().optional(),
   current_activities: z.string().optional(),
+  preferred_training_time: z.string({ message: 'Please pick your best training time' }).min(1, 'Please pick your best training time'),
+  fitness_tracker: z.string().optional(),
 })
 
 export const lifestyleSchema = z.object({
@@ -45,6 +51,8 @@ export const lifestyleSchema = z.object({
   stress_sources: z.array(z.string()).optional(),
   day_in_life: z.string().optional(),
   daily_steps: z.string().optional(),
+  alcohol_frequency: z.string({ message: 'Please tell us how often you drink' }).min(1, 'Please tell us how often you drink'),
+  smoking: z.string({ message: 'Please answer the smoking question' }).min(1, 'Please answer the smoking question'),
 })
 
 export const nutritionSchema = z.object({

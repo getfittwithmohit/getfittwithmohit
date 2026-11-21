@@ -18,6 +18,8 @@ import {
   SLEEP_QUALITY,
   STRESS_SOURCES,
   DAILY_STEPS,
+  ALCOHOL_FREQUENCY,
+  SMOKING,
 } from '@/lib/constants/options'
 
 interface Props {
@@ -44,6 +46,8 @@ export function Step05Lifestyle({ onNext, onBack }: Props) {
   const stressLevel = watch('stress_level')
   const stressSources = watch('stress_sources') || []
   const dailySteps = watch('daily_steps')
+  const alcohol = watch('alcohol_frequency')
+  const smoking = watch('smoking')
 
   const toggleStressSource = (val: string) => {
     const updated = stressSources.includes(val)
@@ -113,6 +117,24 @@ export function Step05Lifestyle({ onNext, onBack }: Props) {
         options={DAILY_STEPS}
         value={dailySteps}
         onChange={(v) => setValue('daily_steps', v)}
+      />
+
+      {/* Alcohol & smoking — no judgment, they change the plan */}
+      <RadioGroup
+        label="How often do you drink alcohol?"
+        required
+        options={ALCOHOL_FREQUENCY}
+        value={alcohol}
+        onChange={(v) => setValue('alcohol_frequency', v, { shouldValidate: true })}
+        error={errors.alcohol_frequency?.message}
+      />
+      <RadioGroup
+        label="Do you smoke?"
+        required
+        options={SMOKING}
+        value={smoking}
+        onChange={(v) => setValue('smoking', v, { shouldValidate: true })}
+        error={errors.smoking?.message}
       />
 
       <NavButtons onBack={onBack} onNext={handleSubmit(onSubmit)} />

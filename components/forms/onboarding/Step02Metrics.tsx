@@ -139,35 +139,32 @@ export function Step02Metrics({ onNext, onBack }: Props) {
         />
       </div>
 
-      {/* Waist, Chest, Hip */}
-      <div className="grid grid-cols-3 gap-4">
+      {/* Measurements — the baseline for "inches lost" */}
+      <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm text-[#475569] leading-relaxed">
+        Grab a soft measuring tape. These five numbers are your starting point — the scale lies sometimes, the tape rarely does.
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <Input
-            label="Waist (inches)"
-            type="number"
-            placeholder="34"
-            {...register('waist_inches')}
-          />
+          <Input label="Waist (inches)" required type="number" inputMode="decimal" placeholder="34" error={errors.waist_inches?.message} {...register('waist_inches')} />
           <MeasurementGuide type="waist" />
         </div>
         <div>
-          <Input
-            label="Chest (inches)"
-            type="number"
-            placeholder="38"
-            {...register('chest_inches')}
-          />
+          <Input label="Lower belly (inches)" required type="number" inputMode="decimal" placeholder="36" error={errors.lower_belly_inches?.message} {...register('lower_belly_inches')} />
+          <MeasurementGuide type="belly" />
+        </div>
+        <div>
+          <Input label="Chest (inches)" required type="number" inputMode="decimal" placeholder="38" error={errors.chest_inches?.message} {...register('chest_inches')} />
           <MeasurementGuide type="chest" />
         </div>
         <div>
-          <Input
-            label="Hip (inches)"
-            type="number"
-            placeholder="37"
-            {...register('hip_inches')}
-          />
+          <Input label="Hips (inches)" required type="number" inputMode="decimal" placeholder="37" error={errors.hip_inches?.message} {...register('hip_inches')} />
           <MeasurementGuide type="hip" />
         </div>
+        <div>
+          <Input label="Thigh (inches)" required type="number" inputMode="decimal" placeholder="22" error={errors.thigh_inches?.message} {...register('thigh_inches')} />
+          <MeasurementGuide type="thigh" />
+        </div>
+        <Input label="Trouser / jeans waist size" type="text" placeholder="e.g. 34 or L" hint="The size you buy today" {...register('trouser_waist_size')} />
       </div>
 
       {/* Primary Goal */}
