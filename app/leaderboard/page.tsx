@@ -88,18 +88,18 @@ export default function LeaderboardPage() {
           <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-1">Leaderboard</p>
           <div className="flex items-end justify-between mt-2">
             <div>
-              <p className="text-white/40 text-xs">Level {level.number}</p>
+              <p className="text-white/65 text-sm">Level {level.number}</p>
               <p className="text-white text-2xl font-semibold">{level.name}</p>
             </div>
             <div className="text-right">
               <p className="text-white text-2xl font-semibold">{totalXp.toLocaleString('en-IN')}</p>
-              <p className="text-white/40 text-xs">total XP</p>
+              <p className="text-white/65 text-sm">total XP</p>
             </div>
           </div>
           <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mt-4">
             <div className="h-full bg-[#00D4E8] rounded-full transition-all" style={{ width: `${level.progress * 100}%` }} />
           </div>
-          <p className="text-white/40 text-xs mt-1.5">
+          <p className="text-white/65 text-sm mt-1.5">
             {level.next
               ? `${(level.next.min - totalXp).toLocaleString('en-IN')} XP to ${level.next.name}`
               : 'Top level reached'}
@@ -131,10 +131,10 @@ export default function LeaderboardPage() {
           ))}
         </div>
         {period === 'week' && (
-          <p className="text-xs text-[#64748b] mb-3 px-1">Monday to Sunday. Resets every Monday. Everyone starts level.</p>
+          <p className="text-sm text-[#64748b] mb-3 px-1">Monday to Sunday. Resets every Monday. Everyone starts level.</p>
         )}
         {period === 'last_week' && (
-          <p className="text-xs text-[#64748b] mb-3 px-1">Final standings for {lastWeekLabel()}.</p>
+          <p className="text-sm text-[#64748b] mb-3 px-1">Final standings for {lastWeekLabel()}.</p>
         )}
 
         {/* Rankings */}
@@ -152,10 +152,10 @@ export default function LeaderboardPage() {
               </span>
               <span className="flex-1 text-sm text-[#0f172a] truncate">
                 {row.display_name}
-                {row.is_me && <span className="text-xs text-[#0095A8] ml-2">You{row.is_hidden ? ' · hidden' : ''}</span>}
+                {row.is_me && <span className="text-sm text-[#0095A8] ml-2">You{row.is_hidden ? ' · hidden' : ''}</span>}
               </span>
               {period !== 'all' && (
-                <span className="text-xs text-[#64748b] whitespace-nowrap">{row.checkin_days ?? 0}/7 days</span>
+                <span className="text-sm text-[#64748b] whitespace-nowrap">{row.checkin_days ?? 0}/7 days</span>
               )}
               <span className="text-sm font-semibold text-[#1a1f3a]">{row.xp.toLocaleString('en-IN')} XP</span>
             </div>
@@ -189,7 +189,7 @@ export default function LeaderboardPage() {
 
         {/* Visibility */}
         <div className="flex items-center justify-between gap-4 mt-4 px-1">
-          <p className="text-xs text-[#64748b]">
+          <p className="text-sm text-[#64748b]">
             {iAmHidden
               ? 'You are hidden — other clients can’t see you. You still earn XP.'
               : 'Other clients see you as your first name and last initial.'}
@@ -197,7 +197,7 @@ export default function LeaderboardPage() {
           <button
             onClick={toggleHidden}
             disabled={savingVisibility || !me}
-            className="flex-shrink-0 text-xs text-[#4a7fd4] underline underline-offset-2 disabled:opacity-50"
+            className="flex-shrink-0 text-sm text-[#4a7fd4] underline underline-offset-2 disabled:opacity-50"
           >
             {savingVisibility ? 'Saving…' : iAmHidden ? 'Show me' : 'Hide me'}
           </button>

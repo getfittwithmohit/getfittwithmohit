@@ -71,7 +71,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
       subtitle="Honest numbers only. Coach Mohit can only help you if he knows what actually happened."
     >
       <div>
-        <p className="text-xs font-medium text-[#64748b] mb-2">
+        <p className="text-sm font-medium text-[#64748b] mb-2">
           Workouts completed this week
           <span className="text-[#00D4E8] ml-0.5">*</span>
         </p>
@@ -91,7 +91,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
             </button>
           ))}
         </div>
-        <div className="flex justify-between text-xs text-[#64748b] mt-1.5 px-1">
+        <div className="flex justify-between text-sm text-[#64748b] mt-1.5 px-1">
           <span>None</span><span>Every day</span>
         </div>
       </div>
@@ -127,7 +127,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
       />
 
       <div>
-        <p className="text-xs font-medium text-[#64748b] mb-2">
+        <p className="text-sm font-medium text-[#64748b] mb-2">
           How many days did you complete your SAVER routine?
           <span className="text-[#00D4E8] ml-0.5">*</span>
         </p>
@@ -147,7 +147,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
             </button>
           ))}
         </div>
-        <div className="flex justify-between text-xs text-[#64748b] mt-1.5 px-1">
+        <div className="flex justify-between text-sm text-[#64748b] mt-1.5 px-1">
           <span>None</span><span>Every day</span>
         </div>
       </div>
@@ -160,7 +160,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
       />
 
       {error && (
-        <p className="text-xs text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+        <p className="text-sm text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">
           {error}
         </p>
       )}

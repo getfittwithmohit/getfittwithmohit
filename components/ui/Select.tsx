@@ -13,7 +13,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
-          <label className="text-xs font-medium text-[#64748b]">
+          <label className="text-sm font-medium text-[#475569]">
             {label}
             {required && <span className="text-[#00D4E8] ml-0.5">*</span>}
           </label>
@@ -37,7 +37,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ))}
         </select>
         {error && (
-          <span className="text-xs text-[#ef4444]">{error}</span>
+          <span className="text-sm text-[#ef4444]">{error}</span>
         )}
       </div>
     )

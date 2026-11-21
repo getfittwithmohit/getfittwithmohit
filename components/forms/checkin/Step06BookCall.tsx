@@ -22,7 +22,7 @@ function SummaryBar({ label, value, max, color, display }: SummaryBarProps) {
   const pct = Math.min(Math.round((value / max) * 100), 100)
   return (
     <div className="mb-3">
-      <div className="flex justify-between text-xs mb-1.5">
+      <div className="flex justify-between text-sm mb-1.5">
         <span className="text-[#64748b]">{label}</span>
         <span className="font-medium text-[#0f172a]">{display}</span>
       </div>
@@ -78,7 +78,7 @@ export function Step06BookCall({ onNext, onBack, submitting }: Props) {
         />
       </div>
 
-      <p className="text-xs text-[#64748b] text-center leading-relaxed">
+      <p className="text-sm text-[#64748b] text-center leading-relaxed">
         Once submitted, you'll be asked to book your review call with Coach Mohit.
       </p>
 

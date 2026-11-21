@@ -63,7 +63,7 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
       subtitle="Your body is always telling you something. These signals matter as much as the numbers."
     >
       <div>
-        <p className="text-xs font-medium text-[#64748b] mb-2">
+        <p className="text-sm font-medium text-[#64748b] mb-2">
           Overall mood this week
           <span className="text-[#00D4E8] ml-0.5">*</span>
         </p>
@@ -80,7 +80,7 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
               }`}
             >
               <span className="text-2xl">{opt.emoji}</span>
-              <span className="text-xs text-[#64748b]">{opt.label}</span>
+              <span className="text-sm text-[#64748b]">{opt.label}</span>
             </button>
           ))}
         </div>
@@ -118,7 +118,7 @@ export function Step03Wellbeing({ onNext, onBack }: Props) {
       />
 
       {error && (
-        <p className="text-xs text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+        <p className="text-sm text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">
           {error}
         </p>
       )}

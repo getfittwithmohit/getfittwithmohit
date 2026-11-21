@@ -1,5 +1,6 @@
 'use client'
 
+import { Icon } from '@/components/ui/Icon'
 import { useEffect, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { useClient } from '@/hooks/useClient'
@@ -44,7 +45,7 @@ export default function CoursesPage() {
         <div className="max-w-2xl mx-auto">
           <HomeButton />
           <h1 className="text-white text-lg font-medium">Courses</h1>
-          <p className="text-white/50 text-xs mt-1">Learn at your own pace · Your progress is saved</p>
+          <p className="text-white/65 text-sm mt-1">Learn at your own pace · Your progress is saved</p>
         </div>
       </div>
 
@@ -55,9 +56,9 @@ export default function CoursesPage() {
 
         {!error && courses.length === 0 && (
           <div className="bg-white border border-[#e2e8f0] rounded-2xl p-8 text-center">
-            <div className="text-3xl mb-2">🎓</div>
+            <div className="mb-2 flex justify-center text-[#007A8A]"><Icon name="grad" size={36} strokeWidth={1.6} /></div>
             <p className="text-sm font-medium text-[#0f172a]">No courses yet</p>
-            <p className="text-xs text-[#64748b] mt-1">Coach Mohit is preparing your first course. Check back soon.</p>
+            <p className="text-sm text-[#64748b] mt-1">Coach Mohit is preparing your first course. Check back soon.</p>
           </div>
         )}
 
@@ -83,7 +84,7 @@ export default function CoursesPage() {
                 )}
               </div>
               <div className="mt-4">
-                <div className="flex justify-between text-xs text-[#64748b] mb-1.5">
+                <div className="flex justify-between text-sm text-[#64748b] mb-1.5">
                   <span>{done} of {total} lesson{total === 1 ? '' : 's'}</span>
                   <span>{percent}%</span>
                 </div>

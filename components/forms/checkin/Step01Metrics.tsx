@@ -29,11 +29,11 @@ function MetricRow({ label, current, previous, unit }: MetricRowProps) {
 
   return (
     <div className="flex items-center justify-between py-2 border-b border-[#e2e8f0] last:border-0">
-      <span className="text-xs text-[#64748b]">{label}</span>
+      <span className="text-sm text-[#64748b]">{label}</span>
       <div className="flex items-center gap-2">
-        {previous && <span className="text-xs text-[#64748b]">{previous} {unit}</span>}
-        {previous && <span className="text-xs text-[#64748b]">→</span>}
-        <span className="text-xs font-medium text-[#0f172a]">
+        {previous && <span className="text-sm text-[#64748b]">{previous} {unit}</span>}
+        {previous && <span className="text-sm text-[#64748b]">→</span>}
+        <span className="text-sm font-medium text-[#0f172a]">
           {current || '?'} {current ? unit : ''}
         </span>
         {diff !== null && (
@@ -123,7 +123,7 @@ export function Step01Metrics({ onNext }: Props) {
       <Input label="Any other measurement" placeholder="e.g. arm 14 inches..." {...register('other_measurement')} />
 
       {error && (
-        <p className="text-xs text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+        <p className="text-sm text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">
           {error}
         </p>
       )}
