@@ -16,18 +16,18 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "GetFittWithMohit",
-    template: "%s · GetFittWithMohit",
+    default: "GFM 1:1 Coaching",
+    template: "%s · GFM 1:1 Coaching",
   },
   description: "Your 1:1 transformation and peak performance coaching app with Coach Mohit.",
-  applicationName: "GetFittWithMohit",
+  applicationName: "GFM 1:1 Coaching",
   appleWebApp: {
     capable: true,
-    title: "GetFittWithMohit",
+    title: "GFM 1:1",
     statusBarStyle: "default",
   },
   openGraph: {
-    title: "GetFittWithMohit",
+    title: "GFM 1:1 Coaching · GetFittWithMohit",
     description: "Your 1:1 transformation and peak performance coaching app with Coach Mohit.",
     images: ["/icons/icon-512.png"],
   },
