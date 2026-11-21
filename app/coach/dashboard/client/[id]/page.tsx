@@ -900,6 +900,8 @@ export default function ClientProgressPage() {
               training_days: fitness.training_days,
               session_duration: fitness.session_duration,
               current_activities: fitness.current_activities,
+              best_training_time: fitness.preferred_training_time,
+              fitness_tracker: fitness.fitness_tracker,
             }} />
           )}
 
@@ -912,6 +914,17 @@ export default function ClientProgressPage() {
               stress_sources: lifestyle.stress_sources,
               daily_steps: lifestyle.daily_steps,
               day_in_life: lifestyle.day_in_life,
+              alcohol: lifestyle.alcohol_frequency,
+              smoking: lifestyle.smoking,
+            }} />
+          )}
+
+          {/* Starting measurements not covered by the editable fields above */}
+          {client?.body_metrics?.[0] && (
+            <InfoSection title="Starting measurements" data={{
+              lower_belly_inches: client.body_metrics[0].lower_belly_inches,
+              thigh_inches: client.body_metrics[0].thigh_inches,
+              trouser_waist_size: client.body_metrics[0].trouser_waist_size,
             }} />
           )}
 
@@ -1241,8 +1254,11 @@ export default function ClientProgressPage() {
                             {Object.entries({
                               'Weight (kg)': c.weight_kg,
                               'Waist (in)': c.waist_inches,
+                              'Chest (in)': c.chest_inches,
+                              'Hips (in)': c.hip_inches,
                               'Lower belly (in)': c.lower_belly_inches,
                               'Thigh (in)': c.thigh_inches,
+                              'Trouser size': c.trouser_waist_size,
                               'Daily steps': c.daily_steps,
                               'Health issues': c.health_issues,
                               'Workouts completed': c.workouts_completed,
@@ -1255,6 +1271,9 @@ export default function ClientProgressPage() {
                               'Sleep duration': c.sleep_duration,
                               'Sleep quality': c.sleep_quality,
                               'Stress level': c.stress_level,
+                              'Hunger & cravings': c.hunger_level,
+                              'Alcoholic drinks': c.drinks_this_week,
+                              'Cycle phase': c.cycle_phase,
                               'Biggest win': c.biggest_win,
                               'Biggest challenge': c.biggest_challenge,
                               'Real-life context': c.real_life_context,

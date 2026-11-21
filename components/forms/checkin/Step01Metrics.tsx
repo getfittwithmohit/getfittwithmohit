@@ -10,6 +10,9 @@ import { MeasurementGuide } from '@/components/ui/MeasurementGuide'
 
 interface Props {
   onNext: () => void
+  // Photo week (every 4 weeks): all five measurements are required
+  fullMeasure?: boolean
+  previous?: { weight_kg?: number | null; waist_inches?: number | null }
 }
 
 interface MetricRowProps {
@@ -50,7 +53,7 @@ function MetricRow({ label, current, previous, unit }: MetricRowProps) {
   )
 }
 
-export function Step01Metrics({ onNext }: Props) {
+export function Step01Metrics({ onNext, fullMeasure = false, previous }: Props) {
   const { data, updateData } = useCheckinStore()
   const [error, setError] = useState('')
 
@@ -65,6 +68,7 @@ export function Step01Metrics({ onNext }: Props) {
       thigh_inches: data.thigh_inches,
       daily_steps: data.daily_steps,
       health_issues: data.health_issues,
+      trouser_waist_size: data.trouser_waist_size || '',
     },
   })
 
@@ -75,6 +79,19 @@ export function Step01Metrics({ onNext }: Props) {
     if (!values.weight_kg) {
       setError('Please enter your weight — it is required every week.')
       return
+    }
+    if (!values.waist_inches) {
+      setError('Please enter your waist — it is required every week.')
+      return
+    }
+    if (fullMeasure) {
+      const missing = [
+        ['chest_inches', 'chest'], ['hip_inches', 'hips'], ['lower_belly_inches', 'lower belly'], ['thigh_inches', 'thigh'],
+      ].filter(([k]) => !values[k]).map(([, label]) => label)
+      if (missing.length) {
+        setError(`It’s measurement week — please add your ${missing.join(', ')}.`)
+        return
+      }
     }
     setError('')
     updateData(values)
@@ -90,35 +107,49 @@ export function Step01Metrics({ onNext }: Props) {
     >
       <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4">
         <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3">vs Last Week</p>
-        <MetricRow label="Weight" current={weightVal} previous="–" unit="kg" />
-        <MetricRow label="Waist" current={waistVal} previous="–" unit="in" />
+        <MetricRow label="Weight" current={weightVal} previous={previous?.weight_kg != null ? String(previous.weight_kg) : ''} unit="kg" />
+        <MetricRow label="Waist" current={waistVal} previous={previous?.waist_inches != null ? String(previous.waist_inches) : ''} unit="in" />
       </div>
 
+      {fullMeasure && (
+        <div className="bg-[#E6F7F9] rounded-xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed">
+          <strong>Measurement week.</strong> Please measure all five places today — this is what your inches-lost is based on.
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Input label="Weight (kg)" required type="number" placeholder="e.g. 78.8" {...register('weight_kg')} />
+          <Input label="Weight (kg)" required type="number" inputMode="decimal" placeholder="e.g. 78.8" {...register('weight_kg')} />
           <MeasurementGuide type="weight" />
         </div>
         <div>
-          <Input label="Waist (inches)" type="number" placeholder="e.g. 32.5" {...register('waist_inches')} />
+          <Input label="Waist (inches)" required type="number" inputMode="decimal" placeholder="e.g. 32.5" {...register('waist_inches')} />
           <MeasurementGuide type="waist" />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Input label="Chest (inches)" type="number" placeholder="e.g. 37" {...register('chest_inches')} />
+          <Input label="Chest (inches)" required={fullMeasure} type="number" inputMode="decimal" placeholder="e.g. 37" {...register('chest_inches')} />
           <MeasurementGuide type="chest" />
         </div>
         <div>
-          <Input label="Hip (inches)" type="number" placeholder="e.g. 36" {...register('hip_inches')} />
+          <Input label="Hips (inches)" required={fullMeasure} type="number" inputMode="decimal" placeholder="e.g. 36" {...register('hip_inches')} />
           <MeasurementGuide type="hip" />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <Input label="Lower belly (inches)" type="number" placeholder="e.g. 35" {...register('lower_belly_inches')} />
-        <Input label="Thigh (inches)" type="number" placeholder="e.g. 22" {...register('thigh_inches')} />
+        <div>
+          <Input label="Lower belly (inches)" required={fullMeasure} type="number" inputMode="decimal" placeholder="e.g. 35" {...register('lower_belly_inches')} />
+          <MeasurementGuide type="belly" />
+        </div>
+        <div>
+          <Input label="Thigh (inches)" required={fullMeasure} type="number" inputMode="decimal" placeholder="e.g. 22" {...register('thigh_inches')} />
+          <MeasurementGuide type="thigh" />
+        </div>
       </div>
-      <Input label="Daily steps this week (average)" type="number" placeholder="e.g. 7500" {...register('daily_steps')} />
+      {fullMeasure && (
+        <Input label="Trouser / jeans waist size" placeholder="e.g. 32 or M" hint="The size that fits you now" {...register('trouser_waist_size')} />
+      )}
+      <Input label="Daily steps this week (average)" type="number" inputMode="numeric" placeholder="e.g. 7500" {...register('daily_steps')} />
       <Input label="Any health issues this week?" placeholder="e.g. back pain, headache..." {...register('health_issues')} />
       <Input label="Any other measurement" placeholder="e.g. arm 14 inches..." {...register('other_measurement')} />
 

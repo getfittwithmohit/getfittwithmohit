@@ -15,9 +15,11 @@ export function SectionCard({
 }: SectionCardProps) {
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#e2e8f0]">
-      <span className="inline-block bg-[#1a1f3a] text-[#00D4E8] text-xs px-3 py-1 rounded-full mb-4 tracking-wide">
-        Section {section} / {total}
-      </span>
+      {section > 0 && (
+        <span className="inline-block bg-[#1a1f3a] text-[#00D4E8] text-xs px-3 py-1 rounded-full mb-4 tracking-wide">
+          Section {section} / {total}
+        </span>
+      )}
       <h3 className="text-lg font-medium text-[#0f172a] mb-1">
         {title}
       </h3>

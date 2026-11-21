@@ -1,7 +1,15 @@
 'use client'
 
 import { toast } from '@/lib/ui/feedback'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useClient } from '@/hooks/useClient'
+import { StepPhotos } from '@/components/forms/checkin/StepPhotos'
+import { getPhotoSets, mergeWeek, photosDue, signPaths, type Pose } from '@/lib/photos/progressPhotos'
+import { getDailyCheckins } from '@/lib/supabase/queries/dailyCheckin'
+import { prefillFromDaily } from '@/lib/checkin/weeklyPrefill'
+import { addDaysIST, todayIST } from '@/lib/utils/istDate'
+import { insertWithOptional } from '@/lib/supabase/insertWithOptional'
+import type { CheckinFormData } from '@/lib/types/forms'
 import { useCheckinStore } from '@/store/checkinStore'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { SuccessScreen } from '@/components/layout/SuccessScreen'
@@ -29,11 +37,62 @@ export default function CheckinPage() {
   const { checking } = useAuthGuard()
   
 
-  const { currentStep, setStep, data, reset } = useCheckinStore()
+  const { currentStep, setStep, data, reset, updateData } = useCheckinStore()
+  const { client, loading: clientLoading } = useClient()
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [photosDone, setPhotosDone] = useState(false)
+  const [setup, setSetup] = useState<{
+    photosDue: boolean
+    fullMeasure: boolean
+    previous: { weight_kg: number | null; waist_inches: number | null } | null
+    references: Partial<Record<Pose, string>>
+    prefilled: boolean
+  } | null>(null)
 
-  if (checking) return <PageLoader />
+  // Photo week, last week's numbers and this week's daily check-ins. Each
+  // part fails on its own; the check-in always opens.
+  useEffect(() => {
+    if (checking || clientLoading) return
+    if (!client) return
+    let cancelled = false
+    ;(async () => {
+      const sets = await getPhotoSets(client.id).catch(() => [])
+      const due = photosDue(sets, client.current_week, client.phase)
+      const thisWeek = sets.some((x) => x.week === client.current_week)
+      const firstWeek = sets.length ? Math.min(...sets.map((x) => x.week)) : null
+      let references: Partial<Record<Pose, string>> = {}
+      if (due && firstWeek !== null) {
+        const first = mergeWeek(sets, firstWeek)
+        const urls = await signPaths(Object.values(first)).catch(() => ({} as Record<string, string>))
+        references = Object.fromEntries(Object.entries(first).filter(([, p]) => p && urls[p!]).map(([k, p]) => [k, urls[p!]]))
+      }
+      const prev = await supabase.from('weekly_checkins').select('weight_kg, waist_inches')
+        .eq('client_id', client.id).order('submitted_at', { ascending: false }).limit(1).maybeSingle()
+      const days = await getDailyCheckins(client.id, addDaysIST(todayIST(), -6)).catch(() => [])
+      const suggested = prefillFromDaily(days)
+      const current = useCheckinStore.getState().data as unknown as Record<string, unknown>
+      const fill: Partial<CheckinFormData> = {}
+      for (const [k, v] of Object.entries(suggested)) if (!current[k] && v) (fill as Record<string, unknown>)[k] = v
+      if (cancelled) return
+      if (Object.keys(fill).length) updateData(fill)
+      setSetup({
+        photosDue: due,
+        fullMeasure: due || thisWeek,
+        previous: prev.data ? { weight_kg: prev.data.weight_kg, waist_inches: prev.data.waist_inches } : null,
+        references,
+        prefilled: Object.keys(fill).length > 0,
+      })
+    })().catch((e) => {
+      console.error('Check-in setup failed:', e)
+      if (!cancelled) setSetup({ photosDue: false, fullMeasure: false, previous: null, references: {}, prefilled: false })
+    })
+    return () => { cancelled = true }
+  }, [checking, clientLoading, client, updateData])
+
+  // No client record (shouldn't happen here): open the check-in as before
+  const setupReady = setup ?? (!clientLoading && !client ? { photosDue: false, fullMeasure: false, previous: null, references: {}, prefilled: false } : null)
+  if (checking || clientLoading || !setupReady) return <PageLoader />
 
   const next = () => setStep(currentStep + 1)
   const back = () => setStep(currentStep - 1)
@@ -67,13 +126,13 @@ weekNumber = (count || 0) + 1
 }
 }
 
-    await supabase.from('weekly_checkins').insert({
+    const { error: saveError } = await insertWithOptional(supabase, 'weekly_checkins', {
       client_id: clientId,
       week_number: weekNumber,
       weight_kg: parseFloat(data.weight_kg) || null,
       waist_inches: parseFloat(data.waist_inches) || null,
-      chest_inches: parseFloat(data.chest_inches) || null,   // ← ADD
-      hip_inches: parseFloat(data.hip_inches) || null,       // ← ADD
+      chest_inches: parseFloat(data.chest_inches) || null,
+      hip_inches: parseFloat(data.hip_inches) || null,
       lower_belly_inches: parseFloat(data.lower_belly_inches) || null,
       thigh_inches: parseFloat(data.thigh_inches) || null,
       daily_steps: parseInt(data.daily_steps) || null,
@@ -104,7 +163,13 @@ biggest_challenge: [
       needs_from_coach: data.needs_from_coach,
       week_rating: parseInt(data.week_rating) || null,
       call_booked: true,
+    }, {
+      drinks_this_week: data.drinks_this_week || null,
+      hunger_level: parseInt(data.hunger_level || '') || null,
+      cycle_phase: data.cycle_phase || null,
+      trouser_waist_size: data.trouser_waist_size?.trim() || null,
     })
+    if (saveError) throw new Error(saveError.message || 'Could not save your check-in')
 
     // Notify coach
 fetch('/api/checkin', {
@@ -166,7 +231,7 @@ fetch('/api/checkin', {
         Weekly Check-In
       </h2>
       <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed text-center">
-        {getDayGreeting()} · Friday evening · Takes 8–10 minutes ·
+        {getDayGreeting()} · Takes about 5 minutes ·
         Be honest — this is your time
       </p>
     </div>
@@ -181,14 +246,23 @@ fetch('/api/checkin', {
       {/* Sections */}
       <div className="max-w-2xl mx-auto px-4 mt-6 pb-16">
 
+        {setupReady.photosDue && !photosDone && client ? (
+          <StepPhotos
+            clientId={client.id}
+            week={client.current_week}
+            references={setupReady.references}
+            onDone={() => { setPhotosDone(true); toast('Photos saved. Now your check-in.', 'success') }}
+          />
+        ) : (
+          <>
         {currentStep === 1 && (
-          <Step01Metrics onNext={next} />
+          <Step01Metrics onNext={next} fullMeasure={setupReady.fullMeasure} previous={setupReady.previous ?? undefined} />
         )}
         {currentStep === 2 && (
-          <Step02Adherence onNext={next} onBack={back} />
+          <Step02Adherence onNext={next} onBack={back} prefilled={setupReady.prefilled} />
         )}
         {currentStep === 3 && (
-          <Step03Wellbeing onNext={next} onBack={back} />
+          <Step03Wellbeing onNext={next} onBack={back} prefilled={setupReady.prefilled} askCycle={client?.gender === 'Female'} />
         )}
         {currentStep === 4 && (
           <Step04Wins onNext={next} onBack={back} />
@@ -202,6 +276,8 @@ fetch('/api/checkin', {
             onBack={back}
             submitting={submitting}
           />
+        )}
+          </>
         )}
 
       </div>

@@ -21,6 +21,7 @@ import {
   uploadProgressPhoto,
   uploadBloodWork,
 } from '@/lib/utils/upload'
+import { compressImage } from '@/lib/photos/progressPhotos'
 import { signOut } from '@/lib/supabase/queries/auth'
 import { useEffect } from 'react'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
@@ -104,31 +105,31 @@ useEffect(() => {
 
       const cid = result.clientId
 
-      // Upload progress photos
-      if (selectedPhotos.front) {
-        await uploadProgressPhoto(cid, 1, 'front', selectedPhotos.front)
+      // Upload progress photos (compressed). Only files that really uploaded
+      // are recorded, so the coach never sees a photo record without a file.
+      const photoPath = async (pose: 'front' | 'side' | 'back', file: File | null) => {
+        if (!file) return null
+        const blob = await compressImage(file)
+        const upload = new File([blob], `${pose}.jpg`, { type: blob.type || 'image/jpeg' })
+        const url = await uploadProgressPhoto(cid, 1, pose, upload)
+        if (!url) {
+          console.error(`Onboarding: ${pose} photo upload failed`)
+          return null
+        }
+        return `${cid}/week-1/${pose}.${upload.name.split('.').pop()}`
       }
-      if (selectedPhotos.side) {
-        await uploadProgressPhoto(cid, 1, 'side', selectedPhotos.side)
-      }
-      if (selectedPhotos.back) {
-        await uploadProgressPhoto(cid, 1, 'back', selectedPhotos.back)
-      }
-
-      // Save progress photos record
-      if (selectedPhotos.front || selectedPhotos.side || selectedPhotos.back) {
+      const [frontPath, sidePath, backPath] = await Promise.all([
+        photoPath('front', selectedPhotos.front),
+        photoPath('side', selectedPhotos.side),
+        photoPath('back', selectedPhotos.back),
+      ])
+      if (frontPath || sidePath || backPath) {
         await supabase.from('progress_photos').insert({
           client_id: cid,
           week_number: 1,
-          front_photo_url: selectedPhotos.front
-            ? `${cid}/week-1/front.${selectedPhotos.front.name.split('.').pop()}`
-            : null,
-          side_photo_url: selectedPhotos.side
-            ? `${cid}/week-1/side.${selectedPhotos.side.name.split('.').pop()}`
-            : null,
-          back_photo_url: selectedPhotos.back
-            ? `${cid}/week-1/back.${selectedPhotos.back.name.split('.').pop()}`
-            : null,
+          front_photo_url: frontPath,
+          side_photo_url: sidePath,
+          back_photo_url: backPath,
         })
       }
 

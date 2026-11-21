@@ -17,6 +17,8 @@ import {
   ENVIRONMENTS,
   TRAINING_DAYS,
   SESSION_DURATION,
+  TRAINING_TIME,
+  FITNESS_TRACKER,
 } from '@/lib/constants/options'
 
 interface Props {
@@ -42,6 +44,8 @@ export function Step04Fitness({ onNext, onBack }: Props) {
   const environments = watch('environments') || []
   const trainingDays = watch('training_days')
   const sessionDuration = watch('session_duration')
+  const trainingTime = watch('preferred_training_time')
+  const tracker = watch('fitness_tracker')
 
   const toggleEnvironment = (val: string) => {
     const updated = environments.includes(val)
@@ -95,6 +99,24 @@ export function Step04Fitness({ onNext, onBack }: Props) {
         options={SESSION_DURATION}
         value={sessionDuration}
         onChange={(v) => setValue('session_duration', v)}
+      />
+
+      {/* Best time to train */}
+      <RadioGroup
+        label="When can you train most consistently?"
+        required
+        options={TRAINING_TIME}
+        value={trainingTime}
+        onChange={(v) => setValue('preferred_training_time', v, { shouldValidate: true })}
+        error={errors.preferred_training_time?.message}
+      />
+
+      {/* Wearable */}
+      <RadioGroup
+        label="Do you wear a fitness watch or tracker?"
+        options={FITNESS_TRACKER}
+        value={tracker}
+        onChange={(v) => setValue('fitness_tracker', v)}
       />
 
       {/* Current Activities */}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { OnboardingFormData } from '@/lib/types/forms'
+import { insertWithOptional } from '@/lib/supabase/insertWithOptional'
 
 // Public signup endpoint — runs before a client necessarily has a session,
 // so it uses the service role key rather than a session-bound client.
@@ -91,8 +92,9 @@ export async function POST(req: NextRequest) {
     if (clientError) throw clientError
     const cid = client.id
 
-    // 2. Body metrics
-    await supabase.from('body_metrics').insert({
+    // 2. Body metrics (new optional fields fall back safely if the
+    // onboarding_checkin_v2 migration hasn't been run yet)
+    await insertWithOptional(supabase, 'body_metrics', {
       client_id: cid,
       height_inches: parseFloat(metrics.height_inches) || null,
       weight_kg: parseFloat(metrics.weight_kg) || null,
@@ -101,6 +103,10 @@ export async function POST(req: NextRequest) {
       hip_inches: parseFloat(metrics.hip_inches) || null,
       target_weight_kg: parseFloat(metrics.target_weight_kg) || null,
       primary_goal: metrics.primary_goal,
+    }, {
+      lower_belly_inches: parseFloat(metrics.lower_belly_inches) || null,
+      thigh_inches: parseFloat(metrics.thigh_inches) || null,
+      trouser_waist_size: metrics.trouser_waist_size?.trim() || null,
     })
 
     // 3. Medical
@@ -114,17 +120,20 @@ export async function POST(req: NextRequest) {
     })
 
     // 4. Fitness
-    await supabase.from('fitness_background').insert({
+    await insertWithOptional(supabase, 'fitness_background', {
       client_id: cid,
       fitness_level: fitness.fitness_level,
       environments: fitness.environments,
       training_days: parseInt(fitness.training_days) || null,
       session_duration: fitness.session_duration,
       current_activities: fitness.current_activities,
+    }, {
+      preferred_training_time: fitness.preferred_training_time || null,
+      fitness_tracker: fitness.fitness_tracker || null,
     })
 
     // 5. Lifestyle
-    await supabase.from('lifestyle').insert({
+    await insertWithOptional(supabase, 'lifestyle', {
       client_id: cid,
       sleep_duration: lifestyle.sleep_duration,
       sleep_quality: lifestyle.sleep_quality,
@@ -132,6 +141,9 @@ export async function POST(req: NextRequest) {
       stress_sources: lifestyle.stress_sources,
       day_in_life: lifestyle.day_in_life,
       daily_steps: lifestyle.daily_steps,
+    }, {
+      alcohol_frequency: lifestyle.alcohol_frequency || null,
+      smoking: lifestyle.smoking || null,
     })
 
     // 6. Nutrition
