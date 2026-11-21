@@ -54,13 +54,13 @@ export function QuickActions({
         </button>
       )}
 
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 sm:flex gap-2">
         {actions.map((a) => (
           <button
             key={a.label}
             onClick={a.onClick}
             className={`
-              flex-1 py-2 px-3 rounded-lg text-xs font-medium
+              flex-1 min-h-11 sm:min-h-0 py-2 px-3 rounded-lg text-sm sm:text-xs font-medium whitespace-nowrap
               border transition-all duration-150 text-center
               ${a.style}
             `}
