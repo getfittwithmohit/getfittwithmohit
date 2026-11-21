@@ -22,6 +22,7 @@ export default function MePage() {
   const [stats, setStats] = useState<{ streak: number | null; xp: number | null; rank: number | null }>({ streak: null, xp: null, rank: null })
   const [why, setWhy] = useState<string | null>(null)
   const [weeklyDue, setWeeklyDue] = useState<string | null>(null)
+  const [photosDue, setPhotosDue] = useState(false)
 
   useEffect(() => {
     if (checking || loading || !client) return
@@ -43,6 +44,7 @@ export default function MePage() {
       })
       setWhy(pledgeRes.data?.doing_this_for || null)
       setWeeklyDue(setup.find((i) => i.key === 'weekly')?.badge || null)
+      setPhotosDue(setup.some((i) => i.key === 'photos'))
     })
     return () => { cancelled = true }
   }, [checking, loading, client])
@@ -90,6 +92,7 @@ export default function MePage() {
       <SectionTitle>Progress</SectionTitle>
       <Group>
         <Row icon="clipboard" title="Weekly check-in" subtitle="Weight, measurements, how the week went" href="/checkin" trailing={weeklyDue ? <Badge>{weeklyDue}</Badge> : undefined} />
+        <Row icon="camera" title="Progress photos" subtitle="Before → now, every 4 weeks" href="/me/photos" trailing={photosDue ? <Badge>Due</Badge> : undefined} />
         <Row icon="chart" title="My progress" subtitle="Weight, waist and streak charts" href="/home/progress" />
         <Row icon="file" title="Transformation report" subtitle="Your 7-section report" href="/home/report" last />
       </Group>

@@ -5,6 +5,7 @@ import { getClientXp, getDailyCheckins } from '@/lib/supabase/queries/dailyCheck
 import { isoWeekday, todaysSession } from '@/lib/utils/workouts'
 import { addDaysIST, istDate, todayIST } from '@/lib/utils/istDate'
 import type { IconName } from '@/components/ui/Icon'
+import { photosDue } from '@/lib/photos/progressPhotos'
 import type { PlanSession, WorkoutLog, WorkoutPlan } from '@/lib/types/workouts'
 
 // Everything the Today screen needs, read in parallel. Each source fails on
@@ -51,7 +52,7 @@ const settle = async <T,>(p: Promise<T>): Promise<T | null> => {
   try { return await p } catch (e) { console.warn('Today:', e); return null }
 }
 
-export async function loadToday(client: { id: string; current_week: number }): Promise<TodayData> {
+export async function loadToday(client: { id: string; current_week: number; phase?: string }): Promise<TodayData> {
   const today = todayIST()
   const yesterday = addDaysIST(today, -1)
 
@@ -143,22 +144,27 @@ function workoutStep(plan: WorkoutPlan, logs: WorkoutLog[], today: string): Toda
 }
 
 // Setup tasks and the weekly check-in: what used to be "Pending" on Home.
-export async function loadSetupItems(client: { id: string; current_week: number }): Promise<SetupItem[]> {
+export async function loadSetupItems(client: { id: string; current_week: number; phase?: string }): Promise<SetupItem[]> {
   const today = todayIST()
   const weekday = isoWeekday(today) // 5 = Fri, 6 = Sat, 7 = Sun
   const checkinWindow = weekday >= 5
 
-  const [pledge, identity, codex, weekly] = await Promise.all([
+  const [pledge, identity, codex, weekly, photoWeeks] = await Promise.all([
     supabase.from('commitment_pledges').select('id').eq('client_id', client.id).maybeSingle(),
     supabase.from('identity_cards').select('id').eq('client_id', client.id).maybeSingle(),
     supabase.from('codex_data').select('origin_story, turning_point, battle_cry, deepest_reason').eq('client_id', client.id).maybeSingle(),
     checkinWindow && client.current_week
       ? supabase.from('weekly_checkins').select('id').eq('client_id', client.id).eq('week_number', client.current_week).maybeSingle()
       : Promise.resolve({ data: { id: 'n/a' } }),
+    supabase.from('progress_photos').select('week_number').eq('client_id', client.id),
   ])
 
   const items: SetupItem[] = []
   if (!weekly.data) items.push({ key: 'weekly', icon: 'clipboard', title: `Week ${client.current_week} check-in`, subtitle: 'About 10 minutes · weight, measurements', href: '/checkin', badge: weekday === 7 ? 'Due today' : 'Due Sun' })
+  const sets = (photoWeeks.data || []).map((r) => ({ week: r.week_number ?? 1 }))
+  if (!photoWeeks.error && photosDue(sets, client.current_week, client.phase || '')) {
+    items.push({ key: 'photos', icon: 'camera', title: 'Progress photos', subtitle: 'Front, side, back · 2 minutes', href: '/me/photos', badge: 'Due' })
+  }
   if (!pledge.data) items.push({ key: 'pledge', icon: 'pen', title: 'Sign your pledge', subtitle: 'Your promise to yourself', href: '/pledge' })
   if (!identity.data) items.push({ key: 'identity', icon: 'target', title: 'Purpose & identity', subtitle: 'Your why, values and vision', href: '/identity' })
   const c = codex.data
