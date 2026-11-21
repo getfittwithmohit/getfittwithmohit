@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { formatDayLabel, istDate } from '@/lib/utils/istDate'
 import { TransformationCard, type CardWeek } from './TransformationCard'
+import { StoredPhoto } from '@/components/ui/StoredPhoto'
 
 // Coach view of a client's progress photos (onboarding = week 1) and
 // blood-work reports. Both buckets are private: files open through signed
@@ -17,7 +18,7 @@ interface PhotoSet {
   id: string
   week: number | null
   uploadedAt: string
-  urls: Record<Pose, { url: string | null; missing: boolean } | null>
+  urls: Record<Pose, { url: string | null; missing: boolean; path: string | null } | null>
 }
 
 interface Report {
@@ -52,7 +53,7 @@ function cardWeeks(sets: PhotoSet[]): CardWeek[] {
 async function signed(bucket: string, path: string | null) {
   if (!path) return null
   const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, LINK_SECONDS)
-  return { url: data?.signedUrl ?? null, missing: !!error || !data?.signedUrl }
+  return { url: data?.signedUrl ?? null, missing: !!error || !data?.signedUrl, path }
 }
 
 export function ClientPhotos({ clientId, clientName = '' }: { clientId: string; clientName?: string }) {
@@ -133,8 +134,7 @@ export function ClientPhotos({ clientId, clientName = '' }: { clientId: string; 
                       <div key={pose} className="flex flex-col gap-1.5">
                         {p?.url ? (
                           <a href={p.url} target="_blank" rel="noopener noreferrer" className="block aspect-[3/4] rounded-xl overflow-hidden bg-[#f1f5f9]">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={p.url} alt={`${pose} photo, week ${set.week ?? ''}`} className="w-full h-full object-cover" />
+                            <StoredPhoto url={p.url} path={p.path} alt={`${pose} photo, week ${set.week ?? ''}`} className="w-full h-full object-cover" />
                           </a>
                         ) : (
                           <div className="aspect-[3/4] rounded-xl bg-[#f1f5f9] flex items-center justify-center text-center px-2 text-xs text-[#64748b]">
