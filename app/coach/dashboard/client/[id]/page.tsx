@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useEffect, useState } from 'react'
 import { subscriptionEndDate, weeksToCover } from '@/lib/utils/subscription'
 import { formatDayLabel } from '@/lib/utils/istDate'
@@ -220,7 +221,7 @@ export default function ClientProgressPage() {
       await loadCalls()
     } catch (err) {
       console.error('Save call error:', err)
-      window.alert('Something went wrong.')
+      toast('Something went wrong.')
     } finally {
       setSavingCall(false)
     }
@@ -314,7 +315,7 @@ export default function ClientProgressPage() {
       setTimeout(() => setSaveSuccess(false), 3000)
     } catch (err: any) {
       console.error('Save error:', err)
-      window.alert('Something went wrong. Please try again.')
+      toast('Something went wrong. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -502,7 +503,7 @@ export default function ClientProgressPage() {
 
   const handleCopyExport = () => {
     navigator.clipboard.writeText(buildExportText())
-    window.alert('Copied to clipboard! Paste it into ChatGPT or any AI tool.')
+    toast('Copied — paste it into ChatGPT or any AI tool', 'success')
   }
 
   const handleDownloadExport = () => {
@@ -1061,7 +1062,7 @@ export default function ClientProgressPage() {
                     .from('clients')
                     .update({ program_duration_weeks: parseInt(editData.program_duration_weeks) || 12 })
                     .eq('id', clientId)
-                  window.alert('Programme duration updated')
+                  toast('Programme duration updated', 'success')
                 }}
                 className="bg-[#1a1f3a] text-[#00D4E8] px-5 py-2.5 rounded-lg text-xs font-medium hover:bg-[#141930] transition-colors"
               >

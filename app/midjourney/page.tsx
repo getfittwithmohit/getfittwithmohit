@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState } from 'react'
 import { useMidJourneyStore } from '@/store/midJourneyStore'
 import { ProgressBar } from '@/components/ui/ProgressBar'
@@ -79,7 +80,7 @@ export default function MidJourneyPage() {
       setSubmitted(true)
     } catch (error: any) {
       console.error('Mid-journey error:', error)
-      window.alert('Something went wrong. Please try again.')
+      toast('Something went wrong. Please try again.')
     } finally {
       setSubmitting(false)
     }

@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmDialog } from '@/lib/ui/feedback'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { useClient } from '@/hooks/useClient'
@@ -505,7 +506,7 @@ export default function WorkoutPage() {
             })}
             <div className="flex">
               <button onClick={skipExercise} className="flex-1 h-12 text-sm text-[#cbd5e1] border-r border-white/5">Skip this exercise</button>
-              <button onClick={() => { setMenuOpen(false); if (window.confirm('Finish now? Sets you’ve done are saved.')) finish() }} disabled={finishing || !allSets.length} className="flex-1 h-12 text-sm disabled:opacity-40" style={{ color: CYAN }}>Finish workout</button>
+              <button onClick={async () => { setMenuOpen(false); if (await confirmDialog('Finish now? Sets you’ve done are saved.', { confirmLabel: 'Finish' })) finish() }} disabled={finishing || !allSets.length} className="flex-1 h-12 text-sm disabled:opacity-40" style={{ color: CYAN }}>Finish workout</button>
             </div>
           </div>
         )}

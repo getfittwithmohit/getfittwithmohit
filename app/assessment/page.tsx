@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState } from 'react'
 import { useAssessmentStore } from '@/store/assessmentStore'
 import { EnvironmentSelector } from '@/components/assessment/EnvironmentSelector'
@@ -125,7 +126,7 @@ if (clientId) {
     setSubmitted(true)
   } catch (error: any) {
     console.error('Assessment error:', error)
-    window.alert('Something went wrong. Please try again.')
+    toast('Something went wrong. Please try again.')
   } finally {
     setSubmitting(false)
   }

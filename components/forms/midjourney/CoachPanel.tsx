@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useRef } from 'react'
 import { useMidJourneyStore } from '@/store/midJourneyStore'
 import { ProfilePreview } from './ProfilePreview'
@@ -64,11 +65,11 @@ export function CoachPanel({ onSend }: Props) {
   const handleSend = () => {
     handleChange()
     if (!coach.full_name) {
-      window.alert('Please enter the client name before sending.')
+      toast('Please enter the client name before sending.')
       return
     }
     if (!coach.phase) {
-      window.alert('Please select a transformation phase.')
+      toast('Please select a transformation phase.')
       return
     }
     onSend()

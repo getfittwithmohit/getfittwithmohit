@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState } from 'react'
 import { useCheckinStore } from '@/store/checkinStore'
 import { ProgressBar } from '@/components/ui/ProgressBar'
@@ -126,7 +127,7 @@ fetch('/api/checkin', {
     setSubmitted(true)
   } catch (error: any) {
     console.error('Checkin error:', error)
-    window.alert('Something went wrong. Please try again.')
+    toast('Something went wrong. Please try again.')
   } finally {
     setSubmitting(false)
   }

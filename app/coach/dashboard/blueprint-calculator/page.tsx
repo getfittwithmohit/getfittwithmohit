@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -30,7 +31,7 @@ export default function BlueprintCalculatorPage() {
     const weightKg = parseFloat(weight)
 
     if (!weightKg || !totalHeightInches) {
-      window.alert('Please enter a valid weight and height.')
+      toast('Please enter a valid weight and height.')
       return
     }
 

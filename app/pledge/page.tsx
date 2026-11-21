@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState, useEffect, useRef } from 'react'
 import { usePledgeStore } from '@/store/pledgeStore'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
@@ -104,7 +105,7 @@ useEffect(() => {
 
   const handleSubmit = async () => {
     if (agreements.length < AGREEMENTS.length) {
-      window.alert('Please confirm all agreements before signing your pledge.')
+      toast('Please confirm all agreements before signing your pledge.')
       return
     }
     setSubmitting(true)
@@ -128,7 +129,7 @@ useEffect(() => {
       setSubmitted(true)
     } catch (error: any) {
       console.error('Pledge error:', error)
-      window.alert('Something went wrong. Please try again.')
+      toast('Something went wrong. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -504,7 +505,7 @@ if (pledgeSigned && existingPledge) {
               <button
                 onClick={() => {
                   if (!data.full_name || !data.why_transform || !data.cost_of_inconsistency || !data.person_becoming || !data.doing_this_for) {
-                    window.alert('Please answer all questions before proceeding.')
+                    toast('Please answer all questions before proceeding.')
                     return
                   }
                   setStep(3)

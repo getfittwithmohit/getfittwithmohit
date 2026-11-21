@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmDialog } from '@/lib/ui/feedback'
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -248,8 +249,8 @@ export function AudioManager() {
                         <button
                           className="text-[#ef4444] hover:underline"
                           disabled={busy}
-                          onClick={() => {
-                            if (window.confirm(`Delete "${audio.title}" and its file? This cannot be undone.`)) {
+                          onClick={async () => {
+                            if (await confirmDialog(`Delete "${audio.title}" and its file? This cannot be undone.`, { destructive: true })) {
                               run(() => deleteAudio(audio))
                             }
                           }}

@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmDialog } from '@/lib/ui/feedback'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -242,8 +243,8 @@ export function CourseManager() {
                       <button
                         className="text-[#ef4444] hover:underline"
                         disabled={busy}
-                        onClick={() => {
-                          if (window.confirm(`Delete "${course.title}" with all its lessons, documents and client progress? This cannot be undone.`)) {
+                        onClick={async () => {
+                          if (await confirmDialog(`Delete "${course.title}" with all its lessons, documents and client progress? This cannot be undone.`, { destructive: true })) {
                             run(() => deleteCourse(course))
                           }
                         }}
@@ -298,8 +299,8 @@ export function CourseManager() {
                           <button
                             className="text-[#ef4444] hover:underline"
                             disabled={busy}
-                            onClick={() => {
-                              if (window.confirm(`Delete lesson "${lesson.title}" and its documents?`)) run(() => deleteLesson(lesson))
+                            onClick={async () => {
+                              if (await confirmDialog(`Delete lesson "${lesson.title}" and its documents?`, { destructive: true })) run(() => deleteLesson(lesson))
                             }}
                           >
                             Delete
