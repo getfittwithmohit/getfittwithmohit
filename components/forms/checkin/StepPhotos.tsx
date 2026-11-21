@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { SectionCard } from '@/components/ui/SectionCard'
 import { Icon } from '@/components/ui/Icon'
+import { StoredPhoto } from '@/components/ui/StoredPhoto'
 import { savePhotoSet, type Pose } from '@/lib/photos/progressPhotos'
 
 // Shown before the weekly check-in when progress photos are due. Front and
@@ -38,8 +39,7 @@ function Pick({
     <div className="flex gap-3 items-center">
       {reference && (
         <div className="w-20 flex-shrink-0 flex flex-col gap-1">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={reference} alt={`Your earlier ${label.toLowerCase()} photo`} className="w-full aspect-[3/4] object-cover rounded-xl opacity-90" />
+          <StoredPhoto url={reference} alt={`Your earlier ${label.toLowerCase()} photo`} className="w-full aspect-[3/4] object-cover rounded-xl opacity-90" />
           <span className="text-xs text-center text-[#64748b]">Match this</span>
         </div>
       )}
