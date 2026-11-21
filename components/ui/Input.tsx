@@ -12,13 +12,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
-          <label className="text-xs font-medium text-[#64748b]">
+          <label className="text-sm font-medium text-[#475569]">
             {label}
             {required && <span className="text-[#00D4E8] ml-0.5">*</span>}
           </label>
         )}
         {hint && (
-          <span className="text-xs text-[#64748b]">{hint}</span>
+          <span className="text-sm text-[#64748b]">{hint}</span>
         )}
         <input
           ref={ref}
@@ -35,7 +35,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {error && (
-          <span className="text-xs text-[#ef4444]">{error}</span>
+          <span className="text-sm text-[#ef4444]">{error}</span>
         )}
       </div>
     )

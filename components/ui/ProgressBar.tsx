@@ -8,7 +8,7 @@ export function ProgressBar({ current, total }: ProgressBarProps) {
 
   return (
     <div className="w-full">
-      <div className="flex justify-between text-xs text-[#64748b] mb-2">
+      <div className="flex justify-between text-sm text-[#64748b] mb-2">
         <span>Section {current} of {total}</span>
         <span>{pct}%</span>
       </div>

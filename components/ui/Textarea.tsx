@@ -12,13 +12,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
-          <label className="text-xs font-medium text-[#64748b]">
+          <label className="text-sm font-medium text-[#475569]">
             {label}
             {required && <span className="text-[#00D4E8] ml-0.5">*</span>}
           </label>
         )}
         {hint && (
-          <span className="text-xs text-[#64748b]">{hint}</span>
+          <span className="text-sm text-[#64748b]">{hint}</span>
         )}
         <textarea
           ref={ref}
@@ -37,7 +37,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {error && (
-          <span className="text-xs text-[#ef4444]">{error}</span>
+          <span className="text-sm text-[#ef4444]">{error}</span>
         )}
       </div>
     )

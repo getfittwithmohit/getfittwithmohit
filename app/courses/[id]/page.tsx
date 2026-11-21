@@ -1,5 +1,6 @@
 'use client'
 
+import { Icon } from '@/components/ui/Icon'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
@@ -99,14 +100,15 @@ export default function CourseDetailPage() {
         <div className="max-w-2xl mx-auto">
           <button
             onClick={() => window.location.href = '/courses'}
-            className="text-white/40 hover:text-white/70 text-xs transition-colors mb-3"
+            className="text-white/65 hover:text-white text-[15px] flex items-center gap-1 min-h-11 -ml-1 transition-colors mb-2"
           >
-            ← All courses
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+            Courses
           </button>
           <h1 className="text-white text-lg font-medium">{course?.title || 'Course'}</h1>
           {course && (
             <>
-              <p className="text-white/50 text-xs mt-1">{doneCount} of {lessons.length} lessons complete · {percent}%</p>
+              <p className="text-white/65 text-sm mt-1">{doneCount} of {lessons.length} lessons complete · {percent}%</p>
               <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden mt-3">
                 <div className="h-full bg-[#00D4E8] rounded-full transition-all" style={{ width: `${percent}%` }} />
               </div>
@@ -123,7 +125,7 @@ export default function CourseDetailPage() {
         {!error && !course && (
           <div className="bg-white border border-[#e2e8f0] rounded-2xl p-8 text-center">
             <p className="text-sm font-medium text-[#0f172a]">This course isn&apos;t available</p>
-            <p className="text-xs text-[#64748b] mt-1">It may have been removed or is not published yet.</p>
+            <p className="text-sm text-[#64748b] mt-1">It may have been removed or is not published yet.</p>
           </div>
         )}
 
@@ -151,14 +153,14 @@ export default function CourseDetailPage() {
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="block text-sm font-medium text-[#0f172a]">{lesson.title}</span>
-                  <span className="block text-xs text-[#64748b] mt-0.5">
+                  <span className="block text-sm text-[#64748b] mt-0.5">
                     {[
                       lesson.duration_minutes ? `${lesson.duration_minutes} min` : null,
                       docs.length ? `${docs.length} document${docs.length === 1 ? '' : 's'}` : null,
                     ].filter(Boolean).join(' · ') || 'Lesson'}
                   </span>
                 </span>
-                <span className="text-[#64748b] text-xs">{isOpen ? '▲' : '▼'}</span>
+                <span className="text-[#64748b] text-sm">{isOpen ? '▲' : '▼'}</span>
               </button>
 
               {isOpen && (
@@ -199,9 +201,9 @@ export default function CourseDetailPage() {
                             onClick={() => openDocument(doc)}
                             className="flex items-center gap-2 text-sm text-[#0f172a] border border-[#e2e8f0] rounded-lg px-3 py-2.5 text-left hover:border-[#00D4E8] transition-colors"
                           >
-                            <span>📄</span>
+                            <Icon name="file" size={16} />
                             <span className="flex-1 truncate">{doc.title}</span>
-                            <span className="text-xs text-[#64748b]">Open</span>
+                            <span className="text-sm text-[#64748b]">Open</span>
                           </button>
                         ))}
                       </div>

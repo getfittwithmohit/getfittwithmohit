@@ -1,5 +1,6 @@
 'use client'
 
+import { Icon } from '@/components/ui/Icon'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -26,10 +27,10 @@ interface TodayData {
 }
 
 const MEAL_LABEL: Record<MealType, string> = {
-  breakfast: '🌅 Breakfast',
-  lunch: '☀️ Lunch',
-  snack: '🍎 Snack',
-  dinner: '🌙 Dinner',
+  breakfast: 'Breakfast',
+  lunch: 'Lunch',
+  snack: 'Snack',
+  dinner: 'Dinner',
 }
 
 const SCAN_MESSAGES = [
@@ -217,11 +218,12 @@ export default function PeakPlatePage() {
         <div className="max-w-2xl mx-auto">
           <button
             onClick={() => (scan ? resetScan() : (window.location.href = backHref))}
-            className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
+            className="text-white/60 hover:text-white text-[15px] flex items-center gap-1 min-h-11 -ml-1 transition-colors mb-1"
           >
-            ← {scan ? 'Back to my plate' : today?.isCoach ? 'Dashboard' : 'Home'}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+            {scan ? 'My plate' : today?.isCoach ? 'Dashboard' : 'Today'}
           </button>
-          <h2 className="text-white text-xl font-medium">🍽️ PEAK Plate</h2>
+          <h2 className="text-white text-2xl font-bold">PEAK Plate</h2>
           <p className="text-white/60 text-sm mt-1">Snap your meal. Know if it&apos;s PEAK — in seconds.</p>
         </div>
       </div>
@@ -235,7 +237,7 @@ export default function PeakPlatePage() {
         {scanning && (
           <div className="bg-white border border-[#e2e8f0] rounded-2xl p-8 text-center">
             {preview && <img src={preview} alt="" className="w-40 h-40 rounded-2xl object-cover mx-auto mb-5 animate-pulse" />}
-            {!preview && <div className="text-5xl mb-5 animate-bounce">🍽️</div>}
+            {!preview && <div className="mb-5 flex justify-center text-[#007A8A] animate-bounce"><Icon name="camera" size={48} strokeWidth={1.6} /></div>}
             <div className="w-8 h-8 border-2 border-[#00D4E8] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-sm text-[#0f172a]">{SCAN_MESSAGES[scanMsg]}</p>
           </div>
@@ -274,10 +276,10 @@ export default function PeakPlatePage() {
                 }}
               />
             ) : (
-              <p className="text-xs text-[#64748b] text-center -mt-1 mb-4">
+              <p className="text-sm text-[#64748b] text-center -mt-1 mb-4">
                 {today.targetSource === 'blueprint'
-                  ? '🎯 Targets from your Fat Loss Blueprint'
-                  : <>🎯 Your custom targets · <button onClick={() => setEditingTargets(true)} className="underline">edit</button></>}
+                  ? 'Targets from your Fat Loss Blueprint'
+                  : <>Your custom targets · <button onClick={() => setEditingTargets(true)} className="underline">edit</button></>}
               </p>
             )}
 
@@ -289,7 +291,7 @@ export default function PeakPlatePage() {
                   <button
                     key={t}
                     onClick={() => setMealType(t)}
-                    className={`text-xs px-3 py-1.5 rounded-full border flex-shrink-0 transition-colors ${
+                    className={`text-sm px-4 min-h-10 rounded-full border flex-shrink-0 transition-colors ${
                       mealType === t
                         ? 'bg-[#1a1f3a] text-white border-[#1a1f3a]'
                         : 'bg-white text-[#64748b] border-[#e2e8f0]'
@@ -307,23 +309,23 @@ export default function PeakPlatePage() {
                     disabled={noScansLeft}
                     className="w-full bg-[#00D4E8] text-[#1a1f3a] rounded-2xl py-6 mb-2 hover:bg-[#00BED1] transition-colors disabled:opacity-50"
                   >
-                    <span className="text-3xl block mb-1">📸</span>
+                    <span className="flex justify-center mb-1.5"><Icon name="camera" size={32} /></span>
                     <span className="text-base font-semibold">Scan my meal</span>
                   </button>
                   <div className="grid grid-cols-2 gap-2 mb-4">
                     <button
                       onClick={() => galleryRef.current?.click()}
                       disabled={noScansLeft}
-                      className="text-sm text-[#0f172a] border border-[#e2e8f0] rounded-xl py-2.5 hover:border-[#00D4E8] disabled:opacity-50"
+                      className="text-base text-[#0f172a] border border-[#e2e8f0] rounded-xl min-h-12 hover:border-[#00D4E8] disabled:opacity-50"
                     >
-                      🖼️ From gallery
+                      From gallery
                     </button>
                     <button
                       onClick={() => setTyping(true)}
                       disabled={noScansLeft}
-                      className="text-sm text-[#0f172a] border border-[#e2e8f0] rounded-xl py-2.5 hover:border-[#00D4E8] disabled:opacity-50"
+                      className="text-base text-[#0f172a] border border-[#e2e8f0] rounded-xl min-h-12 hover:border-[#00D4E8] disabled:opacity-50"
                     >
-                      ⌨️ Type it instead
+                      Type it instead
                     </button>
                   </div>
                 </>
@@ -355,13 +357,13 @@ export default function PeakPlatePage() {
                 onChange={(e) => setNote(e.target.value)}
                 maxLength={200}
                 placeholder="Anything we can't see? e.g. restaurant, cooked in ghee, 3 rotis"
-                className="w-full border border-[#e2e8f0] rounded-xl px-3 py-2.5 text-xs text-[#0f172a] focus:outline-none focus:border-[#00D4E8]"
+                className="w-full border border-[#e2e8f0] rounded-xl px-3 py-2.5 text-sm text-[#0f172a] focus:outline-none focus:border-[#00D4E8]"
               />
 
               {error && <p className="text-sm text-[#dc2626] mt-3">{error}</p>}
-              <p className="text-xs text-[#64748b] text-center mt-3">
+              <p className="text-sm text-[#64748b] text-center mt-3">
                 {noScansLeft
-                  ? "You've used today's scans — they reset at midnight 🌙"
+                  ? "You've used today's scans — they reset at midnight"
                   : `${today.scansLeft} scans left today · Tip: scan before you eat to decide`}
               </p>
 

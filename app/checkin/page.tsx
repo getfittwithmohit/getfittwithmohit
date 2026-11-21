@@ -151,9 +151,10 @@ fetch('/api/checkin', {
   <div className="max-w-2xl mx-auto">
     <button
       onClick={() => window.location.href = '/home'}
-      className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
+      className="text-white/65 hover:text-white text-[15px] flex items-center gap-1 min-h-11 -ml-1 transition-colors mb-2"
     >
-      ← Home
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+      Today
     </button>
     <div className="flex flex-col items-center gap-3">
       <img

@@ -29,7 +29,7 @@ export function ScaleSelect({
   return (
     <div className="flex flex-col gap-2">
       {label && (
-        <label className="text-xs font-medium text-[#64748b]">
+        <label className="text-sm font-medium text-[#475569]">
           {label}
           {required && <span className="text-[#00D4E8] ml-0.5">*</span>}
         </label>
@@ -54,13 +54,13 @@ export function ScaleSelect({
         ))}
       </div>
       {(lowLabel || highLabel) && (
-        <div className="flex justify-between text-xs text-[#64748b]">
+        <div className="flex justify-between text-sm text-[#64748b]">
           <span>{lowLabel}</span>
           <span>{highLabel}</span>
         </div>
       )}
       {error && (
-        <span className="text-xs text-[#ef4444]">{error}</span>
+        <span className="text-sm text-[#ef4444]">{error}</span>
       )}
     </div>
   )

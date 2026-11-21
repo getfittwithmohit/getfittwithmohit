@@ -18,7 +18,7 @@ export function RadioGroup({
   return (
     <div className="flex flex-col gap-2">
       {label && (
-        <label className="text-xs font-medium text-[#64748b]">
+        <label className="text-sm font-medium text-[#475569]">
           {label}
           {required && <span className="text-[#00D4E8] ml-0.5">*</span>}
         </label>
@@ -30,7 +30,7 @@ export function RadioGroup({
             type="button"
             onClick={() => onChange(opt)}
             className={`
-              px-4 py-2 rounded-full text-xs border
+              px-4 min-h-10 rounded-full text-sm border
               transition-all duration-150
               ${value === opt
                 ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#00D4E8]'
@@ -43,7 +43,7 @@ export function RadioGroup({
         ))}
       </div>
       {error && (
-        <span className="text-xs text-[#ef4444]">{error}</span>
+        <span className="text-sm text-[#ef4444]">{error}</span>
       )}
     </div>
   )

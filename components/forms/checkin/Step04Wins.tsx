@@ -53,7 +53,7 @@ export function Step04Wins({ onNext, onBack }: Props) {
     >
       {/* Wins */}
       <div>
-        <p className="text-xs font-medium text-[#64748b] mb-1">
+        <p className="text-sm font-medium text-[#64748b] mb-1">
           Biggest wins this week
           <span className="text-[#64748b] ml-1 font-normal">
             — no win is too small
@@ -87,7 +87,7 @@ export function Step04Wins({ onNext, onBack }: Props) {
 
       {/* Challenges */}
       <div>
-        <p className="text-xs font-medium text-[#64748b] mb-1">
+        <p className="text-sm font-medium text-[#64748b] mb-1">
           Biggest challenges this week
         </p>
         <div className="flex flex-wrap gap-2 mb-3">
