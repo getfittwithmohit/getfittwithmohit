@@ -39,7 +39,10 @@ export default function WorkoutPlanPage() {
         if (p) {
           const state = todaysSession(p, l, todayIST(), logDate)
           const highlight = state.kind === 'ready' || state.kind === 'done_today' ? state.session : state.kind === 'rest_day' ? state.next : null
-          setOpenId(highlight?.id || p.plan_sessions[0]?.id || null)
+          // ?open=<session id> (from the Train tab) opens that session
+          const requested = new URLSearchParams(window.location.search).get('open')
+          const asked = p.plan_sessions.find((x) => x.id === requested)
+          setOpenId(asked?.id || highlight?.id || p.plan_sessions[0]?.id || null)
         }
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Could not load your plan')
@@ -253,7 +256,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen" style={{ background: '#0a0f1a' }}>
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <a href="/home" className="text-white/40 hover:text-white/70 text-xs inline-flex items-center gap-1 mb-4">← Home</a>
+        <a href="/train" className="text-white/60 hover:text-white text-[15px] inline-flex items-center gap-1 mb-3 min-h-11">‹ Train</a>
         {children}
       </div>
     </div>

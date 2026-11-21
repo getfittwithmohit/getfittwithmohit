@@ -1,506 +1,226 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { DailyCheckinCard } from '@/components/home/DailyCheckinCard'
-import { WorkoutCard } from '@/components/home/WorkoutCard'
-import { PeakIdeaCard } from '@/components/home/PeakIdeaCard'
 import { useClient } from '@/hooks/useClient'
-import { signOut } from '@/lib/supabase/queries/auth'
-import { PageLoader } from '@/components/ui/PageLoader'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
-import { supabase } from '@/lib/supabase/client'
-
-const PHASE_EMOJI: Record<string, string> = {
-  Onboarding: '📋',
-  Adaptation: '🌱',
-  Building: '💪',
-  Performance: '🔥',
-  Maintenance: '🏆',
-}
+import { PageLoader } from '@/components/ui/PageLoader'
+import { Icon } from '@/components/ui/Icon'
+import { Badge, Card, Group, LargeTitle, Row, Screen, SectionTitle, Skeleton, T } from '@/components/ui/ios'
+import { SaverSheet } from '@/components/today/SaverSheet'
+import { loadToday, type TodayData, type TodayStep } from '@/lib/today/loadToday'
 
 const DAILY_QUOTES = [
-  "The pain of discipline is lighter than the weight of regret.",
-  "You don't rise to the level of your goals. You fall to the level of your systems.",
-  "Every rep, every meal, every choice — it compounds.",
-  "Your future self is watching you right now. Make them proud.",
-  "Consistency over intensity. Always.",
-  "The body achieves what the mind believes.",
-  "Small daily improvements lead to stunning long-term results.",
+  'The pain of discipline is lighter than the weight of regret.',
+  'You don’t rise to the level of your goals. You fall to the level of your systems.',
+  'Every rep, every meal, every choice — it compounds.',
+  'Your future self is watching you right now. Make them proud.',
+  'Consistency over intensity. Always.',
+  'The body achieves what the mind believes.',
+  'Small daily improvements lead to stunning long-term results.',
 ]
 
-const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+function istParts() {
+  const now = new Date()
+  const date = now.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'long', day: 'numeric', month: 'long' })
+  const hour = Number(now.toLocaleString('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', hour12: false }))
+  const dayIndex = Number(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata', day: 'numeric' }))
+  return { date, hour, dayIndex }
+}
 
-const QUICK_LINKS = [
-  { emoji: '🗓️', label: 'Weekly Check-in', href: '/checkin' },
-  { emoji: '💪', label: 'Assessment', href: '/assessment' },
-  { emoji: '🎯', label: 'Identity', href: '/identity' },
-  { emoji: '📊', label: 'Progress', href: '/home/progress' },
-  { emoji: '📑', label: 'My Report', href: '/home/report' },
-  { emoji: '✊', label: 'Pledge', href: '/pledge' },
-  //{ emoji: '📖', label: 'My Codex', href: '/codex/view' },
-  { emoji: '🌅', label: 'Ritual', href: '/ritual' },
-  { emoji: '📋', label: 'Daily Check-In', href: '/daily-checkin' },
-  { emoji: '🏆', label: 'Leaderboard', href: '/leaderboard' },
-  { emoji: '🎓', label: 'Courses', href: '/courses' },
-  { emoji: '🎧', label: 'Audios', href: '/audios' },
-  { emoji: '🍽️', label: 'PEAK Plate', href: '/plate' },
-]
-
-export default function ClientHomePage() {
+// Today: the day as a short checklist in time order. Whatever is next gets
+// the one big card; finished steps shrink to a ✓ row.
+export default function TodayPage() {
   const { checking } = useAuthGuard()
   const { client, loading } = useClient()
-
-  const [pledge, setPledge] = useState<any>(null)
-  const [identity, setIdentity] = useState<any>(null)
-  const [checkinDone, setCheckinDone] = useState<boolean>(true)
-  const [dataLoading, setDataLoading] = useState(true)
+  const [data, setData] = useState<TodayData | null>(null)
   const [saverOpen, setSaverOpen] = useState(false)
-  const [isCoach, setIsCoach] = useState(false)
-  const [codex, setCodex] = useState<boolean>(false)
-  const [storyDone, setStoryDone] = useState<boolean>(true)
 
   useEffect(() => {
-    async function fetchData() {
-      if (!client) {
-        setDataLoading(false)
-        return
-      }
+    if (checking || loading || !client) return
+    let cancelled = false
+    loadToday(client).then((d) => { if (!cancelled) setData(d) })
+    return () => { cancelled = true }
+  }, [checking, loading, client])
 
-      const [pledgeRes, identityRes] = await Promise.all([
-        supabase
-          .from('commitment_pledges')
-          .select('doing_this_for, signed_at')
-          .eq('client_id', client.id)
-          .maybeSingle(),
-        supabase
-          .from('identity_cards')
-          .select('id')
-          .eq('client_id', client.id)
-          .maybeSingle(),
-      ])
-
-      // Check codex story
-const { data: codexStoryData } = await supabase
-  .from('codex_data')
-  .select('origin_story, turning_point, generated_codex')
-  .eq('client_id', client.id)
-  .maybeSingle()
-
-const hasStory = !!(codexStoryData?.origin_story && codexStoryData?.turning_point)
-setStoryDone(hasStory)
-
-      if (pledgeRes.data) setPledge(pledgeRes.data)
-      if (identityRes.data) setIdentity(identityRes.data)
-
-      const todayDay = new Date().getDay()
-      const isCheckinTime = [5, 6, 0].includes(todayDay)
-      if (isCheckinTime && client.current_week) {
-        const { data: checkinData } = await supabase
-          .from('weekly_checkins')
-          .select('id')
-          .eq('client_id', client.id)
-          .eq('week_number', client.current_week)
-          .maybeSingle()
-        setCheckinDone(!!checkinData)
-      }
-
-      const { data: codexFullData } = await supabase
-  .from('codex_data')
-  .select('battle_cry, deepest_reason')
-  .eq('client_id', client.id)
-  .maybeSingle()
-const hasSetup = !!(codexFullData?.battle_cry && codexFullData?.deepest_reason)
-setCodex(hasSetup)
-
-
-
-      setDataLoading(false)
-    }
-
-    if (!checking) fetchData()
-  }, [client, checking])
-
-  if (checking || loading || dataLoading) return <PageLoader />
+  if (checking || loading) return <PageLoader />
 
   if (!client) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4">
-        <div className="text-center max-w-sm">
-          <div className="text-4xl mb-4">👋</div>
-          <h2 className="text-lg font-medium text-[#0f172a] mb-2">
-            Welcome to GetFittWithMohit
-          </h2>
-          <p className="text-sm text-[#64748b] mb-6">
-            Let's get you set up. Complete your onboarding to get started.
-          </p>
-          <button
-            onClick={() => window.location.href = '/onboarding'}
-            className="bg-[#00D4E8] text-[#1a1f3a] px-8 py-3 rounded-xl text-sm font-medium hover:bg-[#00BED1] transition-colors"
-          >
-            Start Onboarding →
-          </button>
+      <Screen>
+        <div className="min-h-[70vh] flex flex-col items-center justify-center text-center gap-3 px-6">
+          <h1 className="text-2xl font-extrabold m-0">Welcome to GetFittWithMohit</h1>
+          <p className="text-base m-0" style={{ color: T.sec }}>Let’s get you set up. Complete your onboarding to get started.</p>
+          <Link href="/onboarding" className="mt-3 h-[52px] px-8 rounded-2xl flex items-center text-base font-bold" style={{ background: T.cyan, color: '#0a0f1a' }}>
+            Start onboarding
+          </Link>
         </div>
-      </div>
+      </Screen>
     )
   }
 
-  const today = new Date()
-  const dayName = DAY_NAMES[today.getDay()]
-  const quote = DAILY_QUOTES[today.getDay()]
-  const firstName = client?.full_name?.split(' ')[0] || 'there'
+  const { date, hour, dayIndex } = istParts()
+  const firstName = client.full_name?.split(' ')[0] || 'there'
+  const initials = (client.full_name || '?').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
-  const pendingItems: any[] = []
-  if (!checkinDone) pendingItems.push({
-    emoji: '📋',
-    label: `Week ${client?.current_week || ''} Check-in`,
-    description: '8–10 mins · Due this weekend',
-    href: '/checkin',
-    color: '#f59e0b',
-  })
-  if (!pledge) pendingItems.push({
-    emoji: '🤝',
-    label: 'Commitment Pledge',
-    description: 'Sign your promise to yourself',
-    href: '/pledge',
-    color: '#00D4E8',
-  })
-  if (!identity) pendingItems.push({
-    emoji: '🎯',
-    label: 'Purpose & Identity',
-    description: 'Your why, values and vision',
-    href: '/identity',
-    color: '#a855f7',
-  })
-  if (!storyDone) pendingItems.push({
-  emoji: '📖',
-  label: 'Your Story',
-  description: 'Tell us where you came from — builds your Codex',
-  href: '/codex/story',
-  color: '#4a7fd4',
-})
-if (!codex) pendingItems.push({
-  emoji: '📖',
-  label: 'Build Your Codex',
-  description: 'Your personal transformation document',
-  href: '/codex',
-  color: '#4a7fd4',
-})
+  const avatar = (
+    <Link href="/me" aria-label="Open your profile" className="w-10 h-10 rounded-full flex items-center justify-center text-[15px] font-bold mb-1 flex-shrink-0" style={{ background: T.navy, color: T.cyan }}>
+      {initials}
+    </Link>
+  )
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <Screen>
+      <LargeTitle eyebrow={date} title="Today" right={avatar} />
 
-      {/* Header */}
-      <div className="bg-[#1a1f3a] px-6 py-5">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="GetFittWithMohit" className="w-10 h-10 object-contain" />
-            <div>
-              <p className="text-[#00D4E8] text-xs font-medium tracking-widest uppercase">
-                GetFittWithMohit
-              </p>
-              <p className="text-white/40 text-xs mt-0.5">Transform to Inspire</p>
-            </div>
-          </div>
-          <button
-            onClick={signOut}
-            className="text-xs text-white/40 hover:text-white/70 transition-colors"
-          >
-            Sign out
-          </button>
-        </div>
-      </div>
+      {!data ? (
+        <>
+          <Skeleton h={88} />
+          <Skeleton h={220} />
+          <Skeleton h={64} />
+          <Skeleton h={64} />
+        </>
+      ) : (
+        <TodayList data={data} greeting={`${greeting}, ${firstName}`} onSaver={() => setSaverOpen(true)} />
+      )}
 
-      <div className="max-w-2xl mx-auto px-4 py-6">
+      <SectionTitle>Thought for today</SectionTitle>
+      <Card>
+        <p className="m-0 text-base leading-relaxed italic" style={{ color: T.sec }}>“{DAILY_QUOTES[dayIndex % DAILY_QUOTES.length]}”</p>
+      </Card>
 
-        {/* Greeting */}
-        <div className="mb-6">
-          <h2 className="text-xl font-medium text-[#0f172a]">
-            Hey {firstName} 👋
-          </h2>
-          <p className="text-sm text-[#64748b] mt-0.5">
-            {PHASE_EMOJI[client?.phase || '']} {client?.phase}
-            {client?.phase !== 'Onboarding' && ` · Week ${client?.current_week || 1}`}
-          </p>
-        </div>
-        {/* Today's workout */}
-        {client && <WorkoutCard clientId={client.id} />}
+      {saverOpen && <SaverSheet onClose={() => setSaverOpen(false)} />}
+    </Screen>
+  )
+}
 
-        {/* Today's PEAK Idea */}
-        {client && <PeakIdeaCard clientId={client.id} />}
+function TodayList({ data, greeting, onSaver }: { data: TodayData; greeting: string; onSaver: () => void }) {
+  const required = data.steps.filter((s) => !s.optional)
+  const doneCount = required.filter((s) => s.done).length
+  const current = required.find((s) => !s.done) || null
+  const allDone = required.length > 0 && !current
+  const pct = required.length ? Math.round((doneCount / required.length) * 100) : 0
 
-        {/* Daily check-in card */}
-        {client && <DailyCheckinCard clientId={client.id} />}
-
-        {/* PEAK Plate — AI meal scan */}
-        <button
-          onClick={() => window.location.href = '/plate'}
-          className="w-full bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-3 text-left hover:border-[#00D4E8] transition-colors"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs tracking-widest uppercase mb-1 text-[#0095A8]">PEAK Plate</p>
-              <p className="text-base font-medium text-[#0f172a]">Snap your meal — is it PEAK?</p>
-              <p className="text-xs mt-0.5 text-[#94a3b8]">Calories · Macros · Score · Smarter swaps</p>
-            </div>
-            <div className="text-3xl">📸</div>
-          </div>
-        </button>
-
-        {/* Daily ritual card */}
-        <button
-          onClick={() => window.location.href = '/ritual'}
-          className="w-full bg-[#1a1f3a] rounded-2xl p-5 mb-5 text-left hover:bg-[#141930] transition-colors"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-1">Daily Ritual</p>
-              <p className="text-white text-base font-medium">Begin your morning ritual</p>
-              <p className="text-white/40 text-xs mt-0.5">Strangest Secret · Goals · Affirmations · Codex</p>
-            </div>
-            <div className="text-3xl">🌅</div>
-          </div>
-        </button>
-
-        {/* Phase + motivation card */}
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-5">
-
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-xs text-[#94a3b8] uppercase tracking-wide mb-0.5">
-                Current phase
-              </p>
-              <p className="text-lg font-semibold text-[#0f172a]">
-                {PHASE_EMOJI[client?.phase || '']} {client?.phase || '–'}
-              </p>
-            </div>
-            {client?.phase !== 'Onboarding' && (
-              <div className="text-right">
-                <p className="text-xs text-[#94a3b8] uppercase tracking-wide mb-0.5">Week</p>
-                <p className="text-3xl font-bold text-[#1a1f3a]">
-                  {client?.current_week || 1}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className="border-t border-[#e2e8f0] mb-4" />
-
-          {pledge?.doing_this_for && (
-            <div className="mb-4">
-              <p className="text-xs text-[#94a3b8] mb-1">Doing this for</p>
-              <p className="text-sm font-medium text-[#00D4E8] leading-relaxed">
-                "{pledge.doing_this_for}"
-              </p>
-            </div>
+  return (
+    <>
+      <Card className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-base font-semibold">{greeting}</span>
+          {data.streak > 0 && (
+            <span className="flex items-center gap-1.5 text-sm font-semibold whitespace-nowrap" style={{ color: '#B45309' }}>
+              <Icon name="flame" size={18} />{data.streak}-day streak
+            </span>
           )}
-
-          <div className="border-l-2 border-[#00D4E8]/30 pl-3 mb-4">
-            <p className="text-xs text-[#64748b] italic leading-relaxed">
-              "{quote}"
-            </p>
-          </div>
-
-          <button
-            onClick={() => setSaverOpen(true)}
-            className="flex items-center gap-2 text-left hover:opacity-80 transition-opacity w-full"
-          >
-            <span className="text-xs text-[#94a3b8]">
-              🌅 {dayName} · Have you done your SAVER today?
-            </span>
-            <span className="text-xs text-[#00D4E8] underline underline-offset-2 flex-shrink-0">
-              What is SAVER?
-            </span>
-          </button>
-
         </div>
-
-        {/* Pending items */}
-        {pendingItems.length > 0 && (
-          <div className="mb-5">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b]" />
-              <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide">
-                Pending · {pendingItems.length} item{pendingItems.length > 1 ? 's' : ''}
-              </p>
-            </div>
-            <div className="flex flex-col gap-2">
-              {pendingItems.map((item) => (
-                <button
-                  key={item.href}
-                  onClick={() => window.location.href = item.href}
-                  className="flex items-center gap-4 bg-white border border-[#e2e8f0] rounded-xl p-4 text-left hover:border-[#00D4E8] transition-colors"
-                >
-                  <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center text-base flex-shrink-0"
-                    style={{ background: `${item.color}15` }}
-                  >
-                    {item.emoji}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-[#0f172a]">{item.label}</p>
-                    <p className="text-xs text-[#94a3b8] mt-0.5">{item.description}</p>
-                  </div>
-                  <span
-                    className="text-xs px-2.5 py-1 rounded-full font-medium flex-shrink-0"
-                    style={{ background: `${item.color}15`, color: item.color }}
-                  >
-                    Do it →
-                  </span>
-                </button>
-              ))}
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-2 rounded-full bg-[#E5E7EB] overflow-hidden" role="progressbar" aria-valuenow={doneCount} aria-valuemin={0} aria-valuemax={required.length} aria-label="Today’s progress">
+            <div className="h-2 rounded-full transition-all" style={{ width: `${pct}%`, background: T.cyan }} />
           </div>
-        )}
+          <span className="text-sm font-semibold whitespace-nowrap" style={{ color: T.sec }}>
+            {doneCount} of {required.length} done{data.xpToday ? ` · +${data.xpToday} XP` : ''}
+          </span>
+        </div>
+      </Card>
 
-        {/* All clear */}
-        {pendingItems.length === 0 && (
-          <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 mb-5 flex items-center gap-3">
-            <span className="text-xl">✅</span>
-            <div>
-              <p className="text-sm font-medium text-emerald-700">You're on track</p>
-              <p className="text-xs text-emerald-600/70 mt-0.5">Nothing pending · Keep showing up</p>
-            </div>
-          </div>
-        )}
-
-        {/* Quick access */}
-        <div className="mb-8">
-          <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-3">
-            Quick access
-          </p>
-          <div className="grid grid-cols-5 gap-2">
-            {QUICK_LINKS.map((item) => (
-              <button
-                key={item.href}
-                onClick={() => window.location.href = item.href}
-                className="flex flex-col items-center gap-1.5 bg-white border border-[#e2e8f0] rounded-xl py-3 px-1 hover:border-[#00D4E8] transition-colors"
-              >
-                <span className="text-xl">{item.emoji}</span>
-                <span className="text-xs text-[#64748b] text-center leading-tight">
-                  {item.label}
-                </span>
-              </button>
+      {data.setup.length > 0 && (
+        <>
+          <SectionTitle>Needs you</SectionTitle>
+          <Group>
+            {data.setup.map((item, i) => (
+              <Row
+                key={item.key}
+                icon={item.icon}
+                tint="amber"
+                title={item.title}
+                subtitle={item.subtitle}
+                href={item.href}
+                trailing={item.badge ? <Badge>{item.badge}</Badge> : undefined}
+                last={i === data.setup.length - 1}
+              />
             ))}
-          </div>
-        </div>
+          </Group>
+        </>
+      )}
 
-      </div>
+      <SectionTitle>Your day</SectionTitle>
+      {data.steps.map((s) =>
+        current && s.key === current.key ? (
+          <HeroStep key={s.key} step={s} onSaver={s.key === 'ritual' ? onSaver : undefined} />
+        ) : (
+          <StepRow key={s.key} step={s} />
+        )
+      )}
 
-      {/* Floating SAVER button */}
-      <button
-        onClick={() => setSaverOpen(true)}
-        className="fixed bottom-6 right-6 w-12 h-12 bg-[#1a1f3a] border border-[#00D4E8]/30 rounded-full flex items-center justify-center shadow-lg hover:border-[#00D4E8] transition-colors z-40"
-      >
-        <span className="text-sm font-bold text-[#00D4E8]">S</span>
-      </button>
-
-      {/* SAVER modal */}
-      {saverOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center"
-          onClick={() => setSaverOpen(false)}
-        >
-          <div
-            className="bg-white rounded-t-3xl w-full max-w-2xl p-6 pb-10 overflow-y-auto max-h-[90vh]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="w-10 h-1 bg-[#e2e8f0] rounded-full mx-auto mb-6" />
-
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="text-lg font-medium text-[#0f172a]">Your SAVER Routine</h3>
-                <p className="text-xs text-[#94a3b8] mt-0.5">Do this every morning · Takes 45–60 mins total</p>
-              </div>
-              <button
-                onClick={() => setSaverOpen(false)}
-                className="text-[#94a3b8] hover:text-[#64748b] text-xl leading-none"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              {[
-                {
-                  letter: 'S', word: 'Silence', duration: '5–10 mins', color: '#4a7fd4',
-                  steps: [
-                    'Find a quiet spot — no phone, no noise',
-                    'Sit comfortably and breathe slowly',
-                    'Read your goals out loud or write them down',
-                    'Ask yourself: What is the one thing I must do today?',
-                  ],
-                },
-                {
-                  letter: 'A', word: 'Affirmations', duration: '5 mins', color: '#00D4E8',
-                  steps: [
-                    'Write or speak 5–10 statements about who you are becoming',
-                    'Use present tense: "I am strong. I am consistent."',
-                    'Say them with conviction — feel them, don\'t just recite',
-                  ],
-                },
-                {
-                  letter: 'V', word: 'Visualisation', duration: '5 mins', color: '#a855f7',
-                  steps: [
-                    'Close your eyes and see your 6-month goal clearly',
-                    'Then see your 1-year self — how do you look, feel, move?',
-                    'See your 5-year vision — who have you become?',
-                    'Finally: What is the ONE thing you will accomplish today?',
-                  ],
-                },
-                {
-                  letter: 'E', word: 'Exercise', duration: '20–60 mins', color: '#f59e0b',
-                  steps: [
-                    'Follow your Coach Mohit programme',
-                    'Even on rest days — walk, stretch, move',
-                    'Non-negotiable · Your body is your vehicle',
-                  ],
-                },
-                {
-                  letter: 'R', word: 'Reading', duration: '10+ mins', color: '#22c55e',
-                  steps: [
-                    'Read a book that grows your mind',
-                    'Minimum 10 pages every morning',
-                    'Focus on health, mindset, business or biography',
-                  ],
-                },
-              ].map((item) => (
-                <div key={item.letter} className="flex gap-4">
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5"
-                    style={{ background: `${item.color}15`, border: `1px solid ${item.color}30` }}
-                  >
-                    <span className="text-sm font-bold" style={{ color: item.color }}>
-                      {item.letter}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="text-sm font-medium text-[#0f172a]">{item.word}</p>
-                      <span className="text-xs text-[#94a3b8]">· {item.duration}</span>
-                    </div>
-                    <ul className="flex flex-col gap-1">
-                      {item.steps.map((step, i) => (
-                        <li key={i} className="text-xs text-[#64748b] flex items-start gap-1.5">
-                          <span className="text-[#94a3b8] mt-0.5 flex-shrink-0">·</span>
-                          {step}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 bg-[#1a1f3a] rounded-xl p-4 text-center">
-              <p className="text-xs text-white/50 leading-relaxed">
-                Track how many days you completed SAVER in your{' '}
-                <span className="text-[#00D4E8]">weekly check-in</span>
-              </p>
-            </div>
-          </div>
+      {allDone && (
+        <div className="rounded-[22px] p-5 flex flex-col gap-2 text-white" style={{ background: T.navy }}>
+          <span className="text-xs font-bold tracking-[0.12em] uppercase" style={{ color: T.cyan }}>Day complete</span>
+          <span className="text-2xl font-extrabold leading-tight">Every box ticked. That’s who you’re becoming.</span>
+          <span className="text-[15px] text-[#CBD5E1]">Show up again tomorrow to keep the streak alive.</span>
         </div>
       )}
 
+      {data.highFive && (
+        <>
+          <SectionTitle>From Coach Mohit</SectionTitle>
+          <Card className="flex gap-3 items-start">
+            <span className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold flex-shrink-0" style={{ background: T.navy, color: T.cyan }}>M</span>
+            <span className="flex flex-col gap-0.5">
+              <span className="text-[15px] font-semibold">High-five on your {data.highFive} session</span>
+              <span className="text-sm" style={{ color: T.sec }}>Keep that energy going today.</span>
+            </span>
+          </Card>
+        </>
+      )}
+    </>
+  )
+}
+
+function HeroStep({ step, onSaver }: { step: TodayStep; onSaver?: () => void }) {
+  return (
+    <div className="rounded-[22px] p-5 flex flex-col gap-3.5 text-white" style={{ background: T.navy }}>
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold tracking-[0.12em] uppercase" style={{ color: T.cyan }}>Up now · {step.when}</span>
+        <span className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(0,212,232,0.14)', color: T.cyan }}>
+          <Icon name={step.icon} size={22} />
+        </span>
+      </div>
+      <div className="flex flex-col gap-1">
+        <span className="text-[26px] leading-tight font-extrabold tracking-tight">{step.title}</span>
+        <span className="text-[15px] text-[#CBD5E1]">{step.meta}</span>
+      </div>
+      <Link href={step.href} className="h-[54px] rounded-2xl flex items-center justify-center gap-2 text-[17px] font-bold" style={{ background: T.cyan, color: '#0a0f1a' }}>
+        {step.key === 'workout' && <svg width="16" height="16" viewBox="0 0 24 24" fill="#0a0f1a" aria-hidden="true"><polygon points="7,4 20,12 7,20" /></svg>}
+        {step.cta}
+      </Link>
+      {onSaver && (
+        <button type="button" onClick={onSaver} className="self-center text-sm font-semibold py-1" style={{ color: T.cyan }}>
+          What is SAVER?
+        </button>
+      )}
     </div>
+  )
+}
+
+function StepRow({ step }: { step: TodayStep }) {
+  return (
+    <Link href={step.href} className="bg-white rounded-2xl min-h-16 px-3.5 py-2.5 flex items-center gap-3">
+      {step.done ? (
+        <span className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#DCFCE7', color: '#15803D' }}>
+          <Icon name="check" size={20} strokeWidth={2.6} />
+        </span>
+      ) : (
+        <span className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ background: '#EEF2F6', color: T.sec }}>
+          <Icon name={step.icon} size={20} />
+        </span>
+      )}
+      <span className="flex-1 min-w-0 flex flex-col gap-0.5">
+        <span className="text-base font-semibold truncate" style={{ color: step.done ? T.ter : T.ink }}>{step.title}</span>
+        <span className="text-sm truncate" style={{ color: step.done ? '#15803D' : T.ter }}>
+          {step.done ? step.doneNote : `${step.when} · ${step.meta}`}
+        </span>
+      </span>
+      <span style={{ color: '#94a3b8' }}><Icon name="chevron" size={18} /></span>
+    </Link>
   )
 }
