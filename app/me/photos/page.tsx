@@ -7,6 +7,7 @@ import { useClient } from '@/hooks/useClient'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { Icon } from '@/components/ui/Icon'
 import { Card, LargeTitle, Screen, SectionTitle, T } from '@/components/ui/ios'
+import { StoredPhoto } from '@/components/ui/StoredPhoto'
 import { toast } from '@/lib/ui/feedback'
 import { formatDayLabel, istDate } from '@/lib/utils/istDate'
 import {
@@ -141,7 +142,7 @@ export default function ProgressPhotosPage() {
                     <div className="grid grid-cols-3 gap-2">
                       {POSES.map((p) => (
                         <div key={p} className="flex flex-col gap-1">
-                          <Thumb url={merged[p] ? urls[merged[p]!] : undefined} alt={`${POSE_LABEL[p]}, week ${w}`} />
+                          <Thumb url={merged[p] ? urls[merged[p]!] : undefined} path={merged[p]} alt={`${POSE_LABEL[p]}, week ${w}`} />
                           <span className="text-sm text-center" style={{ color: T.sec }}>{POSE_LABEL[p]}</span>
                         </div>
                       ))}
@@ -161,10 +162,9 @@ export default function ProgressPhotosPage() {
   )
 }
 
-function Thumb({ url, alt }: { url?: string; alt: string }) {
+function Thumb({ url, alt, path }: { url?: string; alt: string; path?: string | null }) {
   return url ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={url} alt={alt} className="w-full aspect-[3/4] object-cover rounded-xl bg-[#E5E7EB]" />
+    <StoredPhoto url={url} path={path} alt={alt} className="w-full aspect-[3/4] object-cover rounded-xl bg-[#E5E7EB]" />
   ) : (
     <div className="w-full aspect-[3/4] rounded-xl bg-[#EEF2F6] flex items-center justify-center text-sm" style={{ color: T.ter }}>—</div>
   )
