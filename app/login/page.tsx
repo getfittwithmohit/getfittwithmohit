@@ -103,7 +103,7 @@ export default function LoginPage() {
           <h1 className="text-[#1a1f3a] text-sm font-medium tracking-widest uppercase">
             GetFittWithMohit
           </h1>
-          <p className="text-[#94a3b8] text-xs mt-1">Transform to Inspire</p>
+          <p className="text-[#64748b] text-xs mt-1">Transform to Inspire</p>
         </div>
 
         {/* Step 1 — Email */}
@@ -214,7 +214,7 @@ export default function LoginPage() {
 
         {/* Coach login */}
         <div className="mt-6 pt-6 border-t border-[#e2e8f0] text-center">
-          <p className="text-xs text-[#94a3b8]">
+          <p className="text-xs text-[#64748b]">
             Coach Mohit?{' '}
             <button
               type="button"

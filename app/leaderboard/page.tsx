@@ -131,16 +131,16 @@ export default function LeaderboardPage() {
           ))}
         </div>
         {period === 'week' && (
-          <p className="text-xs text-[#94a3b8] mb-3 px-1">Monday to Sunday. Resets every Monday. Everyone starts level.</p>
+          <p className="text-xs text-[#64748b] mb-3 px-1">Monday to Sunday. Resets every Monday. Everyone starts level.</p>
         )}
         {period === 'last_week' && (
-          <p className="text-xs text-[#94a3b8] mb-3 px-1">Final standings for {lastWeekLabel()}.</p>
+          <p className="text-xs text-[#64748b] mb-3 px-1">Final standings for {lastWeekLabel()}.</p>
         )}
 
         {/* Rankings */}
         <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden divide-y divide-[#f1f5f9]">
           {rows.length === 0 && (
-            <p className="text-sm text-[#94a3b8] text-center py-10">No one on the board yet. Be the first — check in today.</p>
+            <p className="text-sm text-[#64748b] text-center py-10">No one on the board yet. Be the first — check in today.</p>
           )}
           {rows.map((row) => (
             <div
@@ -155,7 +155,7 @@ export default function LeaderboardPage() {
                 {row.is_me && <span className="text-xs text-[#0095A8] ml-2">You{row.is_hidden ? ' · hidden' : ''}</span>}
               </span>
               {period !== 'all' && (
-                <span className="text-xs text-[#94a3b8] whitespace-nowrap">{row.checkin_days ?? 0}/7 days</span>
+                <span className="text-xs text-[#64748b] whitespace-nowrap">{row.checkin_days ?? 0}/7 days</span>
               )}
               <span className="text-sm font-semibold text-[#1a1f3a]">{row.xp.toLocaleString('en-IN')} XP</span>
             </div>
@@ -164,7 +164,7 @@ export default function LeaderboardPage() {
 
         {/* How to earn */}
         <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mt-4">
-          <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-3">How to earn XP</p>
+          <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3">How to earn XP</p>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
             {[
               ['Daily check-in (same day)', 10],
@@ -189,7 +189,7 @@ export default function LeaderboardPage() {
 
         {/* Visibility */}
         <div className="flex items-center justify-between gap-4 mt-4 px-1">
-          <p className="text-xs text-[#94a3b8]">
+          <p className="text-xs text-[#64748b]">
             {iAmHidden
               ? 'You are hidden — other clients can’t see you. You still earn XP.'
               : 'Other clients see you as your first name and last initial.'}

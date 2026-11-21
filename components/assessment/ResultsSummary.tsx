@@ -59,7 +59,7 @@ function ResultCard({ result, test }: ResultCardProps) {
         </div>
       </div>
       {result.pain && (
-        <p className="text-xs text-[#94a3b8] mt-1 italic">
+        <p className="text-xs text-[#64748b] mt-1 italic">
           Note: {result.pain}
         </p>
       )}
@@ -100,14 +100,14 @@ export function ResultsSummary({
 
       {/* Coach notes */}
       <div className="mb-6">
-        <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-2">
+        <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-2">
           Coach Mohit's Notes
         </p>
         <textarea
           placeholder="Coach Mohit will add his observations after reviewing your results..."
           rows={3}
           readOnly
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#94a3b8] bg-[#f8fafc] resize-none"
+          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#64748b] bg-[#f8fafc] resize-none"
         />
       </div>
 

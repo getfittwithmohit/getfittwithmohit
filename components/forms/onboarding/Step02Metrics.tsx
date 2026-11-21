@@ -78,7 +78,7 @@ export function Step02Metrics({ onNext, onBack }: Props) {
         </p>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-xs text-[#94a3b8] mb-1 block">Feet</label>
+            <label className="text-xs text-[#64748b] mb-1 block">Feet</label>
             <select
               value={heightFeet}
               onChange={(e) => {
@@ -94,7 +94,7 @@ export function Step02Metrics({ onNext, onBack }: Props) {
             </select>
           </div>
           <div>
-            <label className="text-xs text-[#94a3b8] mb-1 block">Inches</label>
+            <label className="text-xs text-[#64748b] mb-1 block">Inches</label>
             <select
               value={heightInchRemainder}
               onChange={(e) => {
@@ -110,7 +110,7 @@ export function Step02Metrics({ onNext, onBack }: Props) {
             </select>
           </div>
         </div>
-        <p className="text-xs text-[#94a3b8] mt-1.5">
+        <p className="text-xs text-[#64748b] mt-1.5">
           {heightFeet}' {heightInchRemainder}" — {heightFeet * 12 + heightInchRemainder} inches total
         </p>
          {errors.height_inches && (

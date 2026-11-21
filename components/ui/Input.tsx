@@ -18,7 +18,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
         {hint && (
-          <span className="text-xs text-[#94a3b8]">{hint}</span>
+          <span className="text-xs text-[#64748b]">{hint}</span>
         )}
         <input
           ref={ref}

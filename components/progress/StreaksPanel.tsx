@@ -35,7 +35,7 @@ function StreakCard({
       </div>
       <div className="text-xs font-medium text-[#0f172a]">{label}</div>
       {sublabel && (
-        <div className="text-xs text-[#94a3b8] mt-0.5">{sublabel}</div>
+        <div className="text-xs text-[#64748b] mt-0.5">{sublabel}</div>
       )}
     </div>
   )

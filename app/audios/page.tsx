@@ -349,7 +349,7 @@ export default function AudioLibraryPage() {
 
       {/* Player */}
       {active && (
-        <div className="fixed bottom-0 inset-x-0 bg-[#1a1f3a] border-t border-white/10 px-5 pt-4 pb-6 z-40">
+        <div className="fixed inset-x-0 bg-[#1a1f3a] border-t border-white/10 px-5 pt-4 pb-4 z-40" style={{ bottom: 'var(--tabbar-h, 0px)' }}>
           <div className="max-w-2xl mx-auto">
             <p className="text-white text-sm font-medium truncate">{active.title}</p>
             <p className="text-white/40 text-xs truncate mb-3">
@@ -375,13 +375,13 @@ export default function AudioLibraryPage() {
             <div className="flex items-center justify-between">
               <button
                 onClick={cycleSpeed}
-                className="w-14 text-left text-xs text-white/50 hover:text-white transition-colors"
+                className="w-14 min-h-11 text-left text-sm text-white/60 hover:text-white transition-colors"
                 aria-label="Playback speed"
               >
                 {speed}×
               </button>
               <div className="flex items-center gap-5">
-                <button onClick={() => seekTo(time - 30)} className="text-white/40 text-xs hover:text-white/70 transition-colors">
+                <button onClick={() => seekTo(time - 30)} aria-label="Back 30 seconds" className="text-white/60 text-sm min-w-11 min-h-11 hover:text-white transition-colors">
                   -30s
                 </button>
                 <button
@@ -403,7 +403,7 @@ export default function AudioLibraryPage() {
                     </svg>
                   )}
                 </button>
-                <button onClick={() => seekTo(time + 30)} className="text-white/40 text-xs hover:text-white/70 transition-colors">
+                <button onClick={() => seekTo(time + 30)} aria-label="Forward 30 seconds" className="text-white/60 text-sm min-w-11 min-h-11 hover:text-white transition-colors">
                   +30s
                 </button>
               </div>

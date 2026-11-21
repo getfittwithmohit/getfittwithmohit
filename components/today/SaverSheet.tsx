@@ -17,11 +17,11 @@ export function SaverSheet({ onClose }: { onClose: () => void }) {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-lg font-medium text-[#0f172a]">Your SAVER Routine</h3>
-                <p className="text-xs text-[#94a3b8] mt-0.5">Do this every morning · Takes 45–60 mins total</p>
+                <p className="text-xs text-[#64748b] mt-0.5">Do this every morning · Takes 45–60 mins total</p>
               </div>
               <button
                 onClick={() => onClose()}
-                className="text-[#94a3b8] hover:text-[#64748b] text-xl leading-none"
+                className="text-[#64748b] hover:text-[#64748b] text-xl leading-none"
               >
                 ×
               </button>
@@ -84,12 +84,12 @@ export function SaverSheet({ onClose }: { onClose: () => void }) {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="text-sm font-medium text-[#0f172a]">{item.word}</p>
-                      <span className="text-xs text-[#94a3b8]">· {item.duration}</span>
+                      <span className="text-xs text-[#64748b]">· {item.duration}</span>
                     </div>
                     <ul className="flex flex-col gap-1">
                       {item.steps.map((step, i) => (
                         <li key={i} className="text-xs text-[#64748b] flex items-start gap-1.5">
-                          <span className="text-[#94a3b8] mt-0.5 flex-shrink-0">·</span>
+                          <span className="text-[#64748b] mt-0.5 flex-shrink-0">·</span>
                           {step}
                         </li>
                       ))}

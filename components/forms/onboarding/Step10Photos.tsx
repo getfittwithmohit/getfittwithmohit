@@ -33,9 +33,9 @@ function PhotoUpload({
     <div className="flex flex-col gap-1.5">
       <label className="text-xs font-medium text-[#64748b]">
         {label}
-        <span className="text-[#94a3b8] ml-1 font-normal">(optional)</span>
+        <span className="text-[#64748b] ml-1 font-normal">(optional)</span>
       </label>
-      <p className="text-xs text-[#94a3b8]">{hint}</p>
+      <p className="text-xs text-[#64748b]">{hint}</p>
       <div
         onClick={() => inputRef.current?.click()}
         className={`
@@ -53,14 +53,14 @@ function PhotoUpload({
             <p className="text-xs text-[#00D4E8] font-medium">
               {selectedFile.name}
             </p>
-            <p className="text-xs text-[#94a3b8] mt-0.5">
+            <p className="text-xs text-[#64748b] mt-0.5">
               {(selectedFile.size / 1024).toFixed(0)} KB · tap to change
             </p>
           </div>
         ) : (
           <div>
             <div className="text-xl text-[#00D4E8] mb-1">+</div>
-            <p className="text-xs text-[#94a3b8]">Tap to upload</p>
+            <p className="text-xs text-[#64748b]">Tap to upload</p>
           </div>
         )}
         <input

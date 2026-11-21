@@ -45,7 +45,7 @@ export function DailyCheckinCard({ clientId }: { clientId: string }) {
                 ? `✓ Done for today · +${state!.xpToday} XP`
                 : 'Check in for today — 1 minute'}
           </p>
-          <p className={`text-xs mt-0.5 ${done ? 'text-[#94a3b8]' : 'text-[#1a1f3a]/60'}`}>
+          <p className={`text-xs mt-0.5 ${done ? 'text-[#64748b]' : 'text-[#1a1f3a]/60'}`}>
             {done ? 'Tap to review or edit' : 'Workout · Nutrition · Steps · Sleep · Water'}
           </p>
         </div>

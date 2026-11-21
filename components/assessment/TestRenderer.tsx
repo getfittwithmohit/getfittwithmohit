@@ -75,7 +75,7 @@ export function TestRenderer({
         >
           {test.parameter}
         </span>
-        <span className="text-xs text-[#94a3b8]">
+        <span className="text-xs text-[#64748b]">
           Test {testNumber} of {totalTests}
         </span>
       </div>
@@ -118,7 +118,7 @@ export function TestRenderer({
           <div key={field.label}>
             <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
               {field.label}
-              <span className="text-[#94a3b8] ml-1">({field.unit})</span>
+              <span className="text-[#64748b] ml-1">({field.unit})</span>
             </label>
             <input
               ref={(el) => { fieldRefs.current[field.label] = el }}
@@ -163,7 +163,7 @@ export function TestRenderer({
       <div className="mb-6">
         <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
           Pain or discomfort?
-          <span className="text-[#94a3b8] ml-1 font-normal">(optional)</span>
+          <span className="text-[#64748b] ml-1 font-normal">(optional)</span>
         </label>
         <textarea
           ref={painRef}

@@ -48,7 +48,7 @@ export function EnvironmentSelector({ selected, onSelect, onNext }: Props) {
               {protocol.label}
             </div>
             <div className={`text-xs ${
-              selected === key ? 'text-[#00D4E8]/60' : 'text-[#94a3b8]'
+              selected === key ? 'text-[#00D4E8]/60' : 'text-[#64748b]'
             }`}>
               {protocol.description}
             </div>

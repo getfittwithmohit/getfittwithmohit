@@ -313,7 +313,7 @@ export default function DailyCheckinPage() {
               </p>
             )}
             <div className="flex items-center justify-between mb-4">
-              <p className="text-xs text-[#94a3b8] uppercase tracking-wide">XP earned {isToday ? 'today' : 'that day'}</p>
+              <p className="text-xs text-[#64748b] uppercase tracking-wide">XP earned {isToday ? 'today' : 'that day'}</p>
               <p className="text-2xl font-semibold text-[#1a1f3a]">+{xpTotal}</p>
             </div>
             {xpForDate.length > 0 ? (
@@ -326,7 +326,7 @@ export default function DailyCheckinPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-[#94a3b8] mb-4">
+              <p className="text-xs text-[#64748b] mb-4">
                 {isToday ? 'Your XP will show here.' : 'Late check-ins don’t earn XP.'}
               </p>
             )}
@@ -393,7 +393,7 @@ export default function DailyCheckinPage() {
                 onChange={(e) => set('steps', e.target.value)}
                 className="w-full px-3 py-2.5 text-base border border-[#e2e8f0] rounded-lg focus:outline-none focus:border-[#00D4E8]"
               />
-              <p className="text-xs text-[#94a3b8] mt-1.5">Target: {DAILY_TARGETS.steps.toLocaleString('en-IN')}</p>
+              <p className="text-xs text-[#64748b] mt-1.5">Target: {DAILY_TARGETS.steps.toLocaleString('en-IN')}</p>
             </Question>
 
             <Question n={4} title="Sleep last night" error={fieldErrors.sleep_hours || fieldErrors.sleep_quality}>
@@ -424,7 +424,7 @@ export default function DailyCheckinPage() {
                 start={2}
                 unit="L"
               />
-              <p className="text-xs text-[#94a3b8] mt-1.5">Target: {DAILY_TARGETS.waterLitres} L</p>
+              <p className="text-xs text-[#64748b] mt-1.5">Target: {DAILY_TARGETS.waterLitres} L</p>
             </Question>
 
             <Question n={7} title="Rituals completed?">
@@ -481,7 +481,7 @@ export default function DailyCheckinPage() {
               {saving ? 'Saving…' : savedForDate ? 'Save changes' : 'Submit check-in'}
             </button>
             {savedForDate && (
-              <button onClick={() => { storeDraft(date, null); setDraft(fromSaved(savedForDate)); setEditing(false) }} className="text-sm text-[#94a3b8]">
+              <button onClick={() => { storeDraft(date, null); setDraft(fromSaved(savedForDate)); setEditing(false) }} className="text-sm text-[#64748b]">
                 Cancel
               </button>
             )}
@@ -633,7 +633,7 @@ function Stepper({
         <span className={`text-2xl font-semibold ${value === null ? 'text-[#cbd5e1]' : 'text-[#0f172a]'}`}>
           {value === null ? '–' : value}
         </span>
-        <span className="text-sm text-[#94a3b8] ml-1">{unit}</span>
+        <span className="text-sm text-[#64748b] ml-1">{unit}</span>
       </div>
       <button
         type="button"

@@ -41,7 +41,7 @@ export function BlueprintCard({ data, currentWeightKg, clientName }: BlueprintCa
       <h3 className="text-base font-semibold text-[#0f172a] mb-1">
         Fat Loss Blueprint
       </h3>
-      <p className="text-xs text-[#94a3b8] mb-4">
+      <p className="text-xs text-[#64748b] mb-4">
         Based on current weight {currentWeightKg} kg · Ideal weight {idealWeightKg} kg
       </p>
 
@@ -64,16 +64,16 @@ export function BlueprintCard({ data, currentWeightKg, clientName }: BlueprintCa
       <div className="grid grid-cols-2 gap-3">
         {macros.map((m) => (
           <div key={m.label} className="bg-[#f8fafc] rounded-xl p-4">
-            <p className="text-xs text-[#94a3b8] uppercase tracking-wide mb-1">{m.label}</p>
+            <p className="text-xs text-[#64748b] uppercase tracking-wide mb-1">{m.label}</p>
             <p className="text-2xl font-bold" style={{ color: m.color }}>
               {m.value.toLocaleString()}
-              <span className="text-sm font-medium text-[#94a3b8] ml-1">{m.unit}</span>
+              <span className="text-sm font-medium text-[#64748b] ml-1">{m.unit}</span>
             </p>
           </div>
         ))}
       </div>
 
-      <p className="text-xs text-[#94a3b8] mt-4 leading-relaxed">
+      <p className="text-xs text-[#64748b] mt-4 leading-relaxed">
         Calories = weight × 22 · Protein = ideal weight × 1.6 · Fats = weight × 0.6 ·
         Fiber = (calories/1000) × 14 · Carbs = remaining calories ÷ 4
       </p>

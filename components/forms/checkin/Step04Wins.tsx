@@ -55,7 +55,7 @@ export function Step04Wins({ onNext, onBack }: Props) {
       <div>
         <p className="text-xs font-medium text-[#64748b] mb-1">
           Biggest wins this week
-          <span className="text-[#94a3b8] ml-1 font-normal">
+          <span className="text-[#64748b] ml-1 font-normal">
             — no win is too small
           </span>
         </p>
