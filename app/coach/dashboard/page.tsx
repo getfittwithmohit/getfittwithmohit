@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { RenewalsPanel } from '@/components/dashboard/RenewalsPanel'
 import { useClients, ClientSummary } from '@/hooks/useClients'
 import { ClientList } from '@/components/dashboard/ClientList'
@@ -57,7 +57,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#f8fafc] flex flex-col">
 
       {/* Top bar */}
-      <div className="bg-[#1a1f3a] px-4 md:px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 flex-shrink-0">
+      <div className={`${selected ? 'hidden md:flex' : 'flex'} bg-[#1a1f3a] px-4 md:px-6 py-4 flex-col md:flex-row md:items-center md:justify-between gap-3 flex-shrink-0`}>
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <img
@@ -106,7 +106,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Summary bar */}
-      <div className="bg-white border-b border-[#e2e8f0] px-6 py-3 flex items-center gap-6 flex-shrink-0 overflow-x-auto">
+      <div className={`${selected ? 'hidden md:flex' : 'flex'} bg-white border-b border-[#e2e8f0] px-4 md:px-6 py-3 items-center gap-6 flex-shrink-0 overflow-x-auto`}>
         <div className="text-center flex-shrink-0">
           <div className="text-lg font-medium text-[#0f172a]">{total}</div>
           <div className="text-xs text-[#94a3b8] uppercase tracking-wide">Total</div>
@@ -138,12 +138,15 @@ export default function DashboardPage() {
       </div>
 
       {/* Subscriptions ending soon */}
-      <RenewalsPanel />
+      <div className={selected ? 'hidden md:block' : undefined}>
+        <RenewalsPanel />
+      </div>
 
-      {/* Main split view */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* Main split view. Phones show one pane at a time: the list, or the
+          selected client full-screen with a back button. */}
+      <div className="flex flex-1 md:overflow-hidden">
 
-        <div className="w-72 flex-shrink-0 border-r border-[#e2e8f0] bg-white overflow-hidden flex flex-col">
+        <div className={`${selected ? 'hidden md:flex' : 'flex'} w-full md:w-72 flex-shrink-0 md:border-r border-[#e2e8f0] bg-white md:overflow-hidden flex-col`}>
           <div className="px-4 py-3 border-b border-[#e2e8f0] flex items-center justify-between">
             <span className="text-xs font-medium text-[#64748b] uppercase tracking-wide">
               Clients
@@ -152,17 +155,29 @@ export default function DashboardPage() {
           <ClientList
             clients={clients}
             selectedId={selected?.id || null}
-            onSelect={setSelected}
+            onSelect={(c) => { setSelected(c); window.scrollTo(0, 0) }}
             onStatusChange={setClientStatus}
           />
         </div>
 
-        <div className="flex-1 bg-white overflow-hidden">
-          <DetailPanel
-            client={selected}
-            onFlag={flagClient}
-            onSaveNotes={saveNotes}
-          />
+        <div className={`${selected ? 'flex' : 'hidden md:flex'} flex-1 min-w-0 flex-col bg-white md:overflow-hidden`}>
+          {selected && (
+            <button
+              type="button"
+              onClick={() => setSelected(null)}
+              className="md:hidden flex items-center gap-1 min-h-12 px-3 text-[17px] font-medium text-[#007A8A] border-b border-[#e2e8f0] bg-white sticky top-0 z-10"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+              All clients
+            </button>
+          )}
+          <div className="flex-1 min-h-0">
+            <DetailPanel
+              client={selected}
+              onFlag={flagClient}
+              onSaveNotes={saveNotes}
+            />
+          </div>
         </div>
 
       </div>

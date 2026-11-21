@@ -143,7 +143,7 @@ export function DetailPanel({
   }
 
   return (
-    <div className="h-full overflow-y-auto px-6 py-5">
+    <div className="h-full overflow-y-auto px-4 md:px-6 py-5">
 
       {/* Top — name + phase */}
       <div className="flex items-start justify-between mb-4">
@@ -205,7 +205,7 @@ export function DetailPanel({
       )}
 
       {/* Stat cards */}
-      <div className="grid grid-cols-4 gap-2 mb-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
         <StatCard label="Week" value={`Wk ${client.current_week}`} />
         <StatCard
           label="Streak"
