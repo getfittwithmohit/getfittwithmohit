@@ -89,7 +89,7 @@ export default function MePage() {
 
       <SectionTitle>Progress</SectionTitle>
       <Group>
-        <Row icon="clipboard" title="Weekly check-in" subtitle="Weight, waist, photos" href="/checkin" trailing={weeklyDue ? <Badge>{weeklyDue}</Badge> : undefined} />
+        <Row icon="clipboard" title="Weekly check-in" subtitle="Weight, measurements, how the week went" href="/checkin" trailing={weeklyDue ? <Badge>{weeklyDue}</Badge> : undefined} />
         <Row icon="chart" title="My progress" subtitle="Weight, waist and streak charts" href="/home/progress" />
         <Row icon="file" title="Transformation report" subtitle="Your 7-section report" href="/home/report" last />
       </Group>

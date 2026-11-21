@@ -158,7 +158,7 @@ export async function loadSetupItems(client: { id: string; current_week: number 
   ])
 
   const items: SetupItem[] = []
-  if (!weekly.data) items.push({ key: 'weekly', icon: 'clipboard', title: `Week ${client.current_week} check-in`, subtitle: 'About 10 minutes · weight, photos', href: '/checkin', badge: weekday === 7 ? 'Due today' : 'Due Sun' })
+  if (!weekly.data) items.push({ key: 'weekly', icon: 'clipboard', title: `Week ${client.current_week} check-in`, subtitle: 'About 10 minutes · weight, measurements', href: '/checkin', badge: weekday === 7 ? 'Due today' : 'Due Sun' })
   if (!pledge.data) items.push({ key: 'pledge', icon: 'pen', title: 'Sign your pledge', subtitle: 'Your promise to yourself', href: '/pledge' })
   if (!identity.data) items.push({ key: 'identity', icon: 'target', title: 'Purpose & identity', subtitle: 'Your why, values and vision', href: '/identity' })
   const c = codex.data

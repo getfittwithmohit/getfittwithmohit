@@ -3,8 +3,8 @@ import type { MetadataRoute } from 'next'
 // Lets clients "Add to Home Screen" and open the app full-screen.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'GetFittWithMohit',
-    short_name: 'GetFitt',
+    name: 'GFM 1:1 Coaching',
+    short_name: 'GFM 1:1',
     description: 'Your 1:1 transformation and peak performance coaching app with Coach Mohit.',
     start_url: '/home',
     display: 'standalone',
