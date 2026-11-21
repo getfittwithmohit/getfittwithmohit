@@ -1,5 +1,6 @@
 'use client'
 
+import { Icon, type IconName } from '@/components/ui/Icon'
 import { toast } from '@/lib/ui/feedback'
 import { useState, useEffect, useRef } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
@@ -277,13 +278,13 @@ export default function RitualPage() {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-6">
         <div className="max-w-sm w-full text-center">
-          <div className="text-6xl mb-6">🔥</div>
+          <div className="mb-6 flex justify-center text-[#F59E0B]"><Icon name="flame" size={64} strokeWidth={1.6} /></div>
           <h1 className="text-4xl font-bold text-white mb-1">{streak}</h1>
           <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-1">
             {streak === 1 ? 'day streak' : 'days strong'}
           </p>
           {longest > streak && (
-            <p className="text-white/20 text-xs mb-8">Personal best: {longest} days</p>
+            <p className="text-white/60 text-sm mb-8">Personal best: {longest} days</p>
           )}
           {!alreadyDone && (
             <p className="text-white/50 text-sm leading-relaxed mb-2">
@@ -295,12 +296,12 @@ export default function RitualPage() {
               Already done today. Come back tomorrow and keep the fire burning.
             </p>
           )}
-          <p className="text-white/20 text-xs mb-10">Keep showing up. Every day compounds.</p>
+          <p className="text-white/60 text-sm mb-10">Keep showing up. Every day compounds.</p>
           <button
             onClick={() => window.location.href = '/home'}
-            className="w-full bg-[#00D4E8] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold"
+            className="w-full bg-[#00D4E8] text-[#0a0a0f] min-h-[54px] rounded-2xl text-[17px] font-bold"
           >
-            Back to home
+            Back to Today
           </button>
         </div>
       </div>
@@ -310,11 +311,11 @@ export default function RitualPage() {
   const allDone = completedSteps.length === 5
 
   const ITEMS = [
-    { id: 'secret', emoji: '🎧', label: 'The Strangest Secret', sub: 'Listen · Earl Nightingale · ~30 mins' },
-    { id: 'goals', emoji: '🎯', label: 'Goal Card', sub: 'Read your quarterly goals out loud' },
-    { id: 'affirmations', emoji: '🎙️', label: 'Affirmations', sub: 'Listen to your voice · Your identity' },
-    { id: 'write', emoji: '✍️', label: '20 Goals', sub: 'Write fresh · 10 per page · Present tense' },
-    { id: 'codex', emoji: '📖', label: 'Your Codex', sub: 'Read your personal transformation biography' },
+    { id: 'secret', icon: 'headphones' as IconName, label: 'The Strangest Secret', sub: 'Listen · Earl Nightingale · ~30 mins' },
+    { id: 'goals', icon: 'target' as IconName, label: 'Goal Card', sub: 'Read your quarterly goals out loud' },
+    { id: 'affirmations', icon: 'mic' as IconName, label: 'Affirmations', sub: 'Listen to your voice · Your identity' },
+    { id: 'write', icon: 'pen' as IconName, label: '20 Goals', sub: 'Write fresh · 10 per page · Present tense' },
+    { id: 'codex', icon: 'codex' as IconName, label: 'Your Codex', sub: 'Read your personal transformation biography' },
   ]
 
   return (
@@ -326,17 +327,18 @@ export default function RitualPage() {
       <div className="px-6 pt-8 pb-6 max-w-lg mx-auto">
         <button
           onClick={() => window.location.href = '/home'}
-          className="text-white/25 text-xs mb-6 block hover:text-white/50 transition-colors"
+          className="text-white/60 text-[15px] min-h-11 mb-3 flex items-center gap-1 hover:text-white transition-colors"
         >
-          ← Home
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+          Today
         </button>
         <p className="text-[#00D4E8] text-xs font-medium tracking-widest uppercase mb-1">
           {dayName} · Daily Ritual
         </p>
-        <h1 className="text-white text-2xl font-semibold mb-1">
+        <h1 className="text-white text-[28px] leading-tight font-bold mb-1">
           {greeting}, {firstName}.
         </h1>
-        <p className="text-white/30 text-sm">
+        <p className="text-white/60 text-base">
           {completedSteps.length === 0
             ? 'The world is quiet. This time is yours.'
             : completedSteps.length < 5
@@ -347,8 +349,8 @@ export default function RitualPage() {
         {/* Streak badge */}
         {streakData?.current_streak > 0 && (
           <div className="flex items-center gap-2 mt-4">
-            <span className="text-lg">🔥</span>
-            <span className="text-white/50 text-xs">{streakData.current_streak} day streak</span>
+            <span className="text-[#F59E0B]"><Icon name="flame" size={18} /></span>
+            <span className="text-white/70 text-sm">{streakData.current_streak} day streak</span>
           </div>
         )}
       </div>
@@ -382,12 +384,12 @@ export default function RitualPage() {
                 onClick={() => setExpanded(open ? null : item.id)}
                 className="w-full flex items-center gap-4 px-5 py-4 text-left"
               >
-                <span className="text-2xl flex-shrink-0">{item.emoji}</span>
+                <span className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${done ? 'bg-[#00D4E8]/15 text-[#00D4E8]' : 'bg-white/[0.06] text-white/80'}`}><Icon name={item.icon} size={20} /></span>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium ${done ? 'text-[#00D4E8]' : 'text-white'}`}>
+                  <p className={`text-base font-semibold ${done ? 'text-[#00D4E8]' : 'text-white'}`}>
                     {item.label}
                   </p>
-                  <p className="text-xs text-white/30 mt-0.5 truncate">{item.sub}</p>
+                  <p className="text-sm text-white/60 mt-0.5 truncate">{item.sub}</p>
                 </div>
                 {done ? (
                   <div className="w-6 h-6 rounded-full bg-[#00D4E8] flex items-center justify-center flex-shrink-0">
@@ -414,7 +416,7 @@ export default function RitualPage() {
                   {/* ── STRANGEST SECRET ── */}
                   {item.id === 'secret' && (
                     <div>
-                      <p className="text-white/40 text-xs leading-relaxed mb-5">
+                      <p className="text-white/65 text-sm leading-relaxed mb-5">
                         Listen with your eyes closed. Let every word land before the day begins.
                       </p>
 
@@ -436,7 +438,7 @@ export default function RitualPage() {
                         </div>
 
                         {/* Progress */}
-                        <div className="flex justify-between text-xs text-white/25 mb-2">
+                        <div className="flex justify-between text-sm text-white/60 mb-2">
                           <span>{formatTime(audioTime)}</span>
                           <span>{audioDuration ? formatTime(audioDuration) : '30:00'}</span>
                         </div>
@@ -451,7 +453,7 @@ export default function RitualPage() {
                         <div className="flex items-center justify-center gap-4">
                           <button
                             onClick={() => { if (audioRef.current) audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 30) }}
-                            className="text-white/30 text-xs hover:text-white/60 transition-colors"
+                            className="text-white/60 text-sm hover:text-white/60 transition-colors"
                           >
                             -30s
                           </button>
@@ -472,14 +474,14 @@ export default function RitualPage() {
                           </button>
                           <button
                             onClick={() => { if (audioRef.current) audioRef.current.currentTime = Math.min(audioDuration, audioRef.current.currentTime + 30) }}
-                            className="text-white/30 text-xs hover:text-white/60 transition-colors"
+                            className="text-white/60 text-sm hover:text-white/60 transition-colors"
                           >
                             +30s
                           </button>
                         </div>
                       </div>
 
-                      <p className="text-white/20 text-xs text-center mb-4">
+                      <p className="text-white/60 text-sm text-center mb-4">
                         {listenedEnough ? '✓ Ready to mark complete' : 'Listen for at least 5 minutes to mark complete'}
                       </p>
 
@@ -494,7 +496,7 @@ export default function RitualPage() {
                         </button>
                         <button
                           onClick={() => markDone('secret')}
-                          className="px-4 py-3 rounded-xl text-xs text-white/25 hover:text-white/50 transition-colors border border-white/10"
+                          className="px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white/50 transition-colors border border-white/10"
                         >
                           Skip
                         </button>
@@ -505,7 +507,7 @@ export default function RitualPage() {
                   {/* ── GOAL CARD ── */}
                   {item.id === 'goals' && (
                     <div>
-                      <p className="text-white/40 text-xs leading-relaxed mb-4">
+                      <p className="text-white/65 text-sm leading-relaxed mb-4">
                         Read these out loud. Slowly. With full conviction they are already done.
                       </p>
 
@@ -518,16 +520,16 @@ export default function RitualPage() {
                             <div key={i} className="bg-white/5 rounded-xl p-4">
                               <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-2">{g.label}</p>
                               <p className="text-white text-sm leading-relaxed">{g.text}</p>
-                              {g.deadline && <p className="text-white/25 text-xs mt-2">By: {g.deadline}</p>}
+                              {g.deadline && <p className="text-white/60 text-sm mt-2">By: {g.deadline}</p>}
                             </div>
                           ))}
                         </div>
                       ) : (
                         <div className="bg-white/5 rounded-xl p-4 text-center mb-4">
-                          <p className="text-white/30 text-xs mb-3">No goal card yet.</p>
+                          <p className="text-white/60 text-sm mb-3">No goal card yet.</p>
                           <button
                             onClick={() => window.location.href = '/ritual/goal-card'}
-                            className="text-[#00D4E8] text-xs underline underline-offset-2"
+                            className="text-[#00D4E8] text-sm underline underline-offset-2"
                           >
                             Set up my goal card →
                           </button>
@@ -544,7 +546,7 @@ export default function RitualPage() {
                         </button>
                         <button
                           onClick={() => window.location.href = '/ritual/goal-card'}
-                          className="px-4 py-3 rounded-xl text-xs text-white/25 hover:text-white/50 border border-white/10 transition-colors"
+                          className="px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white/50 border border-white/10 transition-colors"
                         >
                           Edit
                         </button>
@@ -555,7 +557,7 @@ export default function RitualPage() {
                   {/* ── AFFIRMATIONS ── */}
                   {item.id === 'affirmations' && (
                     <div>
-                      <p className="text-white/40 text-xs leading-relaxed mb-4">
+                      <p className="text-white/65 text-sm leading-relaxed mb-4">
                         Your own voice is the most powerful signal your mind receives. Hear yourself say who you are becoming.
                       </p>
 
@@ -571,7 +573,7 @@ export default function RitualPage() {
                       {generatingAff && (
                         <div className="flex items-center gap-3 py-3 mb-3">
                           <div className="w-4 h-4 border border-white/20 border-t-[#00D4E8] rounded-full animate-spin flex-shrink-0" />
-                          <p className="text-white/30 text-xs">Generating your affirmations...</p>
+                          <p className="text-white/60 text-sm">Generating your affirmations...</p>
                         </div>
                       )}
 
@@ -579,7 +581,7 @@ export default function RitualPage() {
                         <>
                           {/* Affirmation preview */}
                           <div className="bg-white/5 rounded-xl p-4 max-h-32 overflow-y-auto mb-3">
-                            <p className="text-white/40 text-xs leading-relaxed whitespace-pre-line">
+                            <p className="text-white/65 text-sm leading-relaxed whitespace-pre-line">
                               {affirmationText.split('\n').slice(0, 10).join('\n')}...
                             </p>
                           </div>
@@ -608,8 +610,8 @@ export default function RitualPage() {
                                 )}
                               </button>
                               <div>
-                                <p className="text-white/60 text-xs font-medium">Your affirmation recording</p>
-                                <p className="text-white/25 text-xs">{affPlaying ? 'Playing...' : 'Tap to listen'}</p>
+                                <p className="text-white/60 text-sm font-medium">Your affirmation recording</p>
+                                <p className="text-white/60 text-sm">{affPlaying ? 'Playing...' : 'Tap to listen'}</p>
                               </div>
                             </div>
                           )}
@@ -618,7 +620,7 @@ export default function RitualPage() {
                           {!recording && !uploadingRec && (
                             <button
                               onClick={startRecording}
-                              className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-xs text-white/40 hover:border-red-500/40 hover:text-red-400 transition-all flex items-center justify-center gap-2 mb-3"
+                              className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-sm text-white/65 hover:border-red-500/40 hover:text-red-400 transition-all flex items-center justify-center gap-2 mb-3"
                             >
                               <span className="w-2 h-2 rounded-full bg-red-500" />
                               {affirmationUrl ? 'Re-record' : 'Record my affirmations'}
@@ -629,11 +631,11 @@ export default function RitualPage() {
                             <div className="bg-red-950/30 border border-red-500/20 rounded-xl p-4 mb-3 flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                <span className="text-red-400 text-xs font-medium">{formatTime(recordingTime)}</span>
+                                <span className="text-red-400 text-sm font-medium">{formatTime(recordingTime)}</span>
                               </div>
                               <button
                                 onClick={stopRecording}
-                                className="bg-red-500 text-white px-4 py-1.5 rounded-lg text-xs font-medium"
+                                className="bg-red-500 text-white px-4 py-1.5 rounded-lg text-sm font-medium"
                               >
                                 Stop
                               </button>
@@ -643,7 +645,7 @@ export default function RitualPage() {
                           {uploadingRec && (
                             <div className="flex items-center gap-2 py-2 mb-3">
                               <div className="w-3 h-3 border border-white/20 border-t-[#00D4E8] rounded-full animate-spin" />
-                              <p className="text-white/25 text-xs">Saving recording...</p>
+                              <p className="text-white/60 text-sm">Saving recording...</p>
                             </div>
                           )}
                         </>
@@ -659,7 +661,7 @@ export default function RitualPage() {
                         </button>
                         <button
                           onClick={() => markDone('affirmations')}
-                          className="px-4 py-3 rounded-xl text-xs text-white/25 hover:text-white/50 border border-white/10 transition-colors"
+                          className="px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white/50 border border-white/10 transition-colors"
                         >
                           Skip
                         </button>
@@ -670,7 +672,7 @@ export default function RitualPage() {
                   {/* ── 20 GOALS ── */}
                   {item.id === 'write' && (
                     <div>
-                      <p className="text-white/40 text-xs leading-relaxed mb-4">
+                      <p className="text-white/65 text-sm leading-relaxed mb-4">
                         Do not look at yesterday's list. Write fresh. Present tense — as if already achieved.
                       </p>
 
@@ -680,7 +682,7 @@ export default function RitualPage() {
                           <button
                             key={p}
                             onClick={() => setGoalsPage(p)}
-                            className="flex-1 py-2 rounded-lg text-xs font-medium transition-all"
+                            className="flex-1 py-2 rounded-lg text-sm font-medium transition-all"
                             style={{
                               background: goalsPage === p ? '#00D4E8' : 'transparent',
                               color: goalsPage === p ? '#0a0a0f' : 'rgba(255,255,255,0.3)',
@@ -696,7 +698,7 @@ export default function RitualPage() {
                           const idx = goalsPage === 1 ? i : i + 10
                           return (
                             <div key={idx} className="flex items-center gap-2">
-                              <span className="text-[#00D4E8] text-xs font-medium w-5 text-right flex-shrink-0">
+                              <span className="text-[#00D4E8] text-sm font-medium w-5 text-right flex-shrink-0">
                                 {idx + 1}.
                               </span>
                               <input
@@ -708,7 +710,7 @@ export default function RitualPage() {
                                   setGoals(updated)
                                 }}
                                 placeholder={`Goal ${idx + 1}...`}
-                                className="flex-1 bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-white text-xs placeholder:text-white/15 focus:outline-none focus:border-[#00D4E8]/30 transition-colors"
+                                className="flex-1 bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-white text-sm placeholder:text-white/15 focus:outline-none focus:border-[#00D4E8]/30 transition-colors"
                               />
                             </div>
                           )
@@ -729,25 +731,25 @@ export default function RitualPage() {
                   {/* ── CODEX ── */}
                   {item.id === 'codex' && (
                     <div>
-                      <p className="text-white/40 text-xs leading-relaxed mb-4">
+                      <p className="text-white/65 text-sm leading-relaxed mb-4">
                         Open your biography. Read it fully. Let it remind you who you are and why you started.
                       </p>
 
                       {codexSection ? (
                         <div className="bg-white/5 rounded-xl p-4 mb-4">
-                          <p className="text-white/50 text-xs leading-relaxed line-clamp-4">
+                          <p className="text-white/50 text-sm leading-relaxed line-clamp-4">
                             {codexSection}
                           </p>
                         </div>
                       ) : (
                         <div className="bg-white/5 rounded-xl p-4 mb-4 text-center">
-                          <p className="text-white/25 text-xs">Codex not written yet.</p>
+                          <p className="text-white/60 text-sm">Codex not written yet.</p>
                         </div>
                       )}
 
                       <button
                         onClick={() => window.open('/codex/view', '_blank')}
-                        className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-xs text-white/50 hover:border-[#00D4E8]/40 transition-colors mb-2"
+                        className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-sm text-white/50 hover:border-[#00D4E8]/40 transition-colors mb-2"
                       >
                         Open full Codex →
                       </button>
@@ -762,7 +764,7 @@ export default function RitualPage() {
                         </button>
                         <button
                           onClick={() => markDone('codex')}
-                          className="px-4 py-3 rounded-xl text-xs text-white/25 hover:text-white/50 border border-white/10 transition-colors"
+                          className="px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white/50 border border-white/10 transition-colors"
                         >
                           Skip
                         </button>
@@ -783,20 +785,20 @@ export default function RitualPage() {
           <button
             onClick={completeRitual}
             disabled={finishing}
-            className="w-full py-4 rounded-2xl text-sm font-semibold disabled:opacity-50 transition-all"
+            className="w-full min-h-[54px] rounded-2xl text-[17px] font-bold disabled:opacity-50 transition-all flex items-center justify-center gap-2"
             style={{ background: '#00D4E8', color: '#0a0a0f' }}
           >
-            {finishing ? 'Completing...' : '🔥 Complete my ritual'}
+            {finishing ? 'Completing...' : <><Icon name="flame" size={18} />Complete my ritual</>}
           </button>
         ) : (
           <div className="text-center">
-            <p className="text-white/20 text-xs mb-3">
+            <p className="text-white/60 text-sm mb-3">
               {5 - completedSteps.length} item{5 - completedSteps.length !== 1 ? 's' : ''} remaining
             </p>
             <button
               onClick={completeRitual}
               disabled={finishing}
-              className="w-full py-4 rounded-2xl text-sm font-medium text-white/30 border border-white/10 disabled:opacity-50"
+              className="w-full min-h-[54px] rounded-2xl text-base font-medium text-white/70 border border-white/15 disabled:opacity-50"
             >
               {finishing ? 'Completing...' : 'Complete ritual anyway'}
             </button>
