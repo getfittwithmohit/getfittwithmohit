@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmDialog } from '@/lib/ui/feedback'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -48,7 +49,7 @@ export default function CoachIdeasPage() {
   if (checking) return <PageLoader />
 
   const approveAll = async () => {
-    if (!window.confirm(`Approve all ${drafts.length} ideas? Clients can receive them from tomorrow.`)) return
+    if (!(await confirmDialog(`Approve all ${drafts.length} ideas? Clients can receive them from tomorrow.`, { confirmLabel: 'Approve all' }))) return
     setApprovingAll(true)
     try {
       await setIdeasStatus(drafts.map((d) => d.id), 'approved')

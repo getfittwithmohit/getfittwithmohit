@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState } from 'react'
 import { useIdentityStore } from '@/store/identityStore'
 import { ProgressBar } from '@/components/ui/ProgressBar'
@@ -96,7 +97,7 @@ await supabase.from('identity_cards').insert({
       setSubmitted(true)
     } catch (error) {
       console.error('Identity submit error:', error)
-      alert('Something went wrong. Please try again.')
+      toast('Something went wrong. Please try again.')
     } finally {
       setSubmitting(false)
     }

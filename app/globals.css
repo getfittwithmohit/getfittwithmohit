@@ -68,3 +68,68 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--gfm-border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gfm-text-tertiary); }
+/* ── Touch & feel (phones) ─────────────────────────────────────────────── */
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* iPhone Safari zooms into any text field under 16px. Unlayered on purpose,
+   so it beats text-sm / text-xs utilities on inputs. */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+@layer base {
+  /* Utilities (absolute, fixed…) still win over this. */
+  button {
+    position: relative;
+    -webkit-touch-callout: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid #00D4E8;
+    outline-offset: 2px;
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    /* Invisible hit area: small buttons get a ~44pt target without
+       changing how they look. */
+    button::after {
+      content: "";
+      position: absolute;
+      inset: -9px -4px;
+    }
+
+    /* Press feedback — phones have no hover. */
+    button:not(:disabled),
+    a[href] {
+      transition: opacity 0.12s ease, transform 0.12s ease;
+    }
+    button:not(:disabled):active,
+    a[href]:active {
+      opacity: 0.6;
+      transform: scale(0.98);
+    }
+  }
+}
+
+/* ── Toast / dialog motion ── */
+@keyframes gfm-slide-down {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes gfm-pop {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.gfm-toast { animation: gfm-slide-down 0.22s ease-out; }
+.gfm-pop   { animation: gfm-pop 0.18s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gfm-toast, .gfm-pop { animation: none; }
+}

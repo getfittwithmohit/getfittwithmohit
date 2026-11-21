@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState, useEffect } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -67,7 +68,7 @@ export default function GoalCardPage() {
       setTimeout(() => window.location.href = '/ritual', 1500)
     } catch (err) {
       console.error(err)
-      window.alert('Something went wrong.')
+      toast('Something went wrong.')
     } finally {
       setSaving(false)
     }

@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState, useEffect, useRef } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -157,13 +158,13 @@ export default function RitualPage() {
     const data = await res.json()
     if (!res.ok) {
       console.error('Generate error:', data.error)
-      window.alert('Failed to generate affirmations. Please try again.')
+      toast('Failed to generate affirmations. Please try again.')
       return
     }
     if (data.text) setAffirmationText(data.text)
   } catch (err) {
     console.error(err)
-    window.alert('Something went wrong. Please try again.')
+    toast('Something went wrong. Please try again.')
   } finally {
     setGeneratingAff(false)
   }
@@ -181,7 +182,7 @@ export default function RitualPage() {
       setRecordingTime(0)
       recTimerRef.current = setInterval(() => setRecordingTime(t => t + 1), 1000)
     } catch {
-      window.alert('Microphone access is required to record affirmations.')
+      toast('Microphone access is required to record affirmations.')
     }
   }
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState, useEffect, useRef } from 'react'
 import { ClientSummary } from '@/hooks/useClients'
 
@@ -164,7 +165,7 @@ export function ClientList({
       loadCurrent()
     } catch (err) {
       console.error('Mark error:', err)
-      window.alert('Something went wrong. Please try again.')
+      toast('Something went wrong. Please try again.')
     } finally {
       setMarking(false)
     }
@@ -186,7 +187,7 @@ export function ClientList({
       setStatusMenuId(null)
     } catch (err) {
       console.error('Status update error:', err)
-      window.alert('Something went wrong. Please try again.')
+      toast('Something went wrong. Please try again.')
     } finally {
       setUpdatingStatus(false)
     }

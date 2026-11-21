@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmDialog } from '@/lib/ui/feedback'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { levelFor } from '@/lib/constants/dailyCheckin'
@@ -135,7 +136,7 @@ export function RenewalsPanel() {
   }
 
   const notRenewing = async (c: RenewalClient) => {
-    if (!window.confirm(`Mark ${c.full_name} as not renewing? They'll be set to inactive and lose app access to content and the leaderboard.`)) return
+    if (!(await confirmDialog(`Mark ${c.full_name} as not renewing? They'll be set to inactive and lose app access to content and the leaderboard.`, { confirmLabel: 'Not renewing', destructive: true }))) return
     setBusy(true)
     setError(null)
     const { error: saveError } = await supabase.from('clients').update({ status: 'inactive' }).eq('id', c.id)

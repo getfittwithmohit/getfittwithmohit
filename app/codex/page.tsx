@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState, useEffect } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -182,7 +183,7 @@ export default function CodexSetupPage() {
       setSubmitted(true)
     } catch (err) {
       console.error(err)
-      window.alert('Something went wrong. Please try again.')
+      toast('Something went wrong. Please try again.')
     } finally {
       setSubmitting(false)
     }

@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmDialog } from '@/lib/ui/feedback'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
@@ -243,7 +244,7 @@ export default function PlanBuilderPage() {
                   )}
                   <button
                     disabled={busy || plan.plan_sessions.length <= 1}
-                    onClick={() => window.confirm(`Delete session ${session.label} and its exercises?`) && run(() => deleteSession(session.id))}
+                    onClick={async () => (await confirmDialog(`Delete session ${session.label} and its exercises?`, { destructive: true })) && run(() => deleteSession(session.id))}
                     className="text-xs text-[#ef4444] underline disabled:opacity-40 h-9"
                   >
                     Delete session
@@ -427,7 +428,7 @@ export default function PlanBuilderPage() {
             {(isTemplate || plan.status === 'archived') && (
               <button
                 disabled={busy}
-                onClick={() => window.confirm(`Delete "${plan.name}"? ${isTemplate ? 'Client plans made from it are not affected.' : ''}`) &&
+                onClick={async () => (await confirmDialog(`Delete "${plan.name}"? ${isTemplate ? 'Client plans made from it are not affected.' : ''}`, { destructive: true })) &&
                   run(async () => { await deletePlan(plan.id); window.location.href = '/coach/dashboard/workouts' })}
                 className="text-xs text-[#ef4444] underline w-fit"
               >

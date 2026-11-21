@@ -1,5 +1,6 @@
 'use client'
 
+import { confirmDialog } from '@/lib/ui/feedback'
 import { useState } from 'react'
 import type { PeakIdea } from '@/lib/types/peakIdeas'
 import { PEAK_TOPICS, PEAK_TRIGGERS, TOPIC_LABEL, TRIGGER_LABEL, topicColor, type PeakTopic, type PeakTrigger } from '@/lib/constants/peakIdeas'
@@ -48,7 +49,7 @@ export function IdeaEditor({ idea, onChanged, defaultOpen = false }: { idea: Pea
   })
   const archive = () => run(() => setIdeasStatus([idea.id], 'archived'))
   const restore = () => run(() => setIdeasStatus([idea.id], 'draft'))
-  const remove = () => { if (window.confirm('Delete this idea for good? Clients who saved it will lose it.')) run(() => deleteIdea(idea.id)) }
+  const remove = async () => { if (await confirmDialog('Delete this idea for good? Clients who saved it will lose it.', { destructive: true })) run(() => deleteIdea(idea.id)) }
 
   const color = topicColor(draft.topic)
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState, useEffect } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -63,7 +64,7 @@ export default function CodexViewPage() {
       setSections(data.codex.sections)
       setCurrentSection(0)
     } catch (err: any) {
-      window.alert('Generation failed. Please try again.')
+      toast('Generation failed. Please try again.')
       console.error(err)
     } finally {
       setGenerating(false)
@@ -91,7 +92,7 @@ export default function CodexViewPage() {
       })
     } else {
       navigator.clipboard.writeText(window.location.href)
-      window.alert('Link copied!')
+      toast('Link copied', 'success')
     }
   }
 

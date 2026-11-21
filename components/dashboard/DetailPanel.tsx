@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/lib/ui/feedback'
 import { useState, useEffect } from 'react'
 import { ClientSummary } from '@/hooks/useClients'
 import { StatCard } from './StatCard'
@@ -100,25 +101,26 @@ export function DetailPanel({
     setSaving(false)
   }
 
+  const copyAndToast = async (text: string, done: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      toast(done, 'success')
+    } catch {
+      window.prompt('Copy this and send it via WhatsApp:', text)
+    }
+  }
+
   const handleReengage = () => {
-    if (pledge) {
-      window.alert(
-        `Re-engagement message for ${client.full_name}:\n\n` +
-        `"Hey ${client.full_name.split(' ')[0]}, Coach Mohit here.\n\n` +
+    const first = client.full_name.split(' ')[0]
+    const message = pledge
+      ? `Hey ${first}, Coach Mohit here.\n\n` +
         `You signed your pledge because: "${pledge.why_transform}"\n\n` +
         `You said you're doing this for: "${pledge.doing_this_for}"\n\n` +
-        `That reason hasn't changed. You have. Let's get back on track together."\n\n` +
-        `(Copy and send via WhatsApp)`
-      )
-    } else {
-      window.alert(
-        `Re-engagement message for ${client.full_name}:\n\n` +
-        `"Hey ${client.full_name.split(' ')[0]}, Coach Mohit here. ` +
+        `That reason hasn't changed. You have. Let's get back on track together.`
+      : `Hey ${first}, Coach Mohit here. ` +
         `Just checking in — remember why you started this journey. ` +
-        `You've already come this far. Let's talk."\n\n` +
-        `(Copy and send via WhatsApp)`
-      )
-    }
+        `You've already come this far. Let's talk.`
+    copyAndToast(message, `Re-engagement message for ${first} copied — paste it in WhatsApp`)
   }
 
   const handleViewProfile = () => {
@@ -128,16 +130,15 @@ export function DetailPanel({
   const handleStartProgramme = async () => {
     const today = new Date().toISOString().split('T')[0]
     await updateClientPhase(client.id, 'Adaptation', today)
-    window.alert(
-      `Programme started for ${client.full_name}! They are now in Week 1 — Adaptation Phase.`
-    )
-    window.location.reload()
+    toast(`Programme started for ${client.full_name}: Week 1, Adaptation Phase`, 'success')
+    setTimeout(() => window.location.reload(), 1500)
   }
 
   const handleSendPledge = () => {
     const pledgeUrl = `${window.location.origin}/pledge`
-    window.alert(
-      `Send this link to ${client.full_name} via WhatsApp:\n\n${pledgeUrl}\n\nAsk them to sign their Commitment Pledge before starting Week 1.`
+    copyAndToast(
+      `Please sign your Commitment Pledge before we start Week 1: ${pledgeUrl}`,
+      `Pledge link copied — send it to ${client.full_name.split(' ')[0]} on WhatsApp`
     )
   }
 
