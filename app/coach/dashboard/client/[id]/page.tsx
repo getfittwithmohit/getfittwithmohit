@@ -68,7 +68,7 @@ function InfoSection({ title, data }: { title: string; data: Record<string, any>
   return (
     <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 mb-4">
       <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">{title}</p>
-      <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
         {entries.map(([key, value]) => (
           <div key={key}>
             <p className="text-xs text-[#94a3b8] mb-0.5 capitalize">
@@ -520,31 +520,31 @@ export default function ClientProgressPage() {
     <div className="min-h-screen bg-[#f8fafc]">
 
       {/* Header */}
-      <div className="bg-[#1a1f3a] px-6 py-5">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <div className="bg-[#1a1f3a] px-4 md:px-6 py-4 md:py-5">
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 md:gap-3 min-w-0">
             <button
-              onClick={() => window.close()}
-              className="text-white/40 hover:text-white/70 text-xs mr-2 transition-colors"
+              onClick={() => (window.history.length > 1 ? window.history.back() : window.close())}
+              className="text-white/60 hover:text-white text-sm md:text-xs min-h-11 pr-1 md:mr-2 transition-colors flex-shrink-0"
             >
-              ← Close
+              ‹ Back
             </button>
-            <img src="/logo.png" alt="GetFittWithMohit" className="w-10 h-10 object-contain" />
-            <div>
-              <h1 className="text-white text-lg font-medium">{client?.full_name}</h1>
-              <p className="text-white/50 text-xs">
+            <img src="/logo.png" alt="GetFittWithMohit" className="hidden md:block w-10 h-10 object-contain" />
+            <div className="min-w-0">
+              <h1 className="text-white text-lg font-medium truncate">{client?.full_name}</h1>
+              <p className="text-white/50 text-xs truncate">
                 Week {currentWeek} · {client?.phase}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-shrink-0">
             <button
               onClick={() => setExportOpen(true)}
-              className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20 transition-colors"
+              className="text-white/70 hover:text-white text-xs font-medium px-3 min-h-9 rounded-full border border-white/15 hover:border-white/25 transition-colors whitespace-nowrap"
             >
-              📤 Export Data
+              Export data
             </button>
-            <div className="text-right">
+            <div className="hidden md:block text-right">
               <p className="text-[#00D4E8] text-xs font-medium tracking-wide">GETFITTWITHMOHIT</p>
               <p className="text-white/40 text-xs">Transform to Inspire</p>
             </div>
@@ -553,16 +553,16 @@ export default function ClientProgressPage() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white border-b border-[#e2e8f0]">
-        <div className="max-w-3xl mx-auto px-4 flex gap-0 overflow-x-auto">
+      <div className="bg-white border-b border-[#e2e8f0] sticky top-0 z-20">
+        <div className="max-w-3xl mx-auto px-2 md:px-4 flex gap-0 overflow-x-auto" role="tablist">
           {[
-            { key: 'progress', label: '📊 Progress' },
-            { key: 'edit', label: '✏️ Edit Profile' },
-            { key: 'calls', label: '📞 Weekly Calls' },
-            { key: 'daily', label: '📋 Daily' },
-            { key: 'workouts', label: '🏋️ Workouts' },
-            { key: 'checkins', label: '📝 Check-ins' },
-            { key: 'report', label: '📑 Report' },
+            { key: 'progress', label: 'Progress' },
+            { key: 'edit', label: 'Profile' },
+            { key: 'calls', label: 'Calls' },
+            { key: 'daily', label: 'Daily' },
+            { key: 'workouts', label: 'Workouts' },
+            { key: 'checkins', label: 'Check-ins' },
+            { key: 'report', label: 'Report' },
           ].map((t) => (
             <button
               key={t.key}
@@ -571,16 +571,19 @@ export default function ClientProgressPage() {
                 if (t.key === 'calls' && calls.length === 0) loadCalls()
                 if (t.key === 'report' && !reportData) loadReport()
               }}
-              className={`px-4 py-3.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
+              role="tab"
+              aria-selected={tab === t.key}
+              className={`px-3 md:px-4 py-3.5 text-[15px] md:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 tab === t.key
                   ? 'border-[#00D4E8] text-[#0f172a]'
-                  : 'border-transparent text-[#94a3b8] hover:text-[#64748b]'
+                  : 'border-transparent text-[#64748b] hover:text-[#0f172a]'
               }`}
             >
               {t.label}
             </button>
           ))}
         </div>
+        <div aria-hidden="true" className="md:hidden pointer-events-none absolute right-0 top-0 bottom-0 w-10" style={{ background: 'linear-gradient(to right, rgba(255,255,255,0), #fff)' }} />
       </div>
 
       {/* Progress Tab */}
@@ -644,7 +647,7 @@ export default function ClientProgressPage() {
             <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">
               Personal Information
             </p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {field('Full name', 'full_name')}
               {field('Email', 'email', 'email')}
               {field('Phone', 'phone', 'tel')}
@@ -666,7 +669,7 @@ export default function ClientProgressPage() {
             <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">
               Programme
             </p>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="text-xs font-medium text-[#64748b] mb-1.5 block">Phase</label>
                 <select
@@ -732,13 +735,13 @@ export default function ClientProgressPage() {
                     type="date"
                     value={editData.subscription_end_date || ''}
                     onChange={(e) => setEditData((p: any) => ({ ...p, subscription_end_date: e.target.value }))}
-                    className="flex-1 px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                    className="flex-1 min-w-0 px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                   />
                   {editData.subscription_end_date && (
                     <button
                       type="button"
                       onClick={() => setEditData((p: any) => ({ ...p, subscription_end_date: '' }))}
-                      className="text-xs text-[#94a3b8] underline"
+                      className="text-sm text-[#64748b] underline px-1 flex-shrink-0"
                     >
                       Clear
                     </button>
@@ -761,14 +764,14 @@ export default function ClientProgressPage() {
             <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">
               Body Metrics
             </p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {field('Starting weight (kg)', 'weight_kg', 'number', 'metrics')}
               {field('Target weight (kg)', 'target_weight_kg', 'number', 'metrics')}
 
               {/* Height — Feet + Inches */}
               <div className="col-span-2">
                 <label className="text-xs font-medium text-[#64748b] mb-1.5 block">Height</label>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs text-[#94a3b8] mb-1 block">Feet</label>
                     <select
@@ -1232,7 +1235,7 @@ export default function ClientProgressPage() {
                       </button>
                       {isOpen && (
                         <div className="border-t border-[#e2e8f0] px-5 py-4 bg-[#f8fafc]">
-                          <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                             {Object.entries({
                               'Weight (kg)': c.weight_kg,
                               'Waist (in)': c.waist_inches,
