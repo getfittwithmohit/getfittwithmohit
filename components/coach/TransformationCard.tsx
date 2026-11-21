@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
+import { heicToJpeg, looksHeic } from '@/lib/photos/heic'
 
 // Coach tool: a branded before/after image (1080×1350, Instagram portrait)
 // from a client's progress photos. Drawn in the browser; nothing is saved or
@@ -34,7 +35,14 @@ const num = (v: unknown): number | null => {
 async function loadBitmap(url: string): Promise<ImageBitmap> {
   const res = await fetch(url)
   if (!res.ok) throw new Error('Could not load a photo')
-  return createImageBitmap(await res.blob())
+  const blob = await res.blob()
+  try {
+    return await createImageBitmap(blob)
+  } catch {
+    // iPhone HEIC photos: convert to JPEG first
+    if (await looksHeic(blob)) return createImageBitmap(await heicToJpeg(blob))
+    throw new Error('One of the photos is in a format that can’t be drawn')
+  }
 }
 
 function drawCover(ctx: CanvasRenderingContext2D, img: ImageBitmap, x: number, y: number, w: number, h: number, r: number) {
