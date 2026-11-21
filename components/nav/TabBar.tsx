@@ -11,7 +11,7 @@ type Tab = { label: string; href: string; icon: IconName; owns: (p: string) => b
 const TABS: Tab[] = [
   { label: 'Today', href: '/home', icon: 'sun', owns: (p) => p === '/home' },
   { label: 'Train', href: '/train', icon: 'dumbbell', owns: (p) => p.startsWith('/train') || p.startsWith('/workout/plan') || p.startsWith('/plate') },
-  { label: 'Learn', href: '/learn', icon: 'book', owns: (p) => p.startsWith('/learn') || p.startsWith('/courses') || p.startsWith('/ideas') },
+  { label: 'Learn', href: '/learn', icon: 'book', owns: (p) => p.startsWith('/learn') || p.startsWith('/courses') || p.startsWith('/ideas') || p.startsWith('/audios') },
   { label: 'Me', href: '/me', icon: 'user', owns: (p) => p.startsWith('/me') || p.startsWith('/home/') || p.startsWith('/leaderboard') },
 ]
 
@@ -25,6 +25,7 @@ const SHOW_ON = [
   /^\/leaderboard$/,
   /^\/courses(\/[^/]+)?$/,
   /^\/ideas(\/stash|\/books|\/recap)?$/,
+  /^\/audios$/,
 ]
 
 const BAR_HEIGHT = 64
@@ -44,7 +45,14 @@ export function TabBar() {
     return () => { cancelled = true }
   }, [])
 
-  if (role !== 'client' || !SHOW_ON.some((r) => r.test(pathname))) return null
+  const visible = role === 'client' && SHOW_ON.some((r) => r.test(pathname))
+
+  // Fixed bars elsewhere (the audio player) read --tabbar-h to sit above it.
+  useEffect(() => {
+    document.documentElement.style.setProperty('--tabbar-h', visible ? `calc(${BAR_HEIGHT}px + env(safe-area-inset-bottom))` : '0px')
+  }, [visible])
+
+  if (!visible) return null
 
   return (
     <>

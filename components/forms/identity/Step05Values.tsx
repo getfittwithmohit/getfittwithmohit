@@ -40,7 +40,7 @@ export function Step05Values({ onNext, onBack }: Props) {
       subtitle="Choose up to 5. These become the filter for every decision — on hard days, your values lead the way."
     >
       <div className="flex items-center justify-between">
-        <p className="text-xs text-[#94a3b8]">
+        <p className="text-xs text-[#64748b]">
           Select up to 5 that feel most true to you
         </p>
         <p className="text-xs font-medium text-[#00D4E8]">
@@ -80,7 +80,7 @@ export function Step05Values({ onNext, onBack }: Props) {
       {/* Selected preview */}
       {selected.length > 0 && (
         <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-3">
-          <p className="text-xs text-[#94a3b8] mb-2">Your values</p>
+          <p className="text-xs text-[#64748b] mb-2">Your values</p>
           <div className="flex flex-wrap gap-2">
             {selected.map((v) => (
               <span

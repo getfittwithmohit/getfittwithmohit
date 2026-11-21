@@ -51,7 +51,7 @@ export function ScoreRing({ score }: { score: number }) {
   return (
     <Ring pct={score / 10} color={meta.color} size={96} stroke={10}>
       <span className="text-3xl font-semibold text-[#0f172a] leading-none">{score}</span>
-      <span className="text-[10px] text-[#94a3b8] mt-0.5">out of 10</span>
+      <span className="text-xs text-[#64748b] mt-0.5">out of 10</span>
     </Ring>
   )
 }
@@ -92,11 +92,11 @@ export function TodayPlate({ totals, targets, meals, onRemove }: {
           <div className="flex items-center justify-around mb-4">
             <Ring pct={totals.calories / targets.calories} color={totals.calories > targets.calories ? '#dc2626' : '#00D4E8'}>
               <span className="text-lg font-semibold text-[#0f172a] leading-none">{totals.calories}</span>
-              <span className="text-[10px] text-[#94a3b8]">/ {targets.calories} kcal</span>
+              <span className="text-xs text-[#64748b]">/ {targets.calories} kcal</span>
             </Ring>
             <Ring pct={totals.protein_g / targets.protein_g} color="#22c55e">
               <span className="text-lg font-semibold text-[#0f172a] leading-none">{Math.round(totals.protein_g)}g</span>
-              <span className="text-[10px] text-[#94a3b8]">/ {targets.protein_g}g protein</span>
+              <span className="text-xs text-[#64748b]">/ {targets.protein_g}g protein</span>
             </Ring>
           </div>
           <div className="flex flex-col gap-2 mb-3">
@@ -125,7 +125,7 @@ export function TodayPlate({ totals, targets, meals, onRemove }: {
           {MACROS.slice(0, 3).map((m) => (
             <div key={m.key} className="text-center">
               <p className="text-lg font-semibold text-[#0f172a]">{Math.round(totals[m.key])}{m.unit === 'g' ? 'g' : ''}</p>
-              <p className="text-[11px] text-[#94a3b8]">{m.label}</p>
+              <p className="text-xs text-[#64748b]">{m.label}</p>
             </div>
           ))}
         </div>
@@ -138,7 +138,7 @@ export function TodayPlate({ totals, targets, meals, onRemove }: {
               <span className="text-xl">{m.emoji}</span>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-[#0f172a] truncate">{m.title}</p>
-                <p className="text-[11px] text-[#94a3b8] capitalize">
+                <p className="text-xs text-[#64748b] capitalize">
                   {m.meal_type} · {m.calories} kcal · {Math.round(m.protein_g)}g protein
                 </p>
               </div>
@@ -155,7 +155,7 @@ export function TodayPlate({ totals, targets, meals, onRemove }: {
         </div>
       )}
       {meals.length === 0 && (
-        <p className="text-xs text-[#94a3b8] text-center mt-3">No meals logged yet today. Scan your first one 👇</p>
+        <p className="text-xs text-[#64748b] text-center mt-3">No meals logged yet today. Scan your first one 👇</p>
       )}
     </div>
   )
@@ -301,7 +301,7 @@ export function ResultCard({
           {MACROS.map((m) => (
             <div key={m.key}>
               <p className="text-lg font-semibold leading-none" style={{ color: m.color }}>{Math.round(totals[m.key])}</p>
-              <p className="text-[10px] text-[#94a3b8] mt-1">{m.key === 'calories' ? 'kcal' : `${m.label} g`}</p>
+              <p className="text-xs text-[#64748b] mt-1">{m.key === 'calories' ? 'kcal' : `${m.label} g`}</p>
             </div>
           ))}
         </div>
@@ -314,7 +314,7 @@ export function ResultCard({
               <div key={i} className={`flex items-center gap-3 ${q === 0 ? 'opacity-40' : ''}`}>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-[#0f172a] truncate">{item.name}</p>
-                  <p className="text-[11px] text-[#94a3b8]">
+                  <p className="text-xs text-[#64748b]">
                     {Math.round(item.per_unit.calories * q)} kcal · {Math.round(item.per_unit.protein_g * q * 10) / 10}g protein
                   </p>
                 </div>
@@ -395,7 +395,7 @@ export function ResultCard({
       )}
 
       {(scan.assumptions || scan.confidence) && (
-        <p className="text-[11px] text-[#94a3b8] leading-relaxed px-1">
+        <p className="text-xs text-[#64748b] leading-relaxed px-1">
           {scan.assumptions && <>Assumed: {scan.assumptions} </>}
           AI estimate{scan.confidence ? ` (${scan.confidence} confidence)` : ''} — real values can vary by 15–20%.
         </p>

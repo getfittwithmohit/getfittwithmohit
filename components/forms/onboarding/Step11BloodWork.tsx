@@ -61,7 +61,7 @@ export function Step11BloodWork({
             </p>
           ))}
         </div>
-        <p className="text-xs text-[#94a3b8] mt-3">
+        <p className="text-xs text-[#64748b] mt-3">
           Get tested at Thyrocare, 1mg, SRL, or your local diagnostic centre.
         </p>
       </div>
@@ -81,7 +81,7 @@ export function Step11BloodWork({
       <div className="flex flex-col gap-1.5">
         <label className="text-xs font-medium text-[#64748b]">
           Upload blood report
-          <span className="text-[#94a3b8] ml-1 font-normal">(optional)</span>
+          <span className="text-[#64748b] ml-1 font-normal">(optional)</span>
         </label>
         <div
           onClick={() => inputRef.current?.click()}
@@ -100,14 +100,14 @@ export function Step11BloodWork({
               <p className="text-xs text-[#00D4E8] font-medium">
                 {selectedFile.name}
               </p>
-              <p className="text-xs text-[#94a3b8] mt-0.5">
+              <p className="text-xs text-[#64748b] mt-0.5">
                 {(selectedFile.size / 1024).toFixed(0)} KB · tap to change
               </p>
             </div>
           ) : (
             <div>
               <div className="text-xl text-[#00D4E8] mb-1">+</div>
-              <p className="text-xs text-[#94a3b8]">PDF or image</p>
+              <p className="text-xs text-[#64748b]">PDF or image</p>
             </div>
           )}
           <input
@@ -122,7 +122,7 @@ export function Step11BloodWork({
             }}
           />
         </div>
-        <p className="text-xs text-[#94a3b8]">
+        <p className="text-xs text-[#64748b]">
           You can also WhatsApp your report to Coach Mohit at any time.
         </p>
       </div>

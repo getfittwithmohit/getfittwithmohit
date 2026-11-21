@@ -57,7 +57,7 @@ export default function CoursesPage() {
           <div className="bg-white border border-[#e2e8f0] rounded-2xl p-8 text-center">
             <div className="text-3xl mb-2">🎓</div>
             <p className="text-sm font-medium text-[#0f172a]">No courses yet</p>
-            <p className="text-xs text-[#94a3b8] mt-1">Coach Mohit is preparing your first course. Check back soon.</p>
+            <p className="text-xs text-[#64748b] mt-1">Coach Mohit is preparing your first course. Check back soon.</p>
           </div>
         )}
 
@@ -83,7 +83,7 @@ export default function CoursesPage() {
                 )}
               </div>
               <div className="mt-4">
-                <div className="flex justify-between text-xs text-[#94a3b8] mb-1.5">
+                <div className="flex justify-between text-xs text-[#64748b] mb-1.5">
                   <span>{done} of {total} lesson{total === 1 ? '' : 's'}</span>
                   <span>{percent}%</span>
                 </div>

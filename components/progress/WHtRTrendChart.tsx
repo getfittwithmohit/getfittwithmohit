@@ -28,7 +28,7 @@ export function WHtRTrendChart({ checkins, heightInches }: WHtRTrendChartProps) 
     return (
       <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5">
         <h3 className="text-sm font-semibold text-[#0f172a] mb-1">Waist-to-Height Ratio Trend</h3>
-        <p className="text-xs text-[#94a3b8] py-8 text-center">
+        <p className="text-xs text-[#64748b] py-8 text-center">
           Need at least 2 weeks of waist measurements to show a trend.
         </p>
       </div>
@@ -38,7 +38,7 @@ export function WHtRTrendChart({ checkins, heightInches }: WHtRTrendChartProps) 
   return (
     <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5">
       <h3 className="text-sm font-semibold text-[#0f172a] mb-1">Waist-to-Height Ratio Trend</h3>
-      <p className="text-xs text-[#94a3b8] mb-4">Target: under 0.50 (dashed line)</p>
+      <p className="text-xs text-[#64748b] mb-4">Target: under 0.50 (dashed line)</p>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />

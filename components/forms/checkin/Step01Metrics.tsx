@@ -31,8 +31,8 @@ function MetricRow({ label, current, previous, unit }: MetricRowProps) {
     <div className="flex items-center justify-between py-2 border-b border-[#e2e8f0] last:border-0">
       <span className="text-xs text-[#64748b]">{label}</span>
       <div className="flex items-center gap-2">
-        {previous && <span className="text-xs text-[#94a3b8]">{previous} {unit}</span>}
-        {previous && <span className="text-xs text-[#94a3b8]">→</span>}
+        {previous && <span className="text-xs text-[#64748b]">{previous} {unit}</span>}
+        {previous && <span className="text-xs text-[#64748b]">→</span>}
         <span className="text-xs font-medium text-[#0f172a]">
           {current || '?'} {current ? unit : ''}
         </span>
@@ -40,7 +40,7 @@ function MetricRow({ label, current, previous, unit }: MetricRowProps) {
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
             isPositive ? 'bg-emerald-50 text-emerald-600'
             : isNegative ? 'bg-red-50 text-red-500'
-            : 'bg-[#f8fafc] text-[#94a3b8]'
+            : 'bg-[#f8fafc] text-[#64748b]'
           }`}>
             {isPositive ? '▼' : isNegative ? '▲' : '='} {Math.abs(parseFloat(diff))} {unit}
           </span>
@@ -89,7 +89,7 @@ export function Step01Metrics({ onNext }: Props) {
       subtitle="Weigh yourself first thing in the morning — same time, same conditions every week."
     >
       <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4">
-        <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-3">vs Last Week</p>
+        <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3">vs Last Week</p>
         <MetricRow label="Weight" current={weightVal} previous="–" unit="kg" />
         <MetricRow label="Waist" current={waistVal} previous="–" unit="in" />
       </div>

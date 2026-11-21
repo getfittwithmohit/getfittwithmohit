@@ -52,7 +52,7 @@ export function Step06BookCall({ onNext, onBack, submitting }: Props) {
     >
       {/* Summary snapshot */}
       <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4">
-        <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-3">
+        <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3">
           This Week's Snapshot
         </p>
         <SummaryBar
@@ -78,7 +78,7 @@ export function Step06BookCall({ onNext, onBack, submitting }: Props) {
         />
       </div>
 
-      <p className="text-xs text-[#94a3b8] text-center leading-relaxed">
+      <p className="text-xs text-[#64748b] text-center leading-relaxed">
         Once submitted, you'll be asked to book your review call with Coach Mohit.
       </p>
 

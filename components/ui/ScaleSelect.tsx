@@ -54,7 +54,7 @@ export function ScaleSelect({
         ))}
       </div>
       {(lowLabel || highLabel) && (
-        <div className="flex justify-between text-xs text-[#94a3b8]">
+        <div className="flex justify-between text-xs text-[#64748b]">
           <span>{lowLabel}</span>
           <span>{highLabel}</span>
         </div>

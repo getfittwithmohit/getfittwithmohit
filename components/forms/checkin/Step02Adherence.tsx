@@ -91,7 +91,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
             </button>
           ))}
         </div>
-        <div className="flex justify-between text-xs text-[#94a3b8] mt-1.5 px-1">
+        <div className="flex justify-between text-xs text-[#64748b] mt-1.5 px-1">
           <span>None</span><span>Every day</span>
         </div>
       </div>
@@ -147,7 +147,7 @@ export function Step02Adherence({ onNext, onBack }: Props) {
             </button>
           ))}
         </div>
-        <div className="flex justify-between text-xs text-[#94a3b8] mt-1.5 px-1">
+        <div className="flex justify-between text-xs text-[#64748b] mt-1.5 px-1">
           <span>None</span><span>Every day</span>
         </div>
       </div>

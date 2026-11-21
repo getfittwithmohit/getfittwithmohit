@@ -124,7 +124,7 @@ export function IdentityCard({
       {/* Coach Panel — private, only visible to coach */}
       {showCoachPanel && (
         <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-2xl p-5">
-          <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">
+          <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-4">
             Coach Mohit — Private Panel
           </p>
 

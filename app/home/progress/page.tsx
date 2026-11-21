@@ -56,7 +56,7 @@ export default function ClientProgressPage() {
 
       <div className="max-w-2xl mx-auto px-4 py-6">
 
-        <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-3">
+        <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3">
           Your Achievements
         </p>
         <StreaksPanel
@@ -73,7 +73,7 @@ export default function ClientProgressPage() {
           <BodyChart checkins={checkins} startWeight={startWeight} />
         </div>
 
-        <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-3">
+        <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3">
           Weekly Trends
         </p>
         <TrendCharts checkins={checkins} />

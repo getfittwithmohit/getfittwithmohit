@@ -37,7 +37,7 @@ export function SuccessScreen({
         {/* Booking section — only for check-in */}
         {showBooking && (
           <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-5 mb-6 text-left">
-            <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-3 text-center">
+            <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3 text-center">
               Next Step
             </p>
             <p className="text-sm font-medium text-[#0f172a] text-center mb-1">
@@ -62,7 +62,7 @@ export function SuccessScreen({
         {/* Home button */}
         <button
           onClick={() => window.location.href = '/home'}
-          className="text-xs text-[#94a3b8] hover:text-[#64748b] transition-colors mb-6 block w-full"
+          className="text-xs text-[#64748b] hover:text-[#64748b] transition-colors mb-6 block w-full"
         >
           ← Back to Home
         </button>

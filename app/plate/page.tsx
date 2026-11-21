@@ -274,7 +274,7 @@ export default function PeakPlatePage() {
                 }}
               />
             ) : (
-              <p className="text-[11px] text-[#94a3b8] text-center -mt-1 mb-4">
+              <p className="text-xs text-[#64748b] text-center -mt-1 mb-4">
                 {today.targetSource === 'blueprint'
                   ? '🎯 Targets from your Fat Loss Blueprint'
                   : <>🎯 Your custom targets · <button onClick={() => setEditingTargets(true)} className="underline">edit</button></>}
@@ -359,7 +359,7 @@ export default function PeakPlatePage() {
               />
 
               {error && <p className="text-sm text-[#dc2626] mt-3">{error}</p>}
-              <p className="text-[11px] text-[#94a3b8] text-center mt-3">
+              <p className="text-xs text-[#64748b] text-center mt-3">
                 {noScansLeft
                   ? "You've used today's scans — they reset at midnight 🌙"
                   : `${today.scansLeft} scans left today · Tip: scan before you eat to decide`}

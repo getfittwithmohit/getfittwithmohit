@@ -44,7 +44,7 @@ export function TrendCharts({ checkins }: TrendChartsProps) {
 
   if (!data.length) {
     return (
-      <div className="flex items-center justify-center h-24 text-sm text-[#94a3b8]">
+      <div className="flex items-center justify-center h-24 text-sm text-[#64748b]">
         No trend data yet
       </div>
     )

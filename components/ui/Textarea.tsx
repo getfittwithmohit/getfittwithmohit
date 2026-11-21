@@ -18,7 +18,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           </label>
         )}
         {hint && (
-          <span className="text-xs text-[#94a3b8]">{hint}</span>
+          <span className="text-xs text-[#64748b]">{hint}</span>
         )}
         <textarea
           ref={ref}

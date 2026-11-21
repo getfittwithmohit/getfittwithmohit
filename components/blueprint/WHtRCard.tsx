@@ -22,13 +22,13 @@ export function WHtRCard({ data, waistInches, heightInches }: WHtRCardProps) {
           {label}
         </span>
       </div>
-      <p className="text-xs text-[#94a3b8] mb-4">
+      <p className="text-xs text-[#64748b] mb-4">
         Waist {waistInches}" ÷ Height {heightInches}"
       </p>
 
       <div className="flex items-end gap-2 mb-3">
         <p className="text-3xl font-bold" style={{ color }}>{ratio}</p>
-        <p className="text-xs text-[#94a3b8] mb-1">ratio (target: under 0.50)</p>
+        <p className="text-xs text-[#64748b] mb-1">ratio (target: under 0.50)</p>
       </div>
 
       {/* Visual scale */}
@@ -43,7 +43,7 @@ export function WHtRCard({ data, waistInches, heightInches }: WHtRCardProps) {
           style={{ left: `${Math.min(100, (ratio / 0.9) * 100)}%` }}
         />
       </div>
-      <div className="flex justify-between text-xs text-[#94a3b8] mb-4">
+      <div className="flex justify-between text-xs text-[#64748b] mb-4">
         <span>0.0</span>
         <span>0.5</span>
         <span>0.6</span>

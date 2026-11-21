@@ -34,7 +34,7 @@ export function BodyChart({ checkins, startWeight }: BodyChartProps) {
 
   if (!data.length) {
     return (
-      <div className="flex items-center justify-center h-48 text-sm text-[#94a3b8]">
+      <div className="flex items-center justify-center h-48 text-sm text-[#64748b]">
         No measurement data yet
       </div>
     )
@@ -45,7 +45,7 @@ export function BodyChart({ checkins, startWeight }: BodyChartProps) {
       <h3 className="text-sm font-medium text-[#0f172a] mb-1">
         Body Measurements
       </h3>
-      <p className="text-xs text-[#94a3b8] mb-4">
+      <p className="text-xs text-[#64748b] mb-4">
         Weight (kg) · All measurements (inches)
       </p>
       <ResponsiveContainer width="100%" height={280}>

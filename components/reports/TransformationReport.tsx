@@ -69,7 +69,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
         <h1 className="text-2xl font-bold text-[#0f172a] leading-tight">
           {clientName}'s Transformation
         </h1>
-        <p className="text-sm text-[#94a3b8] mt-1">
+        <p className="text-sm text-[#64748b] mt-1">
           {durationDays}-day coaching programme · {formatDate(startDate)} – {formatDate(endDate)}
         </p>
       </div>
@@ -81,9 +81,9 @@ export function TransformationReport({ data }: { data: TransformationReportData 
             <span className="text-5xl font-bold" style={{ color: heroColor }}>
               {Math.abs(totalChange)}
             </span>
-            <span className="text-xl font-medium text-[#94a3b8]">kg</span>
+            <span className="text-xl font-medium text-[#64748b]">kg</span>
           </div>
-          <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mt-1 mb-2">
+          <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mt-1 mb-2">
             {heroLabel}
           </p>
           <p className="text-sm text-[#64748b]">
@@ -97,7 +97,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
         <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4">
           <div className="text-2xl mb-1">📋</div>
           <p className="text-2xl font-bold text-[#1a1f3a]">{totalCheckins}</p>
-          <p className="text-xs text-[#94a3b8] uppercase tracking-wide mt-0.5">Check-ins</p>
+          <p className="text-xs text-[#64748b] uppercase tracking-wide mt-0.5">Check-ins</p>
           <p className="text-xs text-[#64748b] mt-0.5">days consistently logged</p>
         </div>
         <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4">
@@ -105,7 +105,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
           <p className="text-2xl font-bold text-emerald-600">
             {compliance.mealPlan.pct.toFixed(1)}%
           </p>
-          <p className="text-xs text-[#94a3b8] uppercase tracking-wide mt-0.5">Meal Compliance</p>
+          <p className="text-xs text-[#64748b] uppercase tracking-wide mt-0.5">Meal Compliance</p>
           <p className="text-xs text-[#64748b] mt-0.5">{compliance.mealPlan.value} on plan</p>
         </div>
         <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4">
@@ -113,13 +113,13 @@ export function TransformationReport({ data }: { data: TransformationReportData 
           <p className="text-2xl font-bold text-amber-500">
             {avgSteps ? avgSteps.toLocaleString() : '–'}
           </p>
-          <p className="text-xs text-[#94a3b8] uppercase tracking-wide mt-0.5">Daily Steps Avg</p>
+          <p className="text-xs text-[#64748b] uppercase tracking-wide mt-0.5">Daily Steps Avg</p>
           <p className="text-xs text-[#64748b] mt-0.5">steps per day</p>
         </div>
         <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4">
           <div className="text-2xl mb-1">🏆</div>
           <p className="text-2xl font-bold text-[#4a7fd4]">{totalWorkouts}</p>
-          <p className="text-xs text-[#94a3b8] uppercase tracking-wide mt-0.5">Workouts Done</p>
+          <p className="text-xs text-[#64748b] uppercase tracking-wide mt-0.5">Workouts Done</p>
           <p className="text-xs text-[#64748b] mt-0.5">sessions completed</p>
         </div>
       </div>
@@ -127,7 +127,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
       {/* Progress Trends */}
       <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-4">
         <h3 className="text-base font-semibold text-[#0f172a] mb-1">Progress Trends</h3>
-        <p className="text-xs text-[#94a3b8] mb-4">
+        <p className="text-xs text-[#64748b] mb-4">
           Actual check-in data with linear regression trendline
         </p>
 
@@ -163,7 +163,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
                 { label: 'Duration', value: `${durationDays} days`, color: '#0f172a' },
               ].map((stat) => (
                 <div key={stat.label} className="bg-[#f8fafc] rounded-xl p-2.5 text-center">
-                  <p className="text-xs text-[#94a3b8] uppercase tracking-wide mb-0.5">{stat.label}</p>
+                  <p className="text-xs text-[#64748b] uppercase tracking-wide mb-0.5">{stat.label}</p>
                   <p className="text-sm font-bold" style={{ color: stat.color }}>{stat.value}</p>
                 </div>
               ))}
@@ -191,7 +191,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
                 { label: 'Latest Avg', value: latestAvgSteps?.toLocaleString() || '–', color: '#22c55e' },
               ].map((stat) => (
                 <div key={stat.label} className="bg-[#f8fafc] rounded-xl p-2.5 text-center">
-                  <p className="text-xs text-[#94a3b8] uppercase tracking-wide mb-0.5">{stat.label}</p>
+                  <p className="text-xs text-[#64748b] uppercase tracking-wide mb-0.5">{stat.label}</p>
                   <p className="text-sm font-bold" style={{ color: stat.color }}>{stat.value}</p>
                 </div>
               ))}
@@ -218,7 +218,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
                 { label: 'Avg Stress', value: avgStress ? `${avgStress}/10` : '–', color: '#4a7fd4' },
               ].map((stat) => (
                 <div key={stat.label} className="bg-[#f8fafc] rounded-xl p-2.5 text-center">
-                  <p className="text-xs text-[#94a3b8] uppercase tracking-wide mb-0.5">{stat.label}</p>
+                  <p className="text-xs text-[#64748b] uppercase tracking-wide mb-0.5">{stat.label}</p>
                   <p className="text-sm font-bold" style={{ color: stat.color }}>{stat.value}</p>
                 </div>
               ))}
@@ -247,7 +247,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
       {milestones.length > 0 && (
         <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-4">
           <h3 className="text-base font-semibold text-[#0f172a] mb-1">Journey Milestones</h3>
-          <p className="text-xs text-[#94a3b8] mb-4">
+          <p className="text-xs text-[#64748b] mb-4">
             Key breakthroughs across {weekLabels.length} weeks
           </p>
           <div className="flex flex-col">
@@ -284,7 +284,7 @@ export function TransformationReport({ data }: { data: TransformationReportData 
       {/* Compliance Scorecard */}
       <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-4">
         <h3 className="text-base font-semibold text-[#0f172a] mb-1">Compliance Scorecard</h3>
-        <p className="text-xs text-[#94a3b8] mb-4">Programme adherence across key habits</p>
+        <p className="text-xs text-[#64748b] mb-4">Programme adherence across key habits</p>
 
         <div className="flex flex-col gap-4">
           {[

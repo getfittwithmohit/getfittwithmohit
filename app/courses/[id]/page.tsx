@@ -123,7 +123,7 @@ export default function CourseDetailPage() {
         {!error && !course && (
           <div className="bg-white border border-[#e2e8f0] rounded-2xl p-8 text-center">
             <p className="text-sm font-medium text-[#0f172a]">This course isn&apos;t available</p>
-            <p className="text-xs text-[#94a3b8] mt-1">It may have been removed or is not published yet.</p>
+            <p className="text-xs text-[#64748b] mt-1">It may have been removed or is not published yet.</p>
           </div>
         )}
 
@@ -151,14 +151,14 @@ export default function CourseDetailPage() {
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="block text-sm font-medium text-[#0f172a]">{lesson.title}</span>
-                  <span className="block text-xs text-[#94a3b8] mt-0.5">
+                  <span className="block text-xs text-[#64748b] mt-0.5">
                     {[
                       lesson.duration_minutes ? `${lesson.duration_minutes} min` : null,
                       docs.length ? `${docs.length} document${docs.length === 1 ? '' : 's'}` : null,
                     ].filter(Boolean).join(' · ') || 'Lesson'}
                   </span>
                 </span>
-                <span className="text-[#94a3b8] text-xs">{isOpen ? '▲' : '▼'}</span>
+                <span className="text-[#64748b] text-xs">{isOpen ? '▲' : '▼'}</span>
               </button>
 
               {isOpen && (
@@ -191,7 +191,7 @@ export default function CourseDetailPage() {
 
                   {docs.length > 0 && (
                     <div>
-                      <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-2">Supporting documents</p>
+                      <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-2">Supporting documents</p>
                       <div className="flex flex-col gap-2">
                         {docs.map((doc) => (
                           <button
@@ -201,7 +201,7 @@ export default function CourseDetailPage() {
                           >
                             <span>📄</span>
                             <span className="flex-1 truncate">{doc.title}</span>
-                            <span className="text-xs text-[#94a3b8]">Open</span>
+                            <span className="text-xs text-[#64748b]">Open</span>
                           </button>
                         ))}
                       </div>

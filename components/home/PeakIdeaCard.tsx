@@ -30,7 +30,7 @@ export function PeakIdeaCard({ clientId }: { clientId: string }) {
           <circle cx="80" cy="80" r="70" fill="rgba(17,19,24,0.10)" />
           <circle cx="100" cy="60" r="30" fill="rgba(255,255,255,0.22)" />
         </svg>
-        <p className="relative text-[11px] tracking-[0.14em] uppercase font-bold">Today’s PEAK Idea · {TOPIC_LABEL[idea.topic]}</p>
+        <p className="relative text-xs tracking-[0.14em] uppercase font-bold">Today’s PEAK Idea · {TOPIC_LABEL[idea.topic]}</p>
         <p className="relative text-[21px] font-bold leading-tight">{idea.hook}</p>
       </div>
       <div className="px-5 py-3.5 flex items-center justify-between">

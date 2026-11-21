@@ -53,7 +53,7 @@ export default function StashPage() {
         </div>
         <div className="flex flex-col items-end gap-0.5">
           <p className="text-[22px] font-bold" style={{ color: PEAK.green }}>{kept}</p>
-          <p className="text-[11px]" style={{ color: PEAK.muted }}>action{kept === 1 ? '' : 's'} kept</p>
+          <p className="text-xs" style={{ color: PEAK.muted }}>action{kept === 1 ? '' : 's'} kept</p>
         </div>
       </header>
 
