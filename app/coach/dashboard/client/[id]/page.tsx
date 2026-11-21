@@ -1287,7 +1287,7 @@ export default function ClientProgressPage() {
 
       {tab === 'photos' && (
         <div className="max-w-3xl mx-auto px-4 py-6">
-          <ClientPhotos clientId={clientId} />
+          <ClientPhotos clientId={clientId} clientName={client?.full_name || ''} />
         </div>
       )}
 
