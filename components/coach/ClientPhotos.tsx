@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { formatDayLabel, istDate } from '@/lib/utils/istDate'
+import { TransformationCard, type CardWeek } from './TransformationCard'
 
 // Coach view of a client's progress photos (onboarding = week 1) and
 // blood-work reports. Both buckets are private: files open through signed
@@ -36,13 +37,25 @@ function bloodWorkPath(stored: string | null): string | null {
   return i >= 0 ? decodeURIComponent(stored.slice(i + marker.length).split('?')[0]) : stored
 }
 
+// One entry per week, newest photo of each pose (a week can have several uploads)
+function cardWeeks(sets: PhotoSet[]): CardWeek[] {
+  const byWeek = new Map<number, CardWeek>()
+  for (const set of sets) {
+    if (set.week === null) continue
+    const w = byWeek.get(set.week) || { week: set.week, urls: { front: null, side: null, back: null } }
+    for (const pose of POSES) if (set.urls[pose]?.url) w.urls[pose] = set.urls[pose]!.url
+    byWeek.set(set.week, w)
+  }
+  return [...byWeek.values()]
+}
+
 async function signed(bucket: string, path: string | null) {
   if (!path) return null
   const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, LINK_SECONDS)
   return { url: data?.signedUrl ?? null, missing: !!error || !data?.signedUrl }
 }
 
-export function ClientPhotos({ clientId }: { clientId: string }) {
+export function ClientPhotos({ clientId, clientName = '' }: { clientId: string; clientName?: string }) {
   const [photos, setPhotos] = useState<PhotoSet[] | null>(null)
   const [reports, setReports] = useState<Report[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -51,7 +64,7 @@ export function ClientPhotos({ clientId }: { clientId: string }) {
     let cancelled = false
     async function load() {
       const [photoRes, bloodRes] = await Promise.all([
-        supabase.from('progress_photos').select('*').eq('client_id', clientId).order('week_number', { ascending: true }),
+        supabase.from('progress_photos').select('*').eq('client_id', clientId).order('week_number', { ascending: true }).order('uploaded_at', { ascending: true }),
         supabase.from('blood_work').select('*').eq('client_id', clientId).order('uploaded_at', { ascending: false }),
       ])
       if (photoRes.error || bloodRes.error) {
@@ -137,6 +150,11 @@ export function ClientPhotos({ clientId }: { clientId: string }) {
             ))}
           </div>
         )}
+      </section>
+
+      <section>
+        <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3">Transformation card</p>
+        <TransformationCard clientId={clientId} clientName={clientName} weeks={cardWeeks(photos)} />
       </section>
 
       <section>
