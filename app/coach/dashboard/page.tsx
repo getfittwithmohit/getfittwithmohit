@@ -84,6 +84,7 @@ export default function DashboardPage() {
           {[
             { href: '/coach/dashboard/ideas', icon: '💡', label: 'PEAK Ideas' },
             { href: '/coach/dashboard/workouts', icon: '🏋️', label: 'Workouts' },
+            { href: '/coach/dashboard/nutrition', icon: '🥗', label: 'Nutrition' },
             { href: '/coach/dashboard/daily', icon: '📋', label: 'Daily Check-ins' },
             { href: '/coach/dashboard/content', icon: '📚', label: 'Courses & Audios' },
             { href: '/plate', icon: '🍽️', label: 'PEAK Plate' },
