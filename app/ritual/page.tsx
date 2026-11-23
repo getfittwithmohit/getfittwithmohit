@@ -61,9 +61,6 @@ export default function RitualPage() {
   const [goals, setGoals] = useState<string[]>(Array(20).fill(''))
   const [savingGoals, setSavingGoals] = useState(false)
 
-  // Step: Codex
-  const [codexSection, setCodexSection] = useState('')
-
   useEffect(() => {
     async function load() {
       const c = await getCurrentClient()
@@ -73,12 +70,11 @@ export default function RitualPage() {
       const today = todayIST()
       const { quarter, year } = getCurrentQuarter()
 
-      const [ritualRes, streakRes, goalRes, affRes, codexRes] = await Promise.all([
+      const [ritualRes, streakRes, goalRes, affRes] = await Promise.all([
         supabase.from('daily_rituals').select('*').eq('client_id', c.id).eq('date', today).maybeSingle(),
         supabase.from('ritual_streaks').select('*').eq('client_id', c.id).maybeSingle(),
         supabase.from('goal_cards').select('*').eq('client_id', c.id).eq('quarter', quarter).eq('year', year).maybeSingle(),
         supabase.from('affirmations').select('generated_text, audio_url, audio_path').eq('client_id', c.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('codex_data').select('generated_codex').eq('client_id', c.id).maybeSingle(),
       ])
 
       setStreakData(streakRes.data)
@@ -96,7 +92,6 @@ export default function RitualPage() {
         if (ritualRes.data.goal_card_done) done.push('goals')
         if (ritualRes.data.affirmations_done) done.push('affirmations')
         if (ritualRes.data.goals_done) done.push('write')
-        if (ritualRes.data.codex_done) done.push('codex')
         setCompletedSteps(done)
       }
 
@@ -108,11 +103,6 @@ export default function RitualPage() {
           .from('affirmations')
           .createSignedUrl(affRes.data.audio_path, 60 * 60 * 8)
         if (urlData?.signedUrl) setAffirmationUrl(urlData.signedUrl)
-      }
-
-      const sections = codexRes.data?.generated_codex?.sections
-      if (sections?.length) {
-        setCodexSection(sections[0].content?.split('\n\n')[0] || '')
       }
 
       setLoading(false)
@@ -253,7 +243,6 @@ export default function RitualPage() {
             completedSteps.includes('goals') ? 2 : null,
             completedSteps.includes('affirmations') ? 3 : null,
             completedSteps.includes('write') ? 4 : null,
-            completedSteps.includes('codex') ? 5 : null,
           ].filter(Boolean),
         }),
       })
@@ -308,15 +297,14 @@ export default function RitualPage() {
     )
   }
 
-  const allDone = completedSteps.length === 5
 
   const ITEMS = [
     { id: 'secret', icon: 'headphones' as IconName, label: 'The Strangest Secret', sub: 'Listen · Earl Nightingale · ~30 mins' },
     { id: 'goals', icon: 'target' as IconName, label: 'Goal Card', sub: 'Read your quarterly goals out loud' },
     { id: 'affirmations', icon: 'mic' as IconName, label: 'Affirmations', sub: 'Listen to your voice · Your identity' },
     { id: 'write', icon: 'pen' as IconName, label: '20 Goals', sub: 'Write fresh · 10 per page · Present tense' },
-    { id: 'codex', icon: 'codex' as IconName, label: 'Your Codex', sub: 'Read your personal transformation biography' },
   ]
+  const allDone = ITEMS.every((it) => completedSteps.includes(it.id))
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
@@ -342,7 +330,7 @@ export default function RitualPage() {
           {completedSteps.length === 0
             ? 'The world is quiet. This time is yours.'
             : completedSteps.length < 5
-              ? `${completedSteps.length} of 5 complete · Keep going.`
+              ? `${completedSteps.filter((id) => ITEMS.some((it) => it.id === id)).length} of ${ITEMS.length} complete · Keep going.`
               : 'All done. Complete your ritual below.'}
         </p>
 
@@ -725,50 +713,6 @@ export default function RitualPage() {
                       >
                         {savingGoals ? 'Saving...' : 'Save & complete ✓'}
                       </button>
-                    </div>
-                  )}
-
-                  {/* ── CODEX ── */}
-                  {item.id === 'codex' && (
-                    <div>
-                      <p className="text-white/65 text-sm leading-relaxed mb-4">
-                        Open your biography. Read it fully. Let it remind you who you are and why you started.
-                      </p>
-
-                      {codexSection ? (
-                        <div className="bg-white/5 rounded-xl p-4 mb-4">
-                          <p className="text-white/50 text-sm leading-relaxed line-clamp-4">
-                            {codexSection}
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="bg-white/5 rounded-xl p-4 mb-4 text-center">
-                          <p className="text-white/60 text-sm">Codex not written yet.</p>
-                        </div>
-                      )}
-
-                      <button
-                        onClick={() => window.open('/codex/view', '_blank')}
-                        className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-sm text-white/50 hover:border-[#00D4E8]/40 transition-colors mb-2"
-                      >
-                        Open full Codex →
-                      </button>
-
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => markDone('codex')}
-                          className="flex-1 py-3 rounded-xl text-sm font-medium"
-                          style={{ background: '#00D4E8', color: '#0a0a0f' }}
-                        >
-                          I've read it ✓
-                        </button>
-                        <button
-                          onClick={() => markDone('codex')}
-                          className="px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white/50 border border-white/10 transition-colors"
-                        >
-                          Skip
-                        </button>
-                      </div>
                     </div>
                   )}
 

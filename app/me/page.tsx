@@ -106,7 +106,6 @@ export default function MePage() {
       <Group>
         <Row icon="pen" tint="violet" title="My pledge" subtitle="Read it morning and night" href="/pledge" />
         <Row icon="target" tint="violet" title="Identity" subtitle="Your why, values and vision" href="/identity" />
-        <Row icon="codex" tint="violet" title="My Codex" subtitle="Your story so far" href="/codex/view" />
         <Row icon="activity" tint="violet" title="Fitness assessment" subtitle="Your fitness baseline" href="/assessment" last />
       </Group>
 
