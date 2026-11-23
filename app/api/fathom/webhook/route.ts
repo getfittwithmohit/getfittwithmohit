@@ -7,6 +7,22 @@ import { handleFathomMeeting } from '@/lib/callNotes/process'
 // the background. Nothing reaches a client until the coach saves it.
 export const maxDuration = 60
 
+// Opening the URL in a browser: a quick setup check (never shows the values).
+export async function GET() {
+  const secret = !!process.env.FATHOM_WEBHOOK_SECRET
+  const apiKey = !!process.env.FATHOM_API_KEY
+  const ai = !!process.env.ANTHROPIC_API_KEY
+  return NextResponse.json({
+    ok: secret && apiKey && ai,
+    message: secret && apiKey && ai
+      ? 'Fathom webhook is ready. Fathom sends calls here automatically; nothing to do in the browser.'
+      : 'Fathom webhook is live but missing settings in Vercel (see below). Add them, then redeploy.',
+    FATHOM_WEBHOOK_SECRET: secret ? 'set' : 'missing',
+    FATHOM_API_KEY: apiKey ? 'set' : 'missing',
+    ANTHROPIC_API_KEY: ai ? 'set' : 'missing',
+  })
+}
+
 export async function POST(req: NextRequest) {
   const secret = process.env.FATHOM_WEBHOOK_SECRET
   if (!secret) {
