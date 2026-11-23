@@ -8,6 +8,7 @@ import {
 } from '@/lib/nutrition/plan'
 import { getVersions, publishPlan, saveDraft, type NutritionPlan, type PlanVersion } from '@/lib/supabase/queries/nutritionPlans'
 import { confirmDialog, toast } from '@/lib/ui/feedback'
+import { AskAI } from './AskAI'
 
 const input = 'w-full px-3 py-2 text-sm border border-[#e2e8f0] rounded-lg bg-white focus:outline-none focus:border-[#00D4E8]'
 const small = 'text-[11px] font-medium text-[#64748b]'
@@ -187,6 +188,8 @@ export function PlanEditor({
             : 'Not published yet — the client can’t see it.'}
         </p>
       </div>
+
+      <AskAI doc={doc} foods={byslug} clientId={plan.client_id} diet={ctx?.diet ?? plan.diet} onApply={setDoc} />
 
       {/* Targets + day */}
       <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col gap-3">
