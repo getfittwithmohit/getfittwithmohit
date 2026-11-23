@@ -8,6 +8,7 @@ import { DailyHistory } from '@/components/coach/DailyHistory'
 import { ClientWorkouts } from '@/components/coach/ClientWorkouts'
 import { ClientPhotos } from '@/components/coach/ClientPhotos'
 import { ClientBrief } from '@/components/coach/ClientBrief'
+import { CallDrafts, type CallDraft } from '@/components/coach/CallDrafts'
 import { useParams } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -98,7 +99,12 @@ export default function ClientProgressPage() {
 
   const [loading, setLoading] = useState(true)
   const [progressData, setProgressData] = useState<any>(null)
-  const [tab, setTab] = useState<Tab>('progress')
+  // ?tab=calls (from the dashboard's call-notes inbox) opens that tab directly.
+  const [tab, setTab] = useState<Tab>(() => {
+    if (typeof window === 'undefined') return 'progress'
+    const t = new URLSearchParams(window.location.search).get('tab')
+    return t === 'calls' || t === 'brief' ? t : 'progress'
+  })
   const [expandedCheckin, setExpandedCheckin] = useState<string | null>(null)
 
   // Edit form state
@@ -118,8 +124,12 @@ export default function ClientProgressPage() {
     discussed: '',
     changes: '',
     next_focus: '',
+    share_focus: false,
   })
   const [savingCall, setSavingCall] = useState(false)
+  // The call-notes draft (Fathom / pasted transcript) the open form was filled from
+  const [activeDraft, setActiveDraft] = useState<{ id: string; week: number } | null>(null)
+  const [draftsKey, setDraftsKey] = useState(0)
 
   // Report tab state
   const [reportData, setReportData] = useState<TransformationReportData | null>(null)
@@ -145,6 +155,15 @@ export default function ClientProgressPage() {
     getClientProgress(clientId).then((data) => {
       setProgressData(data)
       setLoading(false)
+      // Opened straight on the Calls tab (?tab=calls): load the call list too
+      if (new URLSearchParams(window.location.search).get('tab') === 'calls') {
+        setCallsLoading(true)
+        fetch(`/api/review-calls/list?clientId=${clientId}`)
+          .then((r) => r.json())
+          .then((d) => setCalls(d.calls || []))
+          .catch(() => {})
+          .finally(() => setCallsLoading(false))
+      }
 
       setEditData({
         full_name: data.client?.full_name || '',
@@ -201,13 +220,28 @@ export default function ClientProgressPage() {
       discussed: call.discussed || '',
       changes: call.changes || '',
       next_focus: call.next_focus || '',
+      share_focus: !!call.share_focus,
     })
+    setActiveDraft(null)
+  }
+
+  const applyDraft = (d: CallDraft, week: number) => {
+    setEditingWeek(week)
+    setCallForm({
+      status: 'completed',
+      discussed: d.discussed || '',
+      changes: d.changes || '',
+      next_focus: d.next_focus || '',
+      share_focus: true,
+    })
+    setActiveDraft({ id: d.id, week })
+    setTimeout(() => document.getElementById(`call-week-${week}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
   }
 
   const saveCall = async (weekNumber: number) => {
     setSavingCall(true)
     try {
-      await fetch('/api/review-calls/mark', {
+      const res = await fetch('/api/review-calls/mark', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -217,8 +251,23 @@ export default function ClientProgressPage() {
           discussed: callForm.discussed || null,
           changes: callForm.changes || null,
           next_focus: callForm.next_focus || null,
+          share_focus: callForm.status === 'completed' && !!callForm.next_focus && callForm.share_focus,
         }),
       })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Save failed')
+      }
+      if (activeDraft && activeDraft.week === weekNumber) {
+        await fetch('/api/coach/call-notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'applied', draftId: activeDraft.id, weekNumber }),
+        }).catch(() => {})
+        setActiveDraft(null)
+        setDraftsKey((k) => k + 1)
+        toast('Saved. Copy the WhatsApp recap from "Notes from calls".', 'success')
+      }
       setEditingWeek(null)
       await loadCalls()
     } catch (err) {
@@ -1091,6 +1140,13 @@ export default function ClientProgressPage() {
             </div>
           </div>
 
+          <CallDrafts
+            clientId={clientId}
+            maxWeek={calls.length || currentWeek}
+            reloadKey={draftsKey}
+            onUse={applyDraft}
+          />
+
           {/* Call history */}
           {callsLoading && (
             <div className="text-center py-12 text-sm text-[#94a3b8]">Loading call history...</div>
@@ -1116,7 +1172,8 @@ export default function ClientProgressPage() {
               return (
                 <div
                   key={call.week_number}
-                  className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden"
+                  id={`call-week-${call.week_number}`}
+                  className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden scroll-mt-4"
                 >
                   <div
                     className="flex items-center justify-between px-4 py-3 cursor-pointer"
@@ -1170,7 +1227,7 @@ export default function ClientProgressPage() {
                             <textarea
                               value={callForm.discussed}
                               onChange={(e) => setCallForm((p) => ({ ...p, discussed: e.target.value }))}
-                              rows={2}
+                              rows={activeDraft ? 4 : 2}
                               className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
                             />
                           </div>
@@ -1179,7 +1236,7 @@ export default function ClientProgressPage() {
                             <textarea
                               value={callForm.changes}
                               onChange={(e) => setCallForm((p) => ({ ...p, changes: e.target.value }))}
-                              rows={2}
+                              rows={activeDraft ? 4 : 2}
                               className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
                             />
                           </div>
@@ -1188,10 +1245,22 @@ export default function ClientProgressPage() {
                             <textarea
                               value={callForm.next_focus}
                               onChange={(e) => setCallForm((p) => ({ ...p, next_focus: e.target.value }))}
-                              rows={2}
+                              rows={activeDraft ? 4 : 2}
                               className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
                             />
                           </div>
+                          <label className="flex items-start gap-2 text-xs text-[#0f172a] cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={callForm.share_focus}
+                              onChange={(e) => setCallForm((p) => ({ ...p, share_focus: e.target.checked }))}
+                              className="mt-0.5 accent-[#00D4E8]"
+                            />
+                            <span>
+                              Show “What we’re changing” and “Next week’s focus” on {client?.full_name?.split(' ')[0] || 'the client'}’s Today screen
+                              <span className="block text-[#94a3b8]">“What we discussed” always stays private to you.</span>
+                            </span>
+                          </label>
                         </div>
                       )}
 

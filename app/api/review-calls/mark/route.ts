@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   try {
     await requireCoach()
 
-    const { clientId, weekNumber, status, discussed, changes, next_focus } = await req.json()
+    const { clientId, weekNumber, status, discussed, changes, next_focus, share_focus } = await req.json()
 
     if (!clientId || !weekNumber || !status) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
       discussed,
       changes,
       next_focus,
+      ...(typeof share_focus === 'boolean' ? { share_focus } : {}),
       call_date: new Date().toISOString().split('T')[0],
     })
 
