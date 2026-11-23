@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase/client'
+import { heicToJpeg, isHeicFile, looksHeic } from '@/lib/photos/heic'
 
 // Client progress photos: onboarding is Week 1, then a new set every 4 weeks.
 // Files live in the private 'progress-photos' bucket under <clientId>/week-N/
@@ -62,8 +63,17 @@ export function photosDue(sets: { week: number }[], currentWeek: number, phase: 
 
 // Phone photos are 3–8 MB; shrink to ≤1600px JPEG before upload.
 export async function compressImage(file: File, maxSide = 1600, quality = 0.85): Promise<Blob> {
+  let source: Blob = file
   try {
-    const bitmap = await createImageBitmap(file)
+    // Chrome/Android can't decode iPhone HEIC photos: convert them first
+    if (isHeicFile(file) || (await looksHeic(file))) {
+      try { await createImageBitmap(file) } catch { source = await heicToJpeg(file, quality) }
+    }
+  } catch {
+    // conversion failed — fall through and try the original
+  }
+  try {
+    const bitmap = await createImageBitmap(source)
     const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height))
     const w = Math.round(bitmap.width * scale)
     const h = Math.round(bitmap.height * scale)
@@ -72,9 +82,9 @@ export async function compressImage(file: File, maxSide = 1600, quality = 0.85):
     canvas.height = h
     canvas.getContext('2d')!.drawImage(bitmap, 0, 0, w, h)
     const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, 'image/jpeg', quality))
-    return blob || file
+    return blob || source
   } catch {
-    return file // e.g. HEIC the browser can't decode: upload as-is
+    return source // couldn't re-encode: upload what we have
   }
 }
 
