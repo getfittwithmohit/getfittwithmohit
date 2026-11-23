@@ -149,10 +149,9 @@ export async function loadSetupItems(client: { id: string; current_week: number;
   const weekday = isoWeekday(today) // 5 = Fri, 6 = Sat, 7 = Sun
   const checkinWindow = weekday >= 5
 
-  const [pledge, identity, codex, weekly, photoWeeks] = await Promise.all([
+  const [pledge, identity, weekly, photoWeeks] = await Promise.all([
     supabase.from('commitment_pledges').select('id').eq('client_id', client.id).maybeSingle(),
     supabase.from('identity_cards').select('id').eq('client_id', client.id).maybeSingle(),
-    supabase.from('codex_data').select('origin_story, turning_point, battle_cry, deepest_reason').eq('client_id', client.id).maybeSingle(),
     checkinWindow && client.current_week
       ? supabase.from('weekly_checkins').select('id').eq('client_id', client.id).eq('week_number', client.current_week).maybeSingle()
       : Promise.resolve({ data: { id: 'n/a' } }),
@@ -167,8 +166,5 @@ export async function loadSetupItems(client: { id: string; current_week: number;
   }
   if (!pledge.data) items.push({ key: 'pledge', icon: 'pen', title: 'Sign your pledge', subtitle: 'Your promise to yourself', href: '/pledge' })
   if (!identity.data) items.push({ key: 'identity', icon: 'target', title: 'Purpose & identity', subtitle: 'Your why, values and vision', href: '/identity' })
-  const c = codex.data
-  if (!(c?.origin_story && c?.turning_point)) items.push({ key: 'story', icon: 'codex', title: 'Tell your story', subtitle: 'Where you came from', href: '/codex/story' })
-  if (!(c?.battle_cry && c?.deepest_reason)) items.push({ key: 'codex', icon: 'codex', title: 'Build your Codex', subtitle: 'Your transformation document', href: '/codex' })
   return items
 }
