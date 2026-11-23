@@ -132,12 +132,28 @@ export interface MealImage {
 
 type Content = string | ({ type: 'text'; text: string } | { type: 'image'; source: { type: 'base64'; media_type: string; data: string } })[]
 
-async function callClaude<T>(prompt: Content, schema: object, maxTokens = 12000): Promise<T> {
+type AiError = Error & { status?: number; truncated?: boolean }
+
+async function callClaude<T>(prompt: Content, schema: object, maxTokens = 20000): Promise<T> {
   try {
     return await callClaudeOnce<T>(prompt, schema, maxTokens)
   } catch (e) {
-    if ((e as Error & { status?: number }).status === 400) return callClaudeOnce<T>(prompt, stripEnums(schema) as object, maxTokens)
+    const err = e as AiError
+    if (err.status === 400) return callClaudeOnce<T>(prompt, stripEnums(schema) as object, maxTokens)
+    // Ran out of room mid-answer: one retry with more room.
+    if (err.truncated) return callClaudeOnce<T>(prompt, schema, Math.min(maxTokens * 2, 48000))
     throw e
+  }
+}
+
+// Structured output is JSON, but be forgiving about stray fences or text.
+function parseJson<T>(raw: string): T {
+  try {
+    return JSON.parse(raw) as T
+  } catch {
+    const s = raw.indexOf('{'), e = raw.lastIndexOf('}')
+    if (s >= 0 && e > s) return JSON.parse(raw.slice(s, e + 1)) as T
+    throw new Error('not json')
   }
 }
 
@@ -164,10 +180,20 @@ async function callClaudeOnce<T>(prompt: Content, schema: object, maxTokens: num
   }
   const data = await res.json()
   const raw: string = (data.content || []).filter((b: { type: string }) => b.type === 'text').map((b: { text: string }) => b.text).join('').trim()
+  if (data.stop_reason === 'max_tokens') {
+    console.error('Nutrition AI: hit max_tokens', maxTokens, data.usage)
+    const err = new Error('The plan was too long to finish. Please try again — or add fewer photos.') as AiError
+    err.truncated = true
+    throw err
+  }
+  if (data.stop_reason === 'refusal') {
+    console.error('Nutrition AI: refusal', raw.slice(0, 300))
+    throw new Error('The plan writer couldn’t work with these inputs. Try removing any photo that isn’t food.')
+  }
   try {
-    return JSON.parse(raw) as T
+    return parseJson<T>(raw)
   } catch {
-    console.error('Nutrition AI: unparseable reply', raw.slice(0, 500))
+    console.error('Nutrition AI: unparseable reply', data.stop_reason, data.usage, raw.slice(0, 300), '…', raw.slice(-300))
     throw new Error('The plan came back in an unexpected format. Please try again.')
   }
 }
@@ -192,7 +218,7 @@ const VOICE = `You are Coach Mohit Mehral's nutrition system — the standard of
 WRITING RULES (everything the client reads — titles, "why", tips, rules):
 - Written as Mohit, to the client by first name or "you". Never mention AI, models, systems or apps.
 - Plain, warm, direct English. Indian kitchen words are good (katori, roti, sabzi, tiffin, tadka). Short sentences.
-- Every "why" is specific to THIS client — their day, their old habit, their goal, a number — never generic praise. Max 22 words.
+- Every "why" is specific to THIS client — their day, their old habit, their goal, a number — never generic praise. Max 18 words.
 - Tips are practical prep or ordering tips, max 16 words, or "".
 - No medical diagnosis or treatment. No supplements beyond what the client already takes or whey if they already use it. No brand names.
 
@@ -232,18 +258,21 @@ export async function draftFromIntake(args: {
 TASK: Build ${args.facts.first_name}'s personal nutrition plan FROM WHAT THEY ALREADY EAT.
 
 Method (follow it exactly):
-1. CURRENT: Read the food log${args.images?.length ? ' and the photos' : ''}. Map what they eat on a typical day into meals with times, using catalog foods and realistic portions. Anything you cannot map goes in "unmapped" (their words). Add a short note per meal (e.g. "only 6 g protein", "fried, 2 tsp oil").
+Keep the answer compact: no padding, every text field short.
+
+1. CURRENT: ONE typical day (merge the days you were given; max 8 meals). Read the food log${args.images?.length ? ' and the photos' : ''}. Map what they eat on a typical day into meals with times, using catalog foods and realistic portions. Anything you cannot map goes in "unmapped" (their words). Add a short note per meal (e.g. "only 6 g protein", "fried, 2 tsp oil").
+   Max 10 items in "unmapped".
 2. GAPS: the 2–4 biggest problems versus the targets (protein, portions, oil/sugar, timing, fibre, late dinners…), each one line with numbers.
 3. PLAN: keep the shape of their day — same meal times and number of meals, same kinds of food and the same dishes wherever possible. Change only what moves results (roughly: keep 80%, fix 20%):
    - lift protein in every meal (add or upgrade: curd, dal, paneer, sprouts, eggs/chicken/fish if their diet allows, whey only if they already use it);
    - right-size portions of roti, rice, oil, ghee, sugar;
    - swap the problem items for close, familiar alternatives.
-   For each meal give 2–3 options built from THEIR OWN repeats (if they alternate poha and upma, both become options, each fixed). Option 1 is the most typical.
+   For each meal give 2 options built from THEIR OWN repeats (3 only for a meal where they clearly rotate 3+ dishes) (if they alternate poha and upma, both become options, each fixed). Option 1 is the most typical.
    Option 1 of every meal, added up, should land within about 5% of the calorie target and reach the protein target. Other options should be within about 10% of option 1's calories.
    ids: use short ids like "m1", "m1o1".
    rules: 3–5 rules written for this client's specific habits (not generic).
    targets: return the targets given below unchanged unless the coach's notes say otherwise.
-4. CHANGES: up to 6 of the most important changes, old → new, each with a one-line why. These are shown to the coach, not the client.
+4. CHANGES: up to 5 of the most important changes, old → new, each with a one-line why. These are shown to the coach, not the client.
 5. MISSING_FOODS: foods they eat that are not in the catalog and that matter (so the coach can add them). Up to 5. Empty if none.
 
 LEVEL: ${args.level} (1 = habits, 2 = household portions, 3 = grams). Portions are always given as measures; the app shows them at the right level.
