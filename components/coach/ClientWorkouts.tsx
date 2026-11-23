@@ -14,6 +14,7 @@ import {
   type PlanListItem,
 } from '@/lib/supabase/queries/workouts'
 import { formatKg, formatSeconds } from '@/lib/utils/workouts'
+import { ExportPlanButton } from '@/components/workouts/ExportPlanButton'
 import { formatDayLabel, istDate, todayIST } from '@/lib/utils/istDate'
 import type { Exercise, PainFlag, WorkoutLog, WorkoutPlan, WorkoutSet } from '@/lib/types/workouts'
 
@@ -21,7 +22,7 @@ const FEEL_LABEL = { easy: 'Easy', right: 'Just right', brutal: 'Brutal' } as co
 
 // Coach view of one client's training: active plan, recent sessions with
 // every set, pain reports, and one-tap high-fives.
-export function ClientWorkouts({ clientId }: { clientId: string }) {
+export function ClientWorkouts({ clientId, clientName }: { clientId: string; clientName?: string }) {
   const [plan, setPlan] = useState<WorkoutPlan | null>(null)
   const [templates, setTemplates] = useState<PlanListItem[]>([])
   const [logs, setLogs] = useState<WorkoutLog[]>([])
@@ -127,7 +128,10 @@ export function ClientWorkouts({ clientId }: { clientId: string }) {
                 {plan.start_date ? ` · started ${formatDayLabel(plan.start_date)}` : ''}
               </p>
             </div>
-            <a href={`/coach/dashboard/workouts/plans/${plan.id}`} className="h-9 px-4 rounded-lg bg-[#1a1f3a] text-[#00D4E8] text-sm font-medium flex items-center">Edit plan</a>
+            <div className="flex gap-2">
+              <ExportPlanButton plan={plan} clientName={clientName} className="h-9 px-4 rounded-lg border border-[#e2e8f0] text-[#0f172a] text-sm font-medium disabled:opacity-50" />
+              <a href={`/coach/dashboard/workouts/plans/${plan.id}`} className="h-9 px-4 rounded-lg bg-[#1a1f3a] text-[#00D4E8] text-sm font-medium flex items-center">Edit plan</a>
+            </div>
           </div>
         ) : (
           <p className="text-sm text-[#64748b]">No plan yet — the client won’t see a workout until you assign one.</p>

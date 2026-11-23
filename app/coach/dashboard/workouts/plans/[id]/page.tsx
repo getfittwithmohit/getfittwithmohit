@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { supabase } from '@/lib/supabase/client'
+import { ExportPlanButton } from '@/components/workouts/ExportPlanButton'
 import {
   addPlanExercise,
   addSession,
@@ -140,7 +141,12 @@ export default function PlanBuilderPage() {
               {isTemplate ? 'Template' : `${clientName || 'Client'}’s plan`} · {plan.status === 'archived' ? 'Archived' : 'Active'}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <ExportPlanButton
+              plan={plan}
+              clientName={isTemplate ? null : clientName}
+              className="h-10 px-4 rounded-full border border-white/20 text-white text-sm disabled:opacity-50"
+            />
             <button
               onClick={() => run(async () => {
                 const id = await copyPlan(plan.id, null, null, `${plan.name} (template)`)

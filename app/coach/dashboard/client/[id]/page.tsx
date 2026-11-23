@@ -1373,7 +1373,7 @@ export default function ClientProgressPage() {
 
       {tab === 'daily' && <DailyHistory clientId={clientId} />}
 
-      {tab === 'workouts' && <ClientWorkouts clientId={clientId} />}
+      {tab === 'workouts' && <ClientWorkouts clientName={client?.full_name || ''} clientId={clientId} />}
 
       {tab === 'brief' && (
         <div className="max-w-3xl mx-auto px-4 py-6">
