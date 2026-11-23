@@ -213,10 +213,10 @@ function Compare({
       </div>
       {before && after ? (
         <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-[#E5E7EB] select-none">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={after} alt={`Week ${lastWeek}`} className="absolute inset-0 w-full h-full object-cover" draggable={false} />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={before} alt={`Week ${firstWeek}`} className="absolute inset-0 w-full h-full object-cover" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }} draggable={false} />
+          <StoredPhoto url={after} path={latest[pose]} alt={`Week ${lastWeek}`} className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
+            <StoredPhoto url={before} path={first[pose]} alt={`Week ${firstWeek}`} className="absolute inset-0 w-full h-full object-cover" />
+          </div>
           <div className="absolute inset-y-0 w-0.5 bg-white shadow" style={{ left: `${pos}%` }} aria-hidden="true">
             <span className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-white shadow flex items-center justify-center text-[#0f172a] text-sm font-bold">↔</span>
           </div>
@@ -285,7 +285,7 @@ function AddPhotos({
             <span className="text-base font-semibold">{POSE_LABEL[pose]}</span>
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
-                <Thumb url={ref} alt={`Your week 1 ${pose} photo`} />
+                <Thumb url={ref} path={reference?.[pose]} alt={`Your week 1 ${pose} photo`} />
                 <span className="text-sm text-center" style={{ color: T.ter }}>{ref ? 'Week 1 — match this' : 'No earlier photo'}</span>
               </div>
               <label className="flex flex-col gap-1 cursor-pointer">
