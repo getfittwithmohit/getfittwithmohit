@@ -9,6 +9,24 @@ import { describeItem, emptyOption, newId, scaleDoc, LEVEL_LABEL, type ClientCon
 import type { Food, Nutrients } from '@/lib/nutrition/foods'
 import { PlanEditor } from './PlanEditor'
 import { confirmDialog, toast } from '@/lib/ui/feedback'
+import { compressImage } from '@/lib/photos/progressPhotos'
+
+interface MealPhoto { id: string; url: string; data: string; media_type: 'image/jpeg' | 'image/png' | 'image/webp'; caption: string }
+const MAX_PHOTOS = 15
+
+// Shrink to 1024 px JPEG (iPhone HEIC converted) and read as base64 — photos
+// are sent once to be read, never stored.
+async function toMealPhoto(file: File): Promise<MealPhoto> {
+  const blob = await compressImage(file, 1024, 0.7)
+  const type = blob.type === 'image/png' || blob.type === 'image/webp' ? blob.type : 'image/jpeg'
+  const dataUrl: string = await new Promise((res, rej) => {
+    const r = new FileReader()
+    r.onload = () => res(String(r.result))
+    r.onerror = () => rej(new Error('Could not read the photo'))
+    r.readAsDataURL(blob)
+  })
+  return { id: Math.random().toString(36).slice(2), url: URL.createObjectURL(blob), data: dataUrl.split(',')[1] || '', media_type: type as MealPhoto['media_type'], caption: '' }
+}
 
 const DEFAULT_RULES = [
   'Protein first, in every meal',
@@ -56,6 +74,24 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
   const [notes, setNotes] = useState('')
   const [showMore, setShowMore] = useState(false)
   const [draft, setDraft] = useState<DraftResponse | null>(null)
+  const [photos, setPhotos] = useState<MealPhoto[]>([])
+  const [adding, setAdding] = useState(false)
+
+  const addPhotos = async (files: FileList | null) => {
+    if (!files?.length) return
+    const list = Array.from(files).slice(0, MAX_PHOTOS - photos.length)
+    if (files.length > list.length) toast(`Up to ${MAX_PHOTOS} photos — pick the clearest ones.`)
+    setAdding(true)
+    try {
+      const out: MealPhoto[] = []
+      for (const f of list) {
+        try { out.push(await toMealPhoto(f)) } catch { toast(`Couldn’t read ${f.name}`) }
+      }
+      setPhotos((p) => [...p, ...out])
+    } finally {
+      setAdding(false)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -98,13 +134,18 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
   }
 
   const build = async () => {
-    if (mealLog.trim().length < 40) return toast('Paste what they eat in a day — at least a few meals.')
+    if (mealLog.trim().length < 40 && photos.length === 0) return toast('Add photos of their meals, or type what they eat in a day.')
+    // Vercel accepts about 4.5 MB per request
+    if (photos.reduce((t, p) => t + p.data.length, 0) > 4_000_000) return toast('These photos are too big to send together — remove a few and try again.')
     setBusy(true)
     try {
       const res = await fetch('/api/coach/nutrition/draft', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId, mealLog, transcript, notes, level }),
+        body: JSON.stringify({
+          clientId, mealLog, transcript, notes, level,
+          images: photos.map((p) => ({ data: p.data, media_type: p.media_type, caption: p.caption })),
+        }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || 'Something went wrong')
@@ -250,8 +291,42 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
 
         {mode === 'build' && (
           <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-medium text-[#64748b]">Photos of {first}’s meals or WhatsApp screenshots (up to {MAX_PHOTOS})</span>
+              {photos.length > 0 && (
+                <div className="grid grid-cols-3 gap-2">
+                  {photos.map((p, i) => (
+                    <div key={p.id} className="flex flex-col gap-1">
+                      <div className="relative aspect-square rounded-lg overflow-hidden bg-[#f1f5f9]">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={p.url} alt={`Meal photo ${i + 1}`} className="w-full h-full object-cover" />
+                        <button
+                          onClick={() => setPhotos((x) => x.filter((y) => y.id !== p.id))}
+                          className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs"
+                          aria-label="Remove photo"
+                        >✕</button>
+                      </div>
+                      <input
+                        value={p.caption}
+                        onChange={(e) => setPhotos((x) => x.map((y) => (y.id === p.id ? { ...y, caption: e.target.value } : y)))}
+                        placeholder="Day, time"
+                        className="w-full px-2 py-1 text-[11px] border border-[#e2e8f0] rounded-md"
+                        aria-label={`Caption for photo ${i + 1}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {photos.length < MAX_PHOTOS && (
+                <label className={`h-11 rounded-xl border border-dashed border-[#94a3b8] text-sm text-[#0f172a] flex items-center justify-center gap-2 cursor-pointer ${adding ? 'opacity-50' : ''}`}>
+                  <input type="file" accept="image/*,.heic,.heif" multiple className="hidden" disabled={adding} onChange={(e) => { addPhotos(e.target.files); e.target.value = '' }} />
+                  {adding ? 'Adding photos…' : photos.length ? '+ Add more photos' : '📷 Add meal photos'}
+                </label>
+              )}
+              <span className="text-[11px] text-[#94a3b8]">Captions are optional — add the day and time if the photo doesn’t show it. Photos are only read to build the plan; they aren’t saved.</span>
+            </div>
             <label className="flex flex-col gap-1">
-              <span className="text-xs font-medium text-[#64748b]">What {first} eats — paste 1–3 days exactly as they sent it</span>
+              <span className="text-xs font-medium text-[#64748b]">And/or type what {first} eats {photos.length ? '(optional)' : '— paste 1–3 days as they sent it'}</span>
               <textarea
                 value={mealLog}
                 onChange={(e) => setMealLog(e.target.value)}

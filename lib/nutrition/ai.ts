@@ -124,7 +124,15 @@ const stripEnums = (s: unknown): unknown =>
       ? Object.fromEntries(Object.entries(s as Record<string, unknown>).filter(([k]) => k !== 'enum').map(([k, v]) => [k, stripEnums(v)]))
       : s
 
-async function callClaude<T>(prompt: string, schema: object, maxTokens = 12000): Promise<T> {
+export interface MealImage {
+  data: string // base64, no data: prefix
+  media_type: 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif'
+  caption?: string
+}
+
+type Content = string | ({ type: 'text'; text: string } | { type: 'image'; source: { type: 'base64'; media_type: string; data: string } })[]
+
+async function callClaude<T>(prompt: Content, schema: object, maxTokens = 12000): Promise<T> {
   try {
     return await callClaudeOnce<T>(prompt, schema, maxTokens)
   } catch (e) {
@@ -133,7 +141,7 @@ async function callClaude<T>(prompt: string, schema: object, maxTokens = 12000):
   }
 }
 
-async function callClaudeOnce<T>(prompt: string, schema: object, maxTokens: number): Promise<T> {
+async function callClaudeOnce<T>(prompt: Content, schema: object, maxTokens: number): Promise<T> {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not set in Vercel')
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -204,7 +212,7 @@ export interface DraftResult {
 
 export async function draftFromIntake(args: {
   foods: Food[]; facts: ClientFacts; targets: PlanTargets; level: Level
-  mealLog: string; transcript: string; notes: string
+  mealLog: string; transcript: string; notes: string; images?: MealImage[]
 }): Promise<DraftResult> {
   const allow = allowedFoods(args.foods, args.facts.diet)
   const slugs = allow.map((f) => f.slug)
@@ -224,7 +232,7 @@ export async function draftFromIntake(args: {
 TASK: Build ${args.facts.first_name}'s personal nutrition plan FROM WHAT THEY ALREADY EAT.
 
 Method (follow it exactly):
-1. CURRENT: Read the food log. Map what they eat on a typical day into meals with times, using catalog foods and realistic portions. Anything you cannot map goes in "unmapped" (their words). Add a short note per meal (e.g. "only 6 g protein", "fried, 2 tsp oil").
+1. CURRENT: Read the food log${args.images?.length ? ' and the photos' : ''}. Map what they eat on a typical day into meals with times, using catalog foods and realistic portions. Anything you cannot map goes in "unmapped" (their words). Add a short note per meal (e.g. "only 6 g protein", "fried, 2 tsp oil").
 2. GAPS: the 2–4 biggest problems versus the targets (protein, portions, oil/sugar, timing, fibre, late dinners…), each one line with numbers.
 3. PLAN: keep the shape of their day — same meal times and number of meals, same kinds of food and the same dishes wherever possible. Change only what moves results (roughly: keep 80%, fix 20%):
    - lift protein in every meal (add or upgrade: curd, dal, paneer, sprouts, eggs/chicken/fish if their diet allows, whey only if they already use it);
@@ -247,13 +255,31 @@ ${JSON.stringify(args.facts, null, 1)}
 
 FOOD LOG (as the client sent it — may be messy, Hinglish or WhatsApp style):
 """
-${args.mealLog.slice(0, 20000)}
+${args.mealLog.trim() ? args.mealLog.slice(0, 20000) : '(none typed — use the photos)'}
 """
+${args.images?.length ? `
+PHOTOS: ${args.images.length} photo(s) are attached above, in order — meal photos and/or WhatsApp screenshots from the client, with the coach's caption where given:
+${args.images.map((im, i) => `Photo ${i + 1}: ${im.caption?.trim() || '(no caption)'}`).join('\n')}
+How to read them:
+- Identify every food on the plate and estimate portions from what you see: roti count, katori size (a standard katori is ~150 g), rice mound, glass size, pieces. Note visible oil, ghee, fried items and sweets.
+- Times and days: use the caption, or the timestamps/text visible in a WhatsApp screenshot. If unknown, infer the meal from the food and order.
+- The same meal photographed on different days shows what repeats — use that for the options.
+- If a photo is unclear, make your best estimate and say so in that meal's note.
+` : ''}
 ${args.transcript.trim() ? `\nCALL TRANSCRIPT OR NOTES (from the coach — use anything about food, schedule, preferences, problems):\n"""\n${args.transcript.slice(0, 40000)}\n"""\n` : ''}${args.notes.trim() ? `\nCOACH'S INSTRUCTIONS (follow these; they override the method above if they conflict):\n"""\n${args.notes.slice(0, 4000)}\n"""\n` : ''}
 CATALOG (slug | name (local name) | category | measures with kcal and protein per measure):
 ${catalog(allow)}`
 
-  const out = await callClaude<Omit<DraftResult, 'plan'> & { plan: Omit<PlanDoc, 'level'> }>(prompt, schema)
+  const content: Content = args.images?.length
+    ? [
+        ...args.images.flatMap((im, i) => [
+          { type: 'text' as const, text: `Photo ${i + 1}${im.caption?.trim() ? ` — ${im.caption.trim()}` : ''}:` },
+          { type: 'image' as const, source: { type: 'base64' as const, media_type: im.media_type, data: im.data } },
+        ]),
+        { type: 'text' as const, text: prompt },
+      ]
+    : prompt
+  const out = await callClaude<Omit<DraftResult, 'plan'> & { plan: Omit<PlanDoc, 'level'> }>(content, schema)
   const bySlug = new Map(args.foods.map((f) => [f.slug, f]))
   return {
     current: { meals: out.current.meals.map((m) => ({ ...m, items: fixItems(m.items, bySlug) })), unmapped: out.current.unmapped },
