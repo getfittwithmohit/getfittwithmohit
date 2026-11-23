@@ -9,6 +9,7 @@ import { ClientWorkouts } from '@/components/coach/ClientWorkouts'
 import { ClientPhotos } from '@/components/coach/ClientPhotos'
 import { ClientBrief } from '@/components/coach/ClientBrief'
 import { CallDrafts, type CallDraft } from '@/components/coach/CallDrafts'
+import { ClientNutrition } from '@/components/nutrition/coach/ClientNutrition'
 import { useParams } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -33,7 +34,7 @@ import { WHtRCard } from '@/components/blueprint/WHtRCard'
 import { WHtRTrendChart } from '@/components/progress/WHtRTrendChart'
 import { calcCurrentWeek } from '@/lib/supabase/queries/clients'
 
-type Tab = 'brief' | 'progress' | 'edit' | 'calls' | 'report' | 'checkins' | 'daily' | 'workouts' | 'photos'
+type Tab = 'brief' | 'progress' | 'edit' | 'calls' | 'report' | 'checkins' | 'daily' | 'workouts' | 'nutrition' | 'photos'
 
 const FEET_OPTIONS = [3, 4, 5, 6, 7]
 const INCH_OPTIONS = Array.from({ length: 12 }, (_, i) => i)
@@ -103,7 +104,7 @@ export default function ClientProgressPage() {
   const [tab, setTab] = useState<Tab>(() => {
     if (typeof window === 'undefined') return 'progress'
     const t = new URLSearchParams(window.location.search).get('tab')
-    return t === 'calls' || t === 'brief' ? t : 'progress'
+    return t === 'calls' || t === 'brief' || t === 'nutrition' ? t : 'progress'
   })
   const [expandedCheckin, setExpandedCheckin] = useState<string | null>(null)
 
@@ -613,6 +614,7 @@ export default function ClientProgressPage() {
             { key: 'calls', label: 'Calls' },
             { key: 'daily', label: 'Daily' },
             { key: 'workouts', label: 'Workouts' },
+            { key: 'nutrition', label: 'Nutrition' },
             { key: 'checkins', label: 'Check-ins' },
             { key: 'photos', label: 'Photos' },
             { key: 'report', label: 'Report' },
@@ -1374,6 +1376,8 @@ export default function ClientProgressPage() {
       {tab === 'daily' && <DailyHistory clientId={clientId} />}
 
       {tab === 'workouts' && <ClientWorkouts clientName={client?.full_name || ''} clientId={clientId} />}
+
+      {tab === 'nutrition' && <ClientNutrition clientId={clientId} clientName={client?.full_name || ''} />}
 
       {tab === 'brief' && (
         <div className="max-w-3xl mx-auto px-4 py-6">

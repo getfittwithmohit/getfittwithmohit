@@ -20,7 +20,7 @@ const TABS: Tab[] = [
 const SHOW_ON = [
   /^\/home(\/progress|\/report)?$/,
   /^\/(train|learn|me)$/,
-  /^\/me\/photos$/,
+  /^\/me\/(photos|nutrition)$/,
   /^\/workout\/plan$/,
   /^\/plate$/,
   /^\/leaderboard$/,
