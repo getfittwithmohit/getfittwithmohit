@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { RenewalsPanel } from '@/components/dashboard/RenewalsPanel'
+import { CallNotesInbox } from '@/components/dashboard/CallNotesInbox'
 import { useClients, ClientSummary } from '@/hooks/useClients'
 import { ClientList } from '@/components/dashboard/ClientList'
 import { DetailPanel } from '@/components/dashboard/DetailPanel'
@@ -140,6 +141,11 @@ export default function DashboardPage() {
       {/* Subscriptions ending soon */}
       <div className={selected ? 'hidden md:block' : undefined}>
         <RenewalsPanel />
+      </div>
+
+      {/* Recorded calls: notes ready to review / calls to file */}
+      <div className={selected ? 'hidden md:block' : undefined}>
+        <CallNotesInbox clients={clients} />
       </div>
 
       {/* Main split view. Phones show one pane at a time: the list, or the

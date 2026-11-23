@@ -8,6 +8,7 @@ import { PageLoader } from '@/components/ui/PageLoader'
 import { Icon } from '@/components/ui/Icon'
 import { Badge, Card, Group, LargeTitle, Row, Screen, SectionTitle, Skeleton, T } from '@/components/ui/ios'
 import { SaverSheet } from '@/components/today/SaverSheet'
+import { WeekFocus } from '@/components/today/WeekFocus'
 import { loadToday, type TodayData, type TodayStep } from '@/lib/today/loadToday'
 
 const DAILY_QUOTES = [
@@ -84,6 +85,8 @@ export default function TodayPage() {
       ) : (
         <TodayList data={data} greeting={`${greeting}, ${firstName}`} onSaver={() => setSaverOpen(true)} />
       )}
+
+      <WeekFocus />
 
       <SectionTitle>Thought for today</SectionTitle>
       <Card>

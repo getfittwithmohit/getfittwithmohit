@@ -20,19 +20,30 @@ export async function markReviewCall(
     changes?: string
     next_focus?: string
     call_date?: string
+    share_focus?: boolean
   }
 ) {
-  const { error } = await supabase
-    .from('review_calls')
-    .upsert(
-      {
-        client_id: clientId,
-        week_number: weekNumber,
-        ...fields,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'client_id,week_number' }
-    )
+  const upsert = (f: typeof fields) =>
+    supabase
+      .from('review_calls')
+      .upsert(
+        {
+          client_id: clientId,
+          week_number: weekNumber,
+          ...f,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'client_id,week_number' }
+      )
+
+  let { error } = await upsert(fields)
+  // share_focus arrives with supabase/fathom_call_notes.sql. Until that's run,
+  // save the call without it rather than failing.
+  if (error && fields.share_focus !== undefined && (error.code === 'PGRST204' || error.code === '42703')) {
+    const { share_focus: _drop, ...base } = fields
+    void _drop
+    ;({ error } = await upsert(base))
+  }
 
   if (error) throw error
 
