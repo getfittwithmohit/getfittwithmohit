@@ -39,6 +39,47 @@ export function matchClient(emails: string[], clients: ClientRow[], exclude: str
   return hits.length === 1 ? hits[0] : null
 }
 
+const norm = (n: string) =>
+  n.toLowerCase().normalize('NFKD').replace(/[^a-z\s]/g, ' ').split(/\s+/).filter(Boolean)
+
+// Fallback when there's no invite email (e.g. a Meet link pasted into
+// Fathom): match a speaker's / invitee's display name to a client's full name.
+// Needs first AND last name to match, and exactly one client.
+export function matchClientByName(names: string[], clients: ClientRow[], excludeNames: string[]): ClientRow | null {
+  const skip = new Set(excludeNames.map((n) => norm(n).join(' ')))
+  const people = names.map(norm).filter((t) => t.length >= 2 && !skip.has(t.join(' ')))
+  const hits = clients.filter((c) => {
+    const ct = norm(c.full_name || '')
+    if (ct.length < 2) return false
+    return people.some((p) => p[0] === ct[0] && (p[p.length - 1] === ct[ct.length - 1] || p.includes(ct[ct.length - 1])))
+  })
+  return hits.length === 1 ? hits[0] : null
+}
+
+export function meetingNames(m: FathomMeeting): string[] {
+  const set = new Set<string>()
+  for (const i of m.calendar_invitees || []) if (i.name) set.add(i.name)
+  for (const t of m.transcript || []) if (t.speaker?.display_name) set.add(t.speaker.display_name)
+  return [...set]
+}
+
+// Learned match: once the coach files a call from these people (emails, or
+// Meet names when there's no invite) to a client, later calls from the same
+// people go to that client automatically.
+export async function matchClientFromHistory(keys: string[], clients: ClientRow[]): Promise<ClientRow | null> {
+  if (keys.length === 0) return null
+  const { data, error } = await db
+    .from('call_note_drafts')
+    .select('client_id')
+    .not('client_id', 'is', null)
+    .in('status', ['draft', 'applied']) // a dismissed call teaches nothing
+    .overlaps('invitee_emails', keys)
+    .limit(50)
+  if (error || !data) return null
+  const ids = [...new Set(data.map((r) => r.client_id as string))]
+  return ids.length === 1 ? clients.find((c) => c.id === ids[0]) || null : null
+}
+
 export function meetingEmails(m: FathomMeeting): string[] {
   const set = new Set<string>()
   for (const i of m.calendar_invitees || []) if (i.email) set.add(i.email.toLowerCase())
@@ -100,12 +141,18 @@ export async function handleFathomMeeting(m: FathomMeeting): Promise<void> {
   const recordedBy = m.recorded_by?.email?.toLowerCase()
   const exclude = [...COACH_EMAILS, ...(recordedBy ? [recordedBy] : [])]
   const emails = meetingEmails(m)
-  // Solo / internal recordings: nothing to file.
-  if (!emails.some((e) => !exclude.includes(e))) return
 
   const at = new Date(m.recording_start_time || m.scheduled_start_time || m.created_at || Date.now())
   const { data: clients } = await db.from('clients').select('id, email, full_name, start_date, phase, current_week')
-  const client = matchClient(emails, (clients || []) as ClientRow[], exclude)
+  const all = (clients || []) as ClientRow[]
+  const coachNames = [m.recorded_by?.name || '', 'Mohit Mehral', 'Coach Mohit', 'GetFittWithMohit']
+  const people = emails.length
+    ? emails.filter((e) => !exclude.includes(e))
+    : meetingNames(m).filter((n) => !coachNames.some((c) => c && c.toLowerCase() === n.toLowerCase()))
+  const client =
+    matchClient(emails, all, exclude) ||
+    matchClientByName(meetingNames(m), all, coachNames) ||
+    (await matchClientFromHistory(people, all))
 
   const { data: inserted, error } = await db.from('call_note_drafts').insert({
     source: 'fathom',
@@ -115,7 +162,8 @@ export async function handleFathomMeeting(m: FathomMeeting): Promise<void> {
     meeting_title: m.meeting_title || m.title || null,
     meeting_at: at.toISOString(),
     recording_url: m.share_url || m.url || null,
-    invitee_emails: emails,
+    // No invite emails (Meet link pasted into Fathom)? Keep the speaker names so the coach can tell who it was.
+    invitee_emails: people,
     status: client ? 'processing' : 'unmatched',
   }).select('id').single()
   if (error) {
