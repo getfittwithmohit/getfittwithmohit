@@ -77,10 +77,15 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
   const [photos, setPhotos] = useState<MealPhoto[]>([])
   const [adding, setAdding] = useState(false)
 
-  const addPhotos = async (files: FileList | null) => {
-    if (!files?.length) return
-    const list = Array.from(files).slice(0, MAX_PHOTOS - photos.length)
-    if (files.length > list.length) toast(`Up to ${MAX_PHOTOS} photos — pick the clearest ones.`)
+  const [dragging, setDragging] = useState(false)
+
+  const isImage = (f: File) => f.type.startsWith('image/') || /\.(heic|heif)$/i.test(f.name)
+
+  const addPhotos = async (files: FileList | File[] | null) => {
+    const all = Array.from(files || []).filter(isImage)
+    if (!all.length) return
+    const list = all.slice(0, MAX_PHOTOS - photos.length)
+    if (all.length > list.length) toast(`Up to ${MAX_PHOTOS} photos — pick the clearest ones.`)
     setAdding(true)
     try {
       const out: MealPhoto[] = []
@@ -290,11 +295,14 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
         </div>
 
         {mode === 'build' && (
-          <div className="flex flex-col gap-3">
+          <div
+            className="flex flex-col gap-3"
+            onPaste={(e) => { if (e.clipboardData.files.length) { e.preventDefault(); addPhotos(e.clipboardData.files) } }}
+          >
             <div className="flex flex-col gap-2">
               <span className="text-xs font-medium text-[#64748b]">Photos of {first}’s meals or WhatsApp screenshots (up to {MAX_PHOTOS})</span>
               {photos.length > 0 && (
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                   {photos.map((p, i) => (
                     <div key={p.id} className="flex flex-col gap-1">
                       <div className="relative aspect-square rounded-lg overflow-hidden bg-[#f1f5f9]">
@@ -318,9 +326,16 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
                 </div>
               )}
               {photos.length < MAX_PHOTOS && (
-                <label className={`h-11 rounded-xl border border-dashed border-[#94a3b8] text-sm text-[#0f172a] flex items-center justify-center gap-2 cursor-pointer ${adding ? 'opacity-50' : ''}`}>
+                <label
+                  onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+                  onDragLeave={() => setDragging(false)}
+                  onDrop={(e) => { e.preventDefault(); setDragging(false); addPhotos(e.dataTransfer.files) }}
+                  tabIndex={0}
+                  className={`rounded-xl border-2 border-dashed text-sm text-[#0f172a] flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-colors ${photos.length ? 'py-3' : 'py-6'} ${dragging ? 'border-[#00D4E8] bg-[#E6F7F9]' : 'border-[#cbd5e1] bg-[#fcfdfe]'} ${adding ? 'opacity-50' : ''}`}
+                >
                   <input type="file" accept="image/*,.heic,.heif" multiple className="hidden" disabled={adding} onChange={(e) => { addPhotos(e.target.files); e.target.value = '' }} />
-                  {adding ? 'Adding photos…' : photos.length ? '+ Add more photos' : '📷 Add meal photos'}
+                  <span className="font-medium">{adding ? 'Adding photos…' : dragging ? 'Drop the photos here' : photos.length ? '+ Add more photos' : '📷 Add meal photos'}</span>
+                  {!adding && !dragging && <span className="text-[11px] text-[#94a3b8]">Tap to choose, or drag and drop. On a computer you can also paste (Cmd+V).</span>}
                 </label>
               )}
               <span className="text-[11px] text-[#94a3b8]">Captions are optional — add the day and time if the photo doesn’t show it. Photos are only read to build the plan; they aren’t saved.</span>
