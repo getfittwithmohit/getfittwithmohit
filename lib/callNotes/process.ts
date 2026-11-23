@@ -39,6 +39,30 @@ export function matchClient(emails: string[], clients: ClientRow[], exclude: str
   return hits.length === 1 ? hits[0] : null
 }
 
+const norm = (n: string) =>
+  n.toLowerCase().normalize('NFKD').replace(/[^a-z\s]/g, ' ').split(/\s+/).filter(Boolean)
+
+// Fallback when there's no invite email (e.g. a Meet link pasted into
+// Fathom): match a speaker's / invitee's display name to a client's full name.
+// Needs first AND last name to match, and exactly one client.
+export function matchClientByName(names: string[], clients: ClientRow[], excludeNames: string[]): ClientRow | null {
+  const skip = new Set(excludeNames.map((n) => norm(n).join(' ')))
+  const people = names.map(norm).filter((t) => t.length >= 2 && !skip.has(t.join(' ')))
+  const hits = clients.filter((c) => {
+    const ct = norm(c.full_name || '')
+    if (ct.length < 2) return false
+    return people.some((p) => p[0] === ct[0] && (p[p.length - 1] === ct[ct.length - 1] || p.includes(ct[ct.length - 1])))
+  })
+  return hits.length === 1 ? hits[0] : null
+}
+
+export function meetingNames(m: FathomMeeting): string[] {
+  const set = new Set<string>()
+  for (const i of m.calendar_invitees || []) if (i.name) set.add(i.name)
+  for (const t of m.transcript || []) if (t.speaker?.display_name) set.add(t.speaker.display_name)
+  return [...set]
+}
+
 export function meetingEmails(m: FathomMeeting): string[] {
   const set = new Set<string>()
   for (const i of m.calendar_invitees || []) if (i.email) set.add(i.email.toLowerCase())
@@ -100,12 +124,13 @@ export async function handleFathomMeeting(m: FathomMeeting): Promise<void> {
   const recordedBy = m.recorded_by?.email?.toLowerCase()
   const exclude = [...COACH_EMAILS, ...(recordedBy ? [recordedBy] : [])]
   const emails = meetingEmails(m)
-  // Solo / internal recordings: nothing to file.
-  if (!emails.some((e) => !exclude.includes(e))) return
 
   const at = new Date(m.recording_start_time || m.scheduled_start_time || m.created_at || Date.now())
   const { data: clients } = await db.from('clients').select('id, email, full_name, start_date, phase, current_week')
-  const client = matchClient(emails, (clients || []) as ClientRow[], exclude)
+  const all = (clients || []) as ClientRow[]
+  const client =
+    matchClient(emails, all, exclude) ||
+    matchClientByName(meetingNames(m), all, [m.recorded_by?.name || '', 'Mohit Mehral', 'Coach Mohit', 'GetFittWithMohit'])
 
   const { data: inserted, error } = await db.from('call_note_drafts').insert({
     source: 'fathom',
@@ -115,7 +140,8 @@ export async function handleFathomMeeting(m: FathomMeeting): Promise<void> {
     meeting_title: m.meeting_title || m.title || null,
     meeting_at: at.toISOString(),
     recording_url: m.share_url || m.url || null,
-    invitee_emails: emails,
+    // No invite emails (Meet link pasted into Fathom)? Keep the speaker names so the coach can tell who it was.
+    invitee_emails: emails.length ? emails : meetingNames(m).filter((n) => n !== m.recorded_by?.name),
     status: client ? 'processing' : 'unmatched',
   }).select('id').single()
   if (error) {
