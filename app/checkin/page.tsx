@@ -11,7 +11,7 @@ import { addDaysIST, todayIST } from '@/lib/utils/istDate'
 import { insertWithOptional } from '@/lib/supabase/insertWithOptional'
 import type { CheckinFormData } from '@/lib/types/forms'
 import { useCheckinStore } from '@/store/checkinStore'
-import { ProgressBar } from '@/components/ui/ProgressBar'
+import { Screen, T } from '@/components/ui/ios'
 import { SuccessScreen } from '@/components/layout/SuccessScreen'
 import { Step01Metrics } from '@/components/forms/checkin/Step01Metrics'
 import { Step02Adherence } from '@/components/forms/checkin/Step02Adherence'
@@ -209,45 +209,48 @@ fetch('/api/checkin', {
     )
   }
 
+  const onPhotos = setupReady.photosDue && !photosDone && !!client
+
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <Screen>
+      <button onClick={() => go('/home')} className="self-start text-[17px] min-h-11 flex items-center gap-0.5 -ml-1" style={{ color: T.teal }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+        Today
+      </button>
 
-      {/* Header */}
-<div className="bg-[#1a1f3a] px-6 py-5">
-  <div className="max-w-2xl mx-auto">
-    <button
-      onClick={() => go('/home')}
-      className="text-white/65 hover:text-white text-[15px] flex items-center gap-1 min-h-11 -ml-1 transition-colors mb-2"
-    >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
-      Today
-    </button>
-    <div className="flex flex-col items-center gap-3">
-      <img
-        src="/logo.png"
-        alt="GetFittWithMohit"
-        className="w-16 h-16 object-contain"
-      />
-      <h2 className="text-white text-xl font-medium">
-        Weekly Check-In
-      </h2>
-      <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed text-center">
-        {getDayGreeting()} · Takes about 5 minutes ·
-        Be honest — this is your time
-      </p>
-    </div>
-  </div>
-</div>
-
-      {/* Progress */}
-      <div className="max-w-2xl mx-auto px-4 mt-6">
-        <ProgressBar current={currentStep} total={TOTAL_STEPS} />
+      {/* Hero */}
+      <div className="rounded-3xl p-5" style={{ background: T.navy }}>
+        <div className="flex items-center gap-4">
+          <img src="/logo.png" alt="" className="w-12 h-12 object-contain flex-shrink-0" />
+          <div className="min-w-0">
+            <p className="m-0 text-xs font-bold tracking-[0.12em] uppercase" style={{ color: T.cyan }}>
+              {client?.current_week ? `Week ${client.current_week} · ` : ''}Weekly check-in
+            </p>
+            <p className="m-0 mt-0.5 text-white text-[22px] leading-tight font-bold">{getDayGreeting()}{client?.full_name ? `, ${client.full_name.split(' ')[0]}` : ''}.</p>
+            <p className="m-0 mt-1 text-[15px] text-white/70">About 5 minutes. Be honest — this is your time.</p>
+          </div>
+        </div>
+        <div className="mt-4">
+          <div className="flex justify-between text-[13px] font-semibold mb-2 text-white/60">
+            <span>{onPhotos ? 'Progress photos first' : `Section ${currentStep} of ${TOTAL_STEPS}`}</span>
+            {!onPhotos && <span>{Math.round((currentStep / TOTAL_STEPS) * 100)}%</span>}
+          </div>
+          <div className="flex gap-1" role="progressbar" aria-valuemin={1} aria-valuemax={TOTAL_STEPS} aria-valuenow={onPhotos ? 0 : currentStep}>
+            {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+              <div key={i} className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.14)' }}>
+                <div
+                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  style={{ width: !onPhotos && i < currentStep ? '100%' : '0%', background: i === currentStep - 1 ? T.cyan : 'rgba(255,255,255,0.75)' }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Sections */}
-      <div className="max-w-2xl mx-auto px-4 mt-6 pb-16">
-
-        {setupReady.photosDue && !photosDone && client ? (
+      <div key={onPhotos ? 'photos' : currentStep} className="gfm-page">
+        {onPhotos && client ? (
           <StepPhotos
             clientId={client.id}
             week={client.current_week}
@@ -280,8 +283,7 @@ fetch('/api/checkin', {
         )}
           </>
         )}
-
       </div>
-    </div>
+    </Screen>
   )
 }

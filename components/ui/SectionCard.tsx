@@ -14,19 +14,22 @@ export function SectionCard({
   children,
 }: SectionCardProps) {
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#e2e8f0]">
+    <div
+      className="bg-white rounded-3xl p-5 sm:p-6"
+      style={{ boxShadow: '0 1px 2px rgba(15,23,42,0.04), 0 0 0 1px rgba(15,23,42,0.04)' }}
+    >
       {section > 0 && (
-        <span className="inline-block bg-[#1a1f3a] text-[#00D4E8] text-xs px-3 py-1 rounded-full mb-4 tracking-wide">
-          Section {section} / {total}
-        </span>
+        <p className="m-0 mb-1.5 text-xs font-bold tracking-[0.12em] uppercase" style={{ color: '#007A8A' }}>
+          Section {section} of {total}
+        </p>
       )}
-      <h3 className="text-lg font-medium text-[#0f172a] mb-1">
+      <h3 className="m-0 text-[22px] leading-tight font-bold tracking-tight text-[#0f172a]">
         {title}
       </h3>
-      <p className="text-sm text-[#64748b] mb-6 leading-relaxed">
+      <p className="m-0 mt-1.5 mb-5 text-[15px] text-[#64748b] leading-relaxed">
         {subtitle}
       </p>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         {children}
       </div>
     </div>

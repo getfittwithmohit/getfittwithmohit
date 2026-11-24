@@ -54,7 +54,7 @@ function Pick({
         </span>
         <span className="flex-1 min-w-0 flex flex-col gap-0.5">
           <span className="text-base font-semibold text-[#0f172a]">
-            {label}{required ? <span className="text-[#00D4E8] ml-0.5">*</span> : <span className="text-sm font-normal text-[#64748b] ml-1">(optional)</span>}
+            {label}{required ? <span className="text-[#007A8A] ml-0.5">*</span> : <span className="text-sm font-normal text-[#64748b] ml-1">(optional)</span>}
           </span>
           <span className="text-sm text-[#64748b]">{hint}</span>
           <span className="text-sm font-semibold text-[#007A8A]">{file ? 'Tap to retake' : 'Tap to take photo'}</span>
@@ -104,7 +104,7 @@ export function StepPhotos({
       title="Progress photos first"
       subtitle="It’s photo week. Two minutes now — the photos you’ll thank yourself for in 12 weeks."
     >
-      <div className="bg-[#E6F7F9] rounded-xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed">
+      <div className="bg-[#E6F7F9] rounded-2xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed">
         <strong>Private</strong> — only you and Coach Mohit see these. Same spot, same light and same clothing as last time.
       </div>
 
@@ -122,9 +122,9 @@ export function StepPhotos({
       ))}
 
       {tried && missing && (
-        <p className="text-sm text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">Please add your front and side photos to continue.</p>
+        <p className="text-[15px] text-[#B91C1C] bg-[#FEF2F2] rounded-xl px-4 py-3">Please add your front and side photos to continue.</p>
       )}
-      {error && <p className="text-sm text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>}
+      {error && <p className="text-[15px] text-[#B91C1C] bg-[#FEF2F2] rounded-xl px-4 py-3">{error}</p>}
 
       <button
         type="button"

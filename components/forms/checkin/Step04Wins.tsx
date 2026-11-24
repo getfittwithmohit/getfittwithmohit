@@ -53,7 +53,7 @@ export function Step04Wins({ onNext, onBack }: Props) {
     >
       {/* Wins */}
       <div>
-        <p className="text-sm font-medium text-[#64748b] mb-1">
+        <p className="text-[15px] font-semibold text-[#0f172a] mb-2.5">
           Biggest wins this week
           <span className="text-[#64748b] ml-1 font-normal">
             — no win is too small
@@ -66,11 +66,11 @@ export function Step04Wins({ onNext, onBack }: Props) {
               type="button"
               onClick={() => toggleWin(opt)}
               className={`
-                px-3 py-1.5 rounded-full text-xs border
+                px-4 min-h-11 rounded-full text-[15px] font-medium border active:scale-[0.97]
                 transition-all duration-150
                 ${wins.includes(opt)
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                  : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-emerald-300'
+                  ? 'bg-[#DCFCE7] text-[#15803D] border-transparent'
+                  : 'bg-[#F2F4F7] text-[#0f172a] border-transparent hover:bg-[#E8ECF1]'
                 }
               `}
             >
@@ -87,7 +87,7 @@ export function Step04Wins({ onNext, onBack }: Props) {
 
       {/* Challenges */}
       <div>
-        <p className="text-sm font-medium text-[#64748b] mb-1">
+        <p className="text-[15px] font-semibold text-[#0f172a] mb-2.5">
           Biggest challenges this week
         </p>
         <div className="flex flex-wrap gap-2 mb-3">
@@ -97,11 +97,11 @@ export function Step04Wins({ onNext, onBack }: Props) {
               type="button"
               onClick={() => toggleChallenge(opt)}
               className={`
-                px-3 py-1.5 rounded-full text-xs border
+                px-4 min-h-11 rounded-full text-[15px] font-medium border active:scale-[0.97]
                 transition-all duration-150
                 ${challenges.includes(opt)
-                  ? 'bg-red-50 text-red-600 border-red-200'
-                  : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-red-200'
+                  ? 'bg-[#FEE2E2] text-[#B91C1C] border-transparent'
+                  : 'bg-[#F2F4F7] text-[#0f172a] border-transparent hover:bg-[#E8ECF1]'
                 }
               `}
             >

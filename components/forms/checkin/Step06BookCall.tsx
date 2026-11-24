@@ -51,7 +51,7 @@ export function Step06BookCall({ onNext, onBack, submitting }: Props) {
       subtitle="Your check-in is ready. Coach Mohit will review everything before your call."
     >
       {/* Summary snapshot */}
-      <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4">
+      <div className="bg-[#F7F9FB] rounded-2xl p-4">
         <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3">
           This Week's Snapshot
         </p>

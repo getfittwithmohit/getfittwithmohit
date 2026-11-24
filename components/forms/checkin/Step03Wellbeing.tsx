@@ -71,14 +71,14 @@ export function Step03Wellbeing({ onNext, onBack, prefilled = false, askCycle = 
       subtitle="Your body is always telling you something. These signals matter as much as the numbers."
     >
       {prefilled && (
-        <div className="bg-[#E6F7F9] rounded-xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed">
+        <div className="bg-[#E6F7F9] rounded-2xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed">
           <strong>Pre-filled from your daily check-ins.</strong> Just check it and change anything that’s off.
         </div>
       )}
       <div>
-        <p className="text-sm font-medium text-[#64748b] mb-2">
+        <p className="text-[15px] font-semibold text-[#0f172a] mb-2.5">
           Overall mood this week
-          <span className="text-[#00D4E8] ml-0.5">*</span>
+          <span className="text-[#007A8A] ml-0.5">*</span>
         </p>
         <div className="flex gap-2 flex-wrap">
           {MOOD_OPTIONS.map((opt) => (
@@ -86,10 +86,10 @@ export function Step03Wellbeing({ onNext, onBack, prefilled = false, askCycle = 
               key={opt.emoji}
               type="button"
               onClick={() => { setValue('mood', opt.emoji); setError('') }}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl border transition-all duration-150 ${
+              className={`flex flex-col items-center gap-1 px-3 py-2.5 min-w-[4.5rem] rounded-2xl transition-all duration-150 ${
                 mood === opt.emoji
-                  ? 'border-[#00D4E8] bg-[#00D4E8]/5 scale-110'
-                  : 'border-[#e2e8f0] hover:border-[#00D4E8]'
+                  ? 'bg-[#E6F7F9] ring-2 ring-[#00D4E8] scale-105'
+                  : 'bg-[#F2F4F7] hover:bg-[#E8ECF1]'
               }`}
             >
               <span className="text-2xl">{opt.emoji}</span>
@@ -148,7 +148,7 @@ export function Step03Wellbeing({ onNext, onBack, prefilled = false, askCycle = 
       )}
 
       {error && (
-        <p className="text-sm text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+        <p className="text-[15px] text-[#B91C1C] bg-[#FEF2F2] rounded-xl px-4 py-3">
           {error}
         </p>
       )}

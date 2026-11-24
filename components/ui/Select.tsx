@@ -1,4 +1,5 @@
 import { SelectHTMLAttributes, forwardRef } from 'react'
+import { FIELD, FIELD_ERROR, LABEL, ERROR, REQUIRED } from './fieldStyles'
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string
@@ -13,22 +14,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
-          <label className="text-sm font-medium text-[#475569]">
+          <label className={LABEL}>
             {label}
-            {required && <span className="text-[#00D4E8] ml-0.5">*</span>}
+            {required && <span className={REQUIRED}>*</span>}
           </label>
         )}
         <select
           ref={ref}
-          className={`
-            w-full px-3 py-2.5 text-sm
-            border border-[#e2e8f0] rounded-lg
-            text-[#0f172a] bg-white
-            focus:outline-none focus:border-[#00D4E8]
-            transition-colors duration-150
-            ${error ? 'border-[#ef4444]' : ''}
-            ${className}
-          `}
+          className={`${FIELD} min-h-[50px] ${error ? FIELD_ERROR : ''} ${className}`}
           {...props}
         >
           <option value="">{placeholder}</option>
@@ -36,9 +29,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             <option key={opt} value={opt}>{opt}</option>
           ))}
         </select>
-        {error && (
-          <span className="text-sm text-[#ef4444]">{error}</span>
-        )}
+        {error && <span className={ERROR}>{error}</span>}
       </div>
     )
   }
