@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { getActivePlan, getLogs } from '@/lib/supabase/queries/workouts'
 import { todaysSession, type TodayState } from '@/lib/utils/workouts'
@@ -61,23 +62,23 @@ export function WorkoutCard({ clientId }: { clientId: string }) {
       )}
 
       {state.kind === 'ready' && (
-        <a href="/workout" className="h-[58px] rounded-[18px] flex items-center justify-center gap-2.5 text-[17px] font-bold" style={{ background: CYAN, color: '#0a0f1a' }}>
+        <Link href="/workout" className="h-[58px] rounded-[18px] flex items-center justify-center gap-2.5 text-[17px] font-bold" style={{ background: CYAN, color: '#0a0f1a' }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="#0a0f1a" aria-hidden="true"><polygon points="7,4 20,12 7,20" /></svg>
           {missedLately ? 'Start your comeback' : 'Start workout'}
-        </a>
+        </Link>
       )}
       {state.kind === 'rest_day' && state.next && (
-        <a href={`/workout?session=${state.next.id}`} className="h-12 rounded-2xl flex items-center justify-center text-sm font-semibold" style={{ border: `1px solid ${CYAN}`, color: CYAN }}>
+        <Link href={`/workout?session=${state.next.id}`} className="h-12 rounded-2xl flex items-center justify-center text-sm font-semibold" style={{ border: `1px solid ${CYAN}`, color: CYAN }}>
           Train anyway
-        </a>
+        </Link>
       )}
 
       {session?.coach_note && state.kind !== 'done_today' && (
         <p className="text-sm text-[#e2e8f0] leading-snug"><span className="text-[#94a3b8]">Coach Mohit: </span>{session.coach_note}</p>
       )}
-      <a href="/workout/plan" className="text-sm font-semibold self-start" style={{ color: CYAN }}>
+      <Link href="/workout/plan" className="text-sm font-semibold self-start" style={{ color: CYAN }}>
         View full plan →
-      </a>
+      </Link>
       {lastHighFive && (
         <p className="text-sm text-[#e2e8f0]">🔥 Coach Mohit high-fived your {lastHighFive.session_name} session</p>
       )}

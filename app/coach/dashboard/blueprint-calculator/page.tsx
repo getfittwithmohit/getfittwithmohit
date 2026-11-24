@@ -8,6 +8,7 @@ import { generateBlueprint, feetInchesToTotal } from '@/lib/utils/blueprint'
 import { BlueprintCard } from '@/components/blueprint/BlueprintCard'
 import { calcWHtR } from '@/lib/utils/whtr'
 import { WHtRCard } from '@/components/blueprint/WHtRCard'
+import { go } from '@/lib/ui/navigate'
 
 const FEET_OPTIONS = [3, 4, 5, 6, 7]
 const INCH_OPTIONS = Array.from({ length: 12 }, (_, i) => i)
@@ -57,7 +58,7 @@ export default function BlueprintCalculatorPage() {
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => window.location.href = '/coach/dashboard'}
+              onClick={() => go('/coach/dashboard')}
               className="text-white/40 hover:text-white/70 text-xs transition-colors"
             >
               ← Dashboard

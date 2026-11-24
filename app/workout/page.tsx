@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { confirmDialog } from '@/lib/ui/feedback'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
@@ -213,7 +214,7 @@ export default function WorkoutPage() {
       <Dark>
         <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 px-8">
           <p className="text-lg font-semibold">{loadError || 'Something went wrong loading your workout.'}</p>
-          <a href="/home" className="h-12 px-6 rounded-2xl flex items-center font-semibold" style={{ background: CYAN, color: '#0a0f1a' }}>Back home</a>
+          <Link href="/home" className="h-12 px-6 rounded-2xl flex items-center font-semibold" style={{ background: CYAN, color: '#0a0f1a' }}>Back home</Link>
         </div>
       </Dark>
     )
@@ -415,7 +416,7 @@ export default function WorkoutPage() {
           {error && <p className="text-sm text-red-300">{error}</p>}
 
           <div className="flex-1" />
-          <a href="/home" className="h-[58px] rounded-[18px] flex items-center justify-center text-[17px] font-bold" style={{ background: CYAN, color: '#0a0f1a' }}>Done</a>
+          <Link href="/home" className="h-[58px] rounded-[18px] flex items-center justify-center text-[17px] font-bold" style={{ background: CYAN, color: '#0a0f1a' }}>Done</Link>
         </div>
       </Dark>
     )
@@ -480,9 +481,9 @@ export default function WorkoutPage() {
       <div className="flex-1 flex flex-col pb-5 overflow-y-auto">
         <div className="px-5 pt-5 flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <a href="/home" aria-label="Leave workout (progress is saved)" className="w-11 h-11 rounded-xl bg-[#121626] flex items-center justify-center">
+            <Link href="/home" aria-label="Leave workout (progress is saved)" className="w-11 h-11 rounded-xl bg-[#121626] flex items-center justify-center">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" /></svg>
-            </a>
+            </Link>
             <p className="text-[13px] text-[#94a3b8] tabular-nums">Exercise {exIndex + 1} of {session.plan_exercises.length} · {formatSeconds(elapsed)}</p>
             <button onClick={() => setMenuOpen((v) => !v)} aria-label="More: session list, skip, finish" className="w-11 h-11 rounded-xl bg-[#121626] flex items-center justify-center">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="#cbd5e1" aria-hidden="true"><circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" /></svg>

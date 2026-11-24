@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { useClient } from '@/hooks/useClient'
@@ -238,13 +239,13 @@ function SessionCard({
           </ol>
 
           {count > 0 && (
-            <a
+            <Link
               href={`/workout?session=${session.id}`}
               className="h-12 rounded-2xl flex items-center justify-center text-sm font-bold mt-1"
               style={isToday ? { background: CYAN, color: '#0a0f1a' } : { border: `1px solid ${CYAN}`, color: CYAN }}
             >
               {isToday ? 'Start today’s workout' : 'Start this session'}
-            </a>
+            </Link>
           )}
         </div>
       )}
@@ -256,7 +257,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen" style={{ background: '#0a0f1a' }}>
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <a href="/train" className="text-white/60 hover:text-white text-[15px] inline-flex items-center gap-1 mb-3 min-h-11">‹ Train</a>
+        <Link href="/train" className="text-white/60 hover:text-white text-[15px] inline-flex items-center gap-1 mb-3 min-h-11">‹ Train</Link>
         {children}
       </div>
     </div>

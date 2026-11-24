@@ -8,6 +8,7 @@ import { ResultCard, TargetsForm, TodayPlate } from '@/components/plate/PlatePar
 import { compressImage } from '@/lib/utils/compressImage'
 import { EMPTY_TOTALS, mealTypeForNow, type MealLog, type PlateTotals } from '@/lib/utils/plate'
 import { MEAL_TYPES, type MealType, type PlateTargets } from '@/lib/validation/plate'
+import { go } from '@/lib/ui/navigate'
 
 // PEAK Plate — snap (or type) a meal, see calories, macros, what's unhealthy,
 // a score out of 10 and how to make it better. Coach and clients can both use it.
@@ -217,7 +218,7 @@ export default function PeakPlatePage() {
       <div className="bg-[#1a1f3a] px-6 py-5">
         <div className="max-w-2xl mx-auto">
           <button
-            onClick={() => (scan ? resetScan() : (window.location.href = backHref))}
+            onClick={() => (scan ? resetScan() : (go(backHref)))}
             className="text-white/60 hover:text-white text-[15px] flex items-center gap-1 min-h-11 -ml-1 transition-colors mb-1"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>

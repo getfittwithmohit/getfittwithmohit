@@ -1,5 +1,7 @@
 'use client'
 
+
+import { go } from '@/lib/ui/navigate'
 import { useEffect, useState } from 'react'
 import { getClientXp, getDailyCheckins } from '@/lib/supabase/queries/dailyCheckin'
 import { todayIST } from '@/lib/utils/istDate'
@@ -26,7 +28,7 @@ export function DailyCheckinCard({ clientId }: { clientId: string }) {
 
   return (
     <button
-      onClick={() => window.location.href = '/daily-checkin'}
+      onClick={() => go('/daily-checkin')}
       className={`w-full rounded-2xl p-5 mb-3 text-left transition-colors border ${
         done
           ? 'bg-white border-[#e2e8f0] hover:border-[#00D4E8]'

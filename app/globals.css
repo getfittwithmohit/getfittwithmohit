@@ -127,9 +127,14 @@ html {
   from { opacity: 0; transform: scale(0.94); }
   to   { opacity: 1; transform: scale(1); }
 }
+@keyframes gfm-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
 .gfm-toast { animation: gfm-slide-down 0.22s ease-out; }
 .gfm-pop   { animation: gfm-pop 0.18s ease-out; }
+.gfm-page  { animation: gfm-fade-in 0.18s ease-out; }
 
 @media (prefers-reduced-motion: reduce) {
-  .gfm-toast, .gfm-pop { animation: none; }
+  .gfm-toast, .gfm-pop, .gfm-page { animation: none; }
 }

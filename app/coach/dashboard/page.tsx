@@ -8,6 +8,7 @@ import { ClientList } from '@/components/dashboard/ClientList'
 import { DetailPanel } from '@/components/dashboard/DetailPanel'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
+import { go } from '@/lib/ui/navigate'
 
 const PHASE_COLORS: Record<string, string> = {
   Onboarding: '#f59e0b',
@@ -92,7 +93,7 @@ export default function DashboardPage() {
           ].map(item => (
             <button
               key={item.href}
-              onClick={() => window.location.href = item.href}
+              onClick={() => go(item.href)}
               className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-1.5 text-center text-white/60 hover:text-white text-[11px] md:text-xs font-medium leading-tight px-2 py-2 md:px-3 md:py-1.5 rounded-xl md:rounded-full border border-white/10 hover:border-white/20 transition-colors md:whitespace-nowrap"
             >
               <span className="text-base md:text-xs">{item.icon}</span>

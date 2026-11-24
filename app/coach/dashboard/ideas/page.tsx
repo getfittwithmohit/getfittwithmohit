@@ -10,6 +10,7 @@ import { PEAK_TOPICS, TOPIC_LABEL, type PeakTopic } from '@/lib/constants/peakId
 import { IdeaEditor } from '@/components/peak/coach/IdeaEditor'
 import { IdeaWriter } from '@/components/peak/coach/IdeaWriter'
 import { IdeaInsights } from '@/components/peak/coach/IdeaInsights'
+import { go } from '@/lib/ui/navigate'
 
 type Tab = 'review' | 'library' | 'write' | 'insights'
 
@@ -67,7 +68,7 @@ export default function CoachIdeasPage() {
     <div className="min-h-screen bg-[#f8fafc]">
       <div className="bg-[#1a1f3a] px-6 py-4">
         <div className="max-w-6xl mx-auto">
-          <button onClick={() => (window.location.href = '/coach/dashboard')} className="text-white/40 hover:text-white/70 text-xs transition-colors mb-1">
+          <button onClick={() => (go('/coach/dashboard'))} className="text-white/40 hover:text-white/70 text-xs transition-colors mb-1">
             ← Dashboard
           </button>
           <h1 className="text-white text-lg font-medium">PEAK Ideas</h1>

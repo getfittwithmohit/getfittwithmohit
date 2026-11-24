@@ -10,6 +10,7 @@ import { Badge, Card, Group, LargeTitle, Row, Screen, SectionTitle, Skeleton, T 
 import { SaverSheet } from '@/components/today/SaverSheet'
 import { WeekFocus } from '@/components/today/WeekFocus'
 import { loadToday, type TodayData, type TodayStep } from '@/lib/today/loadToday'
+import { getCached, setCached } from '@/lib/ui/cache'
 
 const DAILY_QUOTES = [
   'The pain of discipline is lighter than the weight of regret.',
@@ -34,13 +35,13 @@ function istParts() {
 export default function TodayPage() {
   const { checking } = useAuthGuard()
   const { client, loading } = useClient()
-  const [data, setData] = useState<TodayData | null>(null)
+  const [data, setData] = useState<TodayData | null>(() => getCached<TodayData>('today') ?? null)
   const [saverOpen, setSaverOpen] = useState(false)
 
   useEffect(() => {
     if (checking || loading || !client) return
     let cancelled = false
-    loadToday(client).then((d) => { if (!cancelled) setData(d) })
+    loadToday(client).then((d) => { if (!cancelled) setData(setCached('today', d)) })
     return () => { cancelled = true }
   }, [checking, loading, client])
 

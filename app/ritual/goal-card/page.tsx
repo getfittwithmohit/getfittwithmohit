@@ -6,6 +6,7 @@ import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { supabase } from '@/lib/supabase/client'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
+import { go } from '@/lib/ui/navigate'
 
 function getCurrentQuarter() {
   const month = new Date().getMonth()
@@ -65,7 +66,7 @@ export default function GoalCardPage() {
         await supabase.from('goal_cards').insert(payload)
       }
       setSaved(true)
-      setTimeout(() => window.location.href = '/ritual', 1500)
+      setTimeout(() => go('/ritual'), 1500)
     } catch (err) {
       console.error(err)
       toast('Something went wrong.')
@@ -78,7 +79,7 @@ export default function GoalCardPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] flex flex-col px-6 py-8 max-w-lg mx-auto">
-      <button onClick={() => window.location.href = '/ritual'} className="text-white/30 text-xs mb-8 text-left hover:text-white/50 transition-colors">← Back</button>
+      <button onClick={() => go('/ritual')} className="text-white/30 text-xs mb-8 text-left hover:text-white/50 transition-colors">← Back</button>
 
       <p className="text-[#00D4E8] text-xs font-medium tracking-widest uppercase mb-2">GOAL CARD</p>
       <h1 className="text-white text-2xl font-medium mb-2">Your {quarter} Goals</h1>

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import {
   copyPlan,
@@ -17,6 +18,7 @@ import { formatKg, formatSeconds } from '@/lib/utils/workouts'
 import { ExportPlanButton } from '@/components/workouts/ExportPlanButton'
 import { formatDayLabel, istDate, todayIST } from '@/lib/utils/istDate'
 import type { Exercise, PainFlag, WorkoutLog, WorkoutPlan, WorkoutSet } from '@/lib/types/workouts'
+import { go } from '@/lib/ui/navigate'
 
 const FEEL_LABEL = { easy: 'Easy', right: 'Just right', brutal: 'Brutal' } as const
 
@@ -57,7 +59,7 @@ export function ClientWorkouts({ clientId, clientName }: { clientId: string; cli
     setError(null)
     try {
       const id = await copyPlan(templateId, clientId, startDate)
-      window.location.href = `/coach/dashboard/workouts/plans/${id}`
+      go(`/coach/dashboard/workouts/plans/${id}`)
     } catch (err) {
       setError((err as Error).message)
       setBusy(false)
@@ -130,7 +132,7 @@ export function ClientWorkouts({ clientId, clientName }: { clientId: string; cli
             </div>
             <div className="flex gap-2">
               <ExportPlanButton plan={plan} clientName={clientName} className="h-9 px-4 rounded-lg border border-[#e2e8f0] text-[#0f172a] text-sm font-medium disabled:opacity-50" />
-              <a href={`/coach/dashboard/workouts/plans/${plan.id}`} className="h-9 px-4 rounded-lg bg-[#1a1f3a] text-[#00D4E8] text-sm font-medium flex items-center">Edit plan</a>
+              <Link href={`/coach/dashboard/workouts/plans/${plan.id}`} className="h-9 px-4 rounded-lg bg-[#1a1f3a] text-[#00D4E8] text-sm font-medium flex items-center">Edit plan</Link>
             </div>
           </div>
         ) : (
@@ -152,7 +154,7 @@ export function ClientWorkouts({ clientId, clientName }: { clientId: string; cli
             {busy ? 'Assigning…' : 'Assign'}
           </button>
           {templates.length === 0 && (
-            <a href="/coach/dashboard/workouts" className="text-xs text-[#2563eb] underline">Create a template first →</a>
+            <Link href="/coach/dashboard/workouts" className="text-xs text-[#2563eb] underline">Create a template first →</Link>
           )}
         </div>
       </div>

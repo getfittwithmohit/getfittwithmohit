@@ -19,6 +19,7 @@ import { supabase } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/Button'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
+import { go } from '@/lib/ui/navigate'
 
 const TOTAL_STEPS = 9
 
@@ -123,7 +124,7 @@ await supabase.from('identity_cards').insert({
      <div className="bg-[#1a1f3a] px-6 py-5">
   <div className="max-w-2xl mx-auto">
     <button
-      onClick={() => window.location.href = '/home'}
+      onClick={() => go('/home')}
       className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
     >
       ← Home

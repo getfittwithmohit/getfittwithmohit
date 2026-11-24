@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useClient } from '@/hooks/useClient'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
+import { getCached, setCached } from '@/lib/ui/cache'
 import { Icon } from '@/components/ui/Icon'
 import { Badge, Card, Group, Row, Screen, SectionTitle, T } from '@/components/ui/ios'
 import { supabase } from '@/lib/supabase/client'
@@ -19,10 +20,13 @@ import { confirmDialog } from '@/lib/ui/feedback'
 export default function MePage() {
   const { checking } = useAuthGuard()
   const { client, loading } = useClient()
-  const [stats, setStats] = useState<{ streak: number | null; xp: number | null; rank: number | null }>({ streak: null, xp: null, rank: null })
-  const [why, setWhy] = useState<string | null>(null)
-  const [weeklyDue, setWeeklyDue] = useState<string | null>(null)
-  const [photosDue, setPhotosDue] = useState(false)
+  type Stats = { streak: number | null; xp: number | null; rank: number | null }
+  type MeCache = { stats: Stats; why: string | null; weeklyDue: string | null; photosDue: boolean }
+  const cached = getCached<MeCache>('me')
+  const [stats, setStats] = useState<Stats>(cached?.stats ?? { streak: null, xp: null, rank: null })
+  const [why, setWhy] = useState<string | null>(cached?.why ?? null)
+  const [weeklyDue, setWeeklyDue] = useState<string | null>(cached?.weeklyDue ?? null)
+  const [photosDue, setPhotosDue] = useState(cached?.photosDue ?? false)
 
   useEffect(() => {
     if (checking || loading || !client) return
@@ -37,14 +41,21 @@ export default function MePage() {
       if (cancelled) return
       const s = streakRes.data
       const me = board.find((r) => r.is_me)
-      setStats({
-        streak: s && s.last_completed_date >= yesterday ? s.current_streak || 0 : 0,
-        xp: me ? me.xp : null,
-        rank: me && !me.is_hidden ? me.rank : null,
-      })
-      setWhy(pledgeRes.data?.doing_this_for || null)
-      setWeeklyDue(setup.find((i) => i.key === 'weekly')?.badge || null)
-      setPhotosDue(setup.some((i) => i.key === 'photos'))
+      const next: MeCache = {
+        stats: {
+          streak: s && s.last_completed_date >= yesterday ? s.current_streak || 0 : 0,
+          xp: me ? me.xp : null,
+          rank: me && !me.is_hidden ? me.rank : null,
+        },
+        why: pledgeRes.data?.doing_this_for || null,
+        weeklyDue: setup.find((i) => i.key === 'weekly')?.badge || null,
+        photosDue: setup.some((i) => i.key === 'photos'),
+      }
+      setCached('me', next)
+      setStats(next.stats)
+      setWhy(next.why)
+      setWeeklyDue(next.weeklyDue)
+      setPhotosDue(next.photosDue)
     })
     return () => { cancelled = true }
   }, [checking, loading, client])

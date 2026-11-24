@@ -22,6 +22,7 @@ import { Step06BookCall } from '@/components/forms/checkin/Step06BookCall'
 import { supabase } from '@/lib/supabase/client'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
+import { go } from '@/lib/ui/navigate'
 
 const TOTAL_STEPS = 6
 
@@ -215,7 +216,7 @@ fetch('/api/checkin', {
 <div className="bg-[#1a1f3a] px-6 py-5">
   <div className="max-w-2xl mx-auto">
     <button
-      onClick={() => window.location.href = '/home'}
+      onClick={() => go('/home')}
       className="text-white/65 hover:text-white text-[15px] flex items-center gap-1 min-h-11 -ml-1 transition-colors mb-2"
     >
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>

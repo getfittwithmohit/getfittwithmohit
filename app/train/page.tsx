@@ -1,9 +1,11 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useClient } from '@/hooks/useClient'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
+import { getCached, setCached } from '@/lib/ui/cache'
 import { Icon } from '@/components/ui/Icon'
 import { WorkoutCard } from '@/components/home/WorkoutCard'
 import { Badge, Card, Group, LargeTitle, Row, Screen, SectionTitle, Skeleton, T } from '@/components/ui/ios'
@@ -19,21 +21,29 @@ const logDate = (l: WorkoutLog) => istDate(new Date(l.completed_at || l.started_
 export default function TrainPage() {
   const { checking } = useAuthGuard()
   const { client, loading } = useClient()
-  const [plan, setPlan] = useState<WorkoutPlan | null | undefined>(undefined)
-  const [logs, setLogs] = useState<WorkoutLog[]>([])
-  const [plate, setPlate] = useState<{ meals: number; kcal: number } | null>(null)
+  type TrainCache = { plan?: WorkoutPlan | null; logs?: WorkoutLog[]; plate?: { meals: number; kcal: number } | null }
+  const cached = getCached<TrainCache>('train')
+  const [plan, setPlan] = useState<WorkoutPlan | null | undefined>(cached?.plan)
+  const [logs, setLogs] = useState<WorkoutLog[]>(cached?.logs ?? [])
+  const [plate, setPlate] = useState<{ meals: number; kcal: number } | null>(cached?.plate ?? null)
 
   useEffect(() => {
     if (checking || loading || !client) return
     let cancelled = false
     Promise.all([getActivePlan(client.id), getLogs(client.id, 60)])
-      .then(([p, l]) => { if (!cancelled) { setPlan(p); setLogs(l) } })
+      .then(([p, l]) => {
+        if (cancelled) return
+        setPlan(p); setLogs(l)
+        setCached<TrainCache>('train', { ...getCached<TrainCache>('train'), plan: p, logs: l })
+      })
       .catch(() => { if (!cancelled) setPlan(null) })
     fetch('/api/plate/today')
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
         if (cancelled || !j) return
-        setPlate({ meals: (j.meals || []).length, kcal: Math.round(j.totals?.calories || 0) })
+        const pl = { meals: (j.meals || []).length, kcal: Math.round(j.totals?.calories || 0) }
+        setPlate(pl)
+        setCached<TrainCache>('train', { ...getCached<TrainCache>('train'), plate: pl })
       })
       .catch(() => {})
     return () => { cancelled = true }
@@ -105,7 +115,7 @@ export default function TrainPage() {
 
           {client && <WorkoutCard clientId={client.id} />}
 
-          <SectionTitle action={<a href="/workout/plan" className="text-base font-semibold py-2.5 pl-3" style={{ color: T.teal }}>See full plan</a>}>
+          <SectionTitle action={<Link href="/workout/plan" className="text-base font-semibold py-2.5 pl-3" style={{ color: T.teal }}>See full plan</Link>}>
             My plan
           </SectionTitle>
           <Group>

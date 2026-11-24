@@ -5,6 +5,7 @@ import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { FoodLibrary } from '@/components/nutrition/coach/FoodLibrary'
 import { TemplatesTab } from '@/components/nutrition/coach/TemplatesTab'
+import { go } from '@/lib/ui/navigate'
 
 type Tab = 'templates' | 'foods'
 
@@ -21,7 +22,7 @@ export default function CoachNutritionPage() {
     <div className="min-h-screen bg-[#f8fafc]">
       <div className="bg-[#1a1f3a] px-6 py-4">
         <div className="max-w-6xl mx-auto">
-          <button onClick={() => (window.location.href = '/coach/dashboard')} className="text-white/40 hover:text-white/70 text-xs transition-colors mb-1">
+          <button onClick={() => (go('/coach/dashboard'))} className="text-white/40 hover:text-white/70 text-xs transition-colors mb-1">
             ← Dashboard
           </button>
           <h1 className="text-white text-lg font-medium">Nutrition</h1>

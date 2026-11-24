@@ -1,5 +1,7 @@
 'use client'
 
+
+import { go } from '@/lib/ui/navigate'
 import { useEffect, useState } from 'react'
 import { createTemplate, getPlanList, type PlanListItem } from '@/lib/supabase/queries/workouts'
 import { formatDayLabel } from '@/lib/utils/istDate'
@@ -27,7 +29,7 @@ export function PlansList() {
     setError(null)
     try {
       const id = await createTemplate(newName)
-      window.location.href = `/coach/dashboard/workouts/plans/${id}`
+      go(`/coach/dashboard/workouts/plans/${id}`)
     } catch (err) {
       setError((err as Error).message)
       setCreating(false)

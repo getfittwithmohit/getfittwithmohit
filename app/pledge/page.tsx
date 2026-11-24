@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase/client'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
 import { PLEDGE_LINES } from '@/lib/pledge/pledgeText'
 import { DownloadPledgeButton } from '@/components/pledge/DownloadPledgeButton'
+import { go } from '@/lib/ui/navigate'
 
 const AGREEMENTS = [
   'I have read the Unstoppable Health, Fitness & Performance Pledge fully.',
@@ -171,7 +172,7 @@ useEffect(() => {
           </div>
 
           <button
-            onClick={() => window.location.href = '/home'}
+            onClick={() => go('/home')}
             className="bg-[#00D4E8] text-[#1a1f3a] px-10 py-3.5 rounded-xl text-sm font-medium hover:bg-[#00BED1] transition-colors"
           >
             Begin my journey →
@@ -315,7 +316,7 @@ if (pledgeSigned && existingPledge) {
 
         {/* Back to home */}
         <button
-          onClick={() => window.location.href = '/home'}
+          onClick={() => go('/home')}
           className="w-full py-3 border border-white/10 text-white/50 rounded-xl text-sm hover:bg-white/5 transition-colors"
         >
           ← Back to home
@@ -333,7 +334,7 @@ if (pledgeSigned && existingPledge) {
       <div className="bg-[#1a1f3a] px-6 py-5">
   <div className="max-w-2xl mx-auto">
     <button
-      onClick={() => window.location.href = '/home'}
+      onClick={() => go('/home')}
       className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
     >
       ← Home

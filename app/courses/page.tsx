@@ -8,6 +8,7 @@ import { PageLoader } from '@/components/ui/PageLoader'
 import { HomeButton } from '@/components/layout/HomeButton'
 import { getCompletedLessonIds, getCourses } from '@/lib/supabase/queries/content'
 import type { CourseWithLessons } from '@/lib/types/content'
+import { go } from '@/lib/ui/navigate'
 
 export default function CoursesPage() {
   const { checking } = useAuthGuard()
@@ -69,7 +70,7 @@ export default function CoursesPage() {
           return (
             <button
               key={course.id}
-              onClick={() => window.location.href = `/courses/${course.id}`}
+              onClick={() => go(`/courses/${course.id}`)}
               className="bg-white border border-[#e2e8f0] rounded-2xl p-5 text-left hover:border-[#00D4E8] transition-colors"
             >
               <div className="flex items-start justify-between gap-3">

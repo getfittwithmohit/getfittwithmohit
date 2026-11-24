@@ -14,6 +14,7 @@ import { ClientStep04 } from '@/components/forms/midjourney/ClientStep04'
 import { supabase } from '@/lib/supabase/client'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
+import { go } from '@/lib/ui/navigate'
 
 const TOTAL_CLIENT_STEPS = 4
 
@@ -104,13 +105,13 @@ export default function MidJourneyPage() {
         </p>
         <div className="flex flex-col gap-3">
           <button
-            onClick={() => window.location.href = '/identity'}
+            onClick={() => go('/identity')}
             className="w-full py-3 bg-[#1a1f3a] text-[#00D4E8] rounded-xl text-sm font-medium hover:bg-[#141930] transition-colors"
           >
             Complete Purpose & Identity Form →
           </button>
           <button
-            onClick={() => window.location.href = '/home'}
+            onClick={() => go('/home')}
             className="w-full py-3 border border-[#e2e8f0] text-[#64748b] rounded-xl text-sm hover:bg-[#f8fafc] transition-colors"
           >
             Go to my dashboard
@@ -133,7 +134,7 @@ export default function MidJourneyPage() {
       <div className="bg-[#1a1f3a] px-6 py-5">
   <div className="max-w-2xl mx-auto">
     <button
-      onClick={() => window.location.href = '/home'}
+      onClick={() => go('/home')}
       className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
     >
       ← Home

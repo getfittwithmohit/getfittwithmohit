@@ -15,6 +15,7 @@ import { TestResult } from '@/lib/types/forms'
 import { supabase } from '@/lib/supabase/client'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
+import { go } from '@/lib/ui/navigate'
 
 type Screen = 'environment' | 'test' | 'results'
 
@@ -153,7 +154,7 @@ if (clientId) {
       <div className="bg-[#1a1f3a] px-6 py-5">
   <div className="max-w-2xl mx-auto">
     <button
-      onClick={() => window.location.href = '/home'}
+      onClick={() => go('/home')}
       className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
     >
       ← Home
