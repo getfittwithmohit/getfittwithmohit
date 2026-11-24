@@ -7,6 +7,7 @@ import { PageLoader } from '@/components/ui/PageLoader'
 import { supabase } from '@/lib/supabase/client'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
 import { go } from '@/lib/ui/navigate'
+import { Screen, T } from '@/components/ui/ios'
 
 function getCurrentQuarter() {
   const month = new Date().getMonth()
@@ -77,62 +78,57 @@ export default function GoalCardPage() {
 
   if (checking || loading) return <PageLoader />
 
+  const field = 'w-full rounded-2xl px-4 py-3.5 text-base leading-relaxed focus:outline-none'
+  const fieldStyle = { background: '#fff', border: `1px solid ${T.line}`, color: T.ink }
+  const goal = (n: 1 | 2, ph: string) => {
+    const textKey = n === 1 ? 'goal1_text' : 'goal2_text'
+    const dlKey = n === 1 ? 'goal1_deadline' : 'goal2_deadline'
+    return (
+      <div className="bg-white rounded-2xl p-4 flex flex-col gap-2.5">
+        <p className="m-0 text-xs font-bold tracking-[0.1em] uppercase" style={{ color: T.teal }}>Goal {n === 1 ? 'one' : 'two'}</p>
+        <textarea
+          value={form[textKey]}
+          onChange={(e) => setForm((p) => ({ ...p, [textKey]: e.target.value }))}
+          placeholder={ph}
+          rows={4}
+          className={`${field} resize-none`}
+          style={{ ...fieldStyle, background: '#F8FAFC' }}
+        />
+        <input
+          type="text"
+          value={form[dlKey]}
+          onChange={(e) => setForm((p) => ({ ...p, [dlKey]: e.target.value }))}
+          placeholder="By when? e.g. 31 March"
+          className={`${field} min-h-12 py-0`}
+          style={{ ...fieldStyle, background: '#F8FAFC' }}
+        />
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex flex-col px-6 py-8 max-w-lg mx-auto">
-      <button onClick={() => go('/ritual')} className="text-white/30 text-xs mb-8 text-left hover:text-white/50 transition-colors">← Back</button>
-
-      <p className="text-[#00D4E8] text-xs font-medium tracking-widest uppercase mb-2">GOAL CARD</p>
-      <h1 className="text-white text-2xl font-medium mb-2">Your {quarter} Goals</h1>
-      <p className="text-white/40 text-sm leading-relaxed mb-10">
-        Two goals. Specific. Realistic. With a deadline. You will read these every morning with full conviction that they are already done.
-      </p>
-
-      {/* Goal 1 */}
-      <div className="mb-8">
-        <p className="text-white/60 text-xs uppercase tracking-widest mb-4">Goal One</p>
-        <textarea
-          value={form.goal1_text}
-          onChange={e => setForm(p => ({ ...p, goal1_text: e.target.value }))}
-          placeholder="In 90 days I will have lost 8kg and be training 5 days a week consistently..."
-          rows={4}
-          className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50 resize-none leading-relaxed mb-3"
-        />
-        <input
-          type="text"
-          value={form.goal1_deadline}
-          onChange={e => setForm(p => ({ ...p, goal1_deadline: e.target.value }))}
-          placeholder="By when? e.g. 30 June 2025"
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50"
-        />
+    <Screen>
+      <button onClick={() => go('/ritual')} className="self-start text-[17px] min-h-11 flex items-center gap-0.5 -ml-1" style={{ color: T.teal }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+        Ritual
+      </button>
+      <div className="px-1">
+        <p className="m-0 text-[13px] font-semibold uppercase tracking-wide" style={{ color: T.ter }}>Goal card</p>
+        <h1 className="m-0 text-[34px] leading-tight font-extrabold tracking-tight">Your {quarter} goals</h1>
+        <p className="m-0 mt-2 text-[15px] leading-relaxed" style={{ color: T.sec }}>
+          Two goals. Specific, realistic, with a deadline. You’ll read them every morning with full conviction that they’re already done.
+        </p>
       </div>
-
-      {/* Goal 2 */}
-      <div className="mb-10">
-        <p className="text-white/60 text-xs uppercase tracking-widest mb-4">Goal Two</p>
-        <textarea
-          value={form.goal2_text}
-          onChange={e => setForm(p => ({ ...p, goal2_text: e.target.value }))}
-          placeholder="By end of quarter I will have built a morning routine I follow 6 days a week..."
-          rows={4}
-          className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50 resize-none leading-relaxed mb-3"
-        />
-        <input
-          type="text"
-          value={form.goal2_deadline}
-          onChange={e => setForm(p => ({ ...p, goal2_deadline: e.target.value }))}
-          placeholder="By when? e.g. 30 June 2025"
-          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-[#00D4E8]/50"
-        />
-      </div>
-
+      {goal(1, 'In 90 days I have lost 8 kg and I train 5 days a week…')}
+      {goal(2, 'By the end of this quarter I follow my morning routine 6 days a week…')}
       <button
         onClick={handleSave}
         disabled={!form.goal1_text.trim() || !form.goal2_text.trim() || saving}
-        className="w-full py-4 rounded-2xl text-sm font-semibold transition-all disabled:opacity-30"
-        style={{ background: '#00D4E8', color: '#0a0a0f' }}
+        className="w-full min-h-[54px] rounded-2xl text-[17px] font-semibold disabled:opacity-40 mt-1"
+        style={saved ? { background: '#16A34A', color: '#fff' } : { background: T.navy, color: T.cyan }}
       >
-        {saved ? '✓ Saved' : saving ? 'Saving...' : 'Save My Goal Card →'}
+        {saved ? '✓ Saved' : saving ? 'Saving…' : 'Save my goal card'}
       </button>
-    </div>
+    </Screen>
   )
 }
