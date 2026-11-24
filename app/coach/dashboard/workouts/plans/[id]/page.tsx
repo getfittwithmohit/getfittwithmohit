@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { confirmDialog } from '@/lib/ui/feedback'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -23,6 +24,7 @@ import {
 } from '@/lib/supabase/queries/workouts'
 import { todayIST } from '@/lib/utils/istDate'
 import { LOG_TYPE_LABEL, WEEKDAYS, type Exercise, type PlanExercise, type WorkoutPlan } from '@/lib/types/workouts'
+import { go } from '@/lib/ui/navigate'
 
 const cell = 'w-full px-2 py-1.5 text-sm border border-[#e2e8f0] rounded-md bg-white focus:outline-none focus:border-[#00D4E8]'
 const label = 'text-xs font-medium text-[#64748b]'
@@ -127,7 +129,7 @@ export default function PlanBuilderPage() {
       <div className="bg-[#1a1f3a] px-6 py-4">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
-            <button onClick={() => window.location.href = '/coach/dashboard/workouts'} className="text-white/40 hover:text-white/70 text-xs mb-1">
+            <button onClick={() => go('/coach/dashboard/workouts')} className="text-white/40 hover:text-white/70 text-xs mb-1">
               ← Plans
             </button>
             <input
@@ -150,7 +152,7 @@ export default function PlanBuilderPage() {
             <button
               onClick={() => run(async () => {
                 const id = await copyPlan(plan.id, null, null, `${plan.name} (template)`)
-                window.location.href = `/coach/dashboard/workouts/plans/${id}`
+                go(`/coach/dashboard/workouts/plans/${id}`)
               })}
               disabled={busy}
               className="h-10 px-4 rounded-full border border-white/20 text-white text-sm disabled:opacity-50"
@@ -187,7 +189,7 @@ export default function PlanBuilderPage() {
               disabled={busy || !assignClient}
               onClick={() => run(async () => {
                 const id = await copyPlan(plan.id, assignClient, assignStart, isTemplate ? plan.name : undefined)
-                window.location.href = `/coach/dashboard/workouts/plans/${id}`
+                go(`/coach/dashboard/workouts/plans/${id}`)
               })}
               className="h-9 px-4 rounded-lg bg-[#1a1f3a] text-[#00D4E8] text-sm font-medium disabled:opacity-50"
             >
@@ -426,7 +428,7 @@ export default function PlanBuilderPage() {
                     onBlur={(e) => numberOrNull(e.target.value) !== plan.weeks && run(() => updatePlan(plan.id, { weeks: numberOrNull(e.target.value) }))} />
                 </label>
                 {plan.client_id && (
-                  <a href={`/coach/dashboard/client/${plan.client_id}`} className="text-xs text-[#2563eb] underline">Open {clientName || 'client'}’s profile →</a>
+                  <Link href={`/coach/dashboard/client/${plan.client_id}`} className="text-xs text-[#2563eb] underline">Open {clientName || 'client'}’s profile →</Link>
                 )}
               </div>
             )}
@@ -435,7 +437,7 @@ export default function PlanBuilderPage() {
               <button
                 disabled={busy}
                 onClick={async () => (await confirmDialog(`Delete "${plan.name}"? ${isTemplate ? 'Client plans made from it are not affected.' : ''}`, { destructive: true })) &&
-                  run(async () => { await deletePlan(plan.id); window.location.href = '/coach/dashboard/workouts' })}
+                  run(async () => { await deletePlan(plan.id); go('/coach/dashboard/workouts') })}
                 className="text-xs text-[#ef4444] underline w-fit"
               >
                 Delete {isTemplate ? 'template' : 'archived plan'}

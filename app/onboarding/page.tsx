@@ -27,6 +27,7 @@ import { useEffect } from 'react'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
+import { go } from '@/lib/ui/navigate'
 
 
 
@@ -41,7 +42,7 @@ useEffect(() => {
   async function check() {
     const client = await getCurrentClient()
     if (client) {
-      window.location.href = '/home'
+      go('/home')
     } else {
       setCheckingClient(false)
     }

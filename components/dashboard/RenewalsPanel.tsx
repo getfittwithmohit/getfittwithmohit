@@ -1,5 +1,7 @@
 'use client'
 
+
+import { go } from '@/lib/ui/navigate'
 import { confirmDialog } from '@/lib/ui/feedback'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
@@ -170,7 +172,7 @@ export function RenewalsPanel() {
               <div key={c.id} className={urgent ? 'bg-red-50/60' : ''}>
                 <div className="px-5 py-3 flex flex-wrap items-center gap-x-4 gap-y-2">
                   <button
-                    onClick={() => window.location.href = `/coach/dashboard/client/${c.id}`}
+                    onClick={() => go(`/coach/dashboard/client/${c.id}`)}
                     className="text-sm font-medium text-[#0f172a] hover:underline min-w-[9rem] text-left"
                   >
                     {c.full_name}

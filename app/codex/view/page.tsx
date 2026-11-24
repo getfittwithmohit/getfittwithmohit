@@ -6,6 +6,7 @@ import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { supabase } from '@/lib/supabase/client'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
+import { go } from '@/lib/ui/navigate'
 
 export default function CodexViewPage() {
   const { checking } = useAuthGuard()
@@ -112,7 +113,7 @@ export default function CodexViewPage() {
           </p>
           <div className="flex flex-col gap-3">
             <button
-              onClick={() => window.location.href = '/codex/story'}
+              onClick={() => go('/codex/story')}
               className={`w-full py-4 rounded-2xl text-sm font-medium transition-colors ${
                 storyDone
                   ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-800'
@@ -122,7 +123,7 @@ export default function CodexViewPage() {
               {storyDone ? '✓ Your Story — Done' : 'Step 1: Your Story →'}
             </button>
             <button
-              onClick={() => window.location.href = '/codex'}
+              onClick={() => go('/codex')}
               className={`w-full py-4 rounded-2xl text-sm font-medium transition-colors ${
                 setupDone
                   ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-800'
@@ -159,7 +160,7 @@ export default function CodexViewPage() {
             Write My Codex →
           </button>
           <button
-            onClick={() => window.location.href = '/home'}
+            onClick={() => go('/home')}
             className="w-full text-white/25 py-3 text-sm"
           >
             Back to home
@@ -238,7 +239,7 @@ export default function CodexViewPage() {
       {/* Top bar */}
       <div className="flex items-center justify-between px-6 pt-6 pb-3 flex-shrink-0">
         <button
-          onClick={() => window.location.href = '/home'}
+          onClick={() => go('/home')}
           className="text-white/25 text-xs hover:text-white/50 transition-colors"
         >
           ← Home
@@ -330,7 +331,7 @@ export default function CodexViewPage() {
 
         {isLast ? (
           <button
-            onClick={() => window.location.href = '/home'}
+            onClick={() => go('/home')}
             className="bg-[#00D4E8] text-[#0a0a0f] px-5 py-2.5 rounded-full text-xs font-semibold"
           >
             Close

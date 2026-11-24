@@ -6,6 +6,7 @@ import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { supabase } from '@/lib/supabase/client'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
+import { go } from '@/lib/ui/navigate'
 
 const QUESTIONS = [
   {
@@ -205,13 +206,13 @@ export default function CodexSetupPage() {
             Everything you've written has been woven into your personal transformation document. Open it every morning. Let it remind you who you are.
           </p>
           <button
-            onClick={() => window.location.href = '/codex/view'}
+            onClick={() => go('/codex/view')}
             className="w-full bg-[#00D4E8] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3 hover:bg-[#00BED1] transition-colors"
           >
             Open My Codex →
           </button>
           <button
-            onClick={() => window.location.href = '/home'}
+            onClick={() => go('/home')}
             className="w-full text-white/30 py-3 text-sm hover:text-white/60 transition-colors"
           >
             Back to home
@@ -231,7 +232,7 @@ export default function CodexSetupPage() {
             You've already created your Codex. You can view it or update your answers.
           </p>
           <button
-            onClick={() => window.location.href = '/codex/view'}
+            onClick={() => go('/codex/view')}
             className="w-full bg-[#00D4E8] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3"
           >
             Open My Codex →

@@ -5,6 +5,7 @@ import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { PlansList } from '@/components/workouts/coach/PlansList'
 import { LibraryManager } from '@/components/workouts/coach/LibraryManager'
+import { go } from '@/lib/ui/navigate'
 
 type Tab = 'plans' | 'library'
 
@@ -21,7 +22,7 @@ export default function CoachWorkoutsPage() {
       <div className="bg-[#1a1f3a] px-6 py-4">
         <div className="max-w-6xl mx-auto">
           <button
-            onClick={() => window.location.href = '/coach/dashboard'}
+            onClick={() => go('/coach/dashboard')}
             className="text-white/40 hover:text-white/70 text-xs transition-colors mb-1"
           >
             ← Dashboard

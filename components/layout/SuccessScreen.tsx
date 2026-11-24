@@ -1,3 +1,4 @@
+import { go } from '@/lib/ui/navigate'
 interface SuccessScreenProps {
   name: string
   message?: string
@@ -61,7 +62,7 @@ export function SuccessScreen({
 
         {/* Home button */}
         <button
-          onClick={() => window.location.href = '/home'}
+          onClick={() => go('/home')}
           className="text-xs text-[#64748b] hover:text-[#64748b] transition-colors mb-6 block w-full"
         >
           ← Back to Home

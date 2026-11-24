@@ -17,6 +17,7 @@ import {
 } from '@/lib/supabase/queries/dailyCheckin'
 import { addDaysIST, formatDayLabel, istDate, todayIST } from '@/lib/utils/istDate'
 import { getLogs } from '@/lib/supabase/queries/workouts'
+import { go } from '@/lib/ui/navigate'
 
 type Draft = {
   workout_status: DailyCheckinInput['workout_status'] | null
@@ -341,7 +342,7 @@ export default function DailyCheckinPage() {
                 </button>
               )}
               <button
-                onClick={() => window.location.href = '/leaderboard'}
+                onClick={() => go('/leaderboard')}
                 className="flex-1 min-h-12 rounded-xl bg-[#00D4E8] text-base font-semibold text-[#1a1f3a] hover:bg-[#00BED1] flex items-center justify-center gap-2"
               >
                 <Icon name="trophy" size={18} />Leaderboard

@@ -6,6 +6,7 @@ import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { supabase } from '@/lib/supabase/client'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
+import { go } from '@/lib/ui/navigate'
 
 const QUESTIONS = [
   {
@@ -157,13 +158,13 @@ export default function CodexStoryPage() {
             Now complete the deeper questions to finish your Codex — the emotional foundation that makes your biography come alive.
           </p>
           <button
-            onClick={() => window.location.href = '/codex'}
+            onClick={() => go('/codex')}
             className="w-full bg-[#00D4E8] text-[#0a0a0f] py-4 rounded-2xl text-sm font-semibold mb-3"
           >
             Continue to Codex Setup →
           </button>
           <button
-            onClick={() => window.location.href = '/home'}
+            onClick={() => go('/home')}
             className="w-full text-white/25 py-3 text-sm hover:text-white/50 transition-colors"
           >
             Back to home

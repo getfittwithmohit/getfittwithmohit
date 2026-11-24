@@ -5,6 +5,7 @@ import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { CourseManager } from '@/components/content/CourseManager'
 import { AudioManager } from '@/components/content/AudioManager'
+import { go } from '@/lib/ui/navigate'
 
 const TABS = [
   { key: 'courses', label: '🎓 Courses' },
@@ -27,7 +28,7 @@ export default function CoachContentPage() {
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div>
             <button
-              onClick={() => window.location.href = '/coach/dashboard'}
+              onClick={() => go('/coach/dashboard')}
               className="text-white/40 hover:text-white/70 text-xs transition-colors mb-1"
             >
               ← Dashboard

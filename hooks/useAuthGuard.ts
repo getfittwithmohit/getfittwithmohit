@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase/client'
+import { clearCache } from '@/lib/ui/cache'
 
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms))
 
@@ -20,12 +21,26 @@ async function loadSession(): Promise<Session | null | 'offline'> {
   return 'offline'
 }
 
+// Once a session has been confirmed in this tab, later screens open instantly
+// (no full-screen spinner) while the check still runs quietly in the
+// background. Signing out clears it.
+let known: { isCoach: boolean } | null = null
+let listening = false
+const allowed = (role: 'coach' | 'any' | undefined, isCoach: boolean) =>
+  role === 'any' || (role === 'coach' ? isCoach : !isCoach)
+
 // role 'any': coach and clients may both use the page (e.g. PEAK Plate).
 export function useAuthGuard(role?: 'coach' | 'any') {
-  const [checking, setChecking] = useState(true)
+  const [checking, setChecking] = useState(() => !(known && allowed(role, known.isCoach)))
 
   useEffect(() => {
     let cancelled = false
+    if (!listening) {
+      listening = true
+      supabase.auth.onAuthStateChange((event) => {
+        if (event === 'SIGNED_OUT') { known = null; clearCache() }
+      })
+    }
 
     const run = async () => {
       let session = await loadSession()
@@ -42,6 +57,7 @@ export function useAuthGuard(role?: 'coach' | 'any') {
       if (cancelled || session === 'offline') return
 
       if (!session) {
+        known = null
         window.location.href = '/login'
         return
       }
@@ -49,6 +65,7 @@ export function useAuthGuard(role?: 'coach' | 'any') {
       const email = session.user.email?.toLowerCase()
       const coachEmail = process.env.NEXT_PUBLIC_COACH_EMAIL?.toLowerCase()
       const isCoach = email === coachEmail
+      known = { isCoach }
 
       if (role === 'coach' && !isCoach) {
         // Non-coach trying to access coach page

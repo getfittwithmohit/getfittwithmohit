@@ -10,6 +10,7 @@ import {
   type LeaderboardPeriod,
 } from '@/lib/supabase/queries/dailyCheckin'
 import { lastWeekLabel } from '@/lib/utils/leaderboard'
+import { go } from '@/lib/ui/navigate'
 
 type Period = LeaderboardPeriod
 
@@ -64,7 +65,7 @@ export default function CoachLeaderboardPage() {
       <div className="bg-[#1a1f3a] px-6 py-4">
         <div className="max-w-2xl mx-auto">
           <button
-            onClick={() => window.location.href = '/coach/dashboard'}
+            onClick={() => go('/coach/dashboard')}
             className="text-white/40 hover:text-white/70 text-xs transition-colors mb-1"
           >
             ← Dashboard
@@ -110,7 +111,7 @@ export default function CoachLeaderboardPage() {
             <div key={row.client_id} className={`flex items-center gap-3 px-4 py-3 ${row.is_hidden ? 'opacity-50' : ''}`}>
               <span className="w-8 text-center text-sm font-semibold text-[#64748b]">{row.rank}</span>
               <button
-                onClick={() => window.location.href = `/coach/dashboard/client/${row.client_id}`}
+                onClick={() => go(`/coach/dashboard/client/${row.client_id}`)}
                 className="flex-1 text-left text-sm text-[#0f172a] truncate hover:underline"
               >
                 {row.display_name}

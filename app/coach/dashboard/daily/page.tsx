@@ -13,6 +13,7 @@ import {
   type DailyCheckin,
 } from '@/lib/supabase/queries/dailyCheckin'
 import { addDaysIST, formatDayLabel, istDate, todayIST } from '@/lib/utils/istDate'
+import { go } from '@/lib/ui/navigate'
 
 type ClientLite = { id: string; full_name: string; phone: string | null }
 
@@ -105,7 +106,7 @@ export default function CoachDailyPage() {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div>
             <button
-              onClick={() => window.location.href = '/coach/dashboard'}
+              onClick={() => go('/coach/dashboard')}
               className="text-white/40 hover:text-white/70 text-xs transition-colors mb-1"
             >
               ← Dashboard
@@ -116,7 +117,7 @@ export default function CoachDailyPage() {
             </p>
           </div>
           <button
-            onClick={() => window.location.href = '/coach/dashboard/leaderboard'}
+            onClick={() => go('/coach/dashboard/leaderboard')}
             className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20"
           >
             🏆 Leaderboard
@@ -139,7 +140,7 @@ export default function CoachDailyPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <button
-                        onClick={() => window.location.href = `/coach/dashboard/client/${r.client_id}`}
+                        onClick={() => go(`/coach/dashboard/client/${r.client_id}`)}
                         className="text-sm font-medium text-[#0f172a] hover:underline"
                       >
                         {nameOf(r.client_id)}
@@ -181,7 +182,7 @@ export default function CoachDailyPage() {
               {quiet.map((c) => (
                 <button
                   key={c.id}
-                  onClick={() => window.location.href = `/coach/dashboard/client/${c.id}`}
+                  onClick={() => go(`/coach/dashboard/client/${c.id}`)}
                   className="text-xs bg-white border border-amber-200 rounded-full px-3 py-1 text-amber-900 hover:border-amber-400"
                 >
                   {c.full_name} · {c.last ? `last ${formatDayLabel(c.last)}` : 'never'}
@@ -227,7 +228,7 @@ export default function CoachDailyPage() {
                 return (
                   <tr
                     key={c.id}
-                    onClick={() => window.location.href = `/coach/dashboard/client/${c.id}`}
+                    onClick={() => go(`/coach/dashboard/client/${c.id}`)}
                     className={`border-b border-[#f8fafc] cursor-pointer hover:bg-[#f8fafc] ${r.support_needed ? 'bg-red-50' : ''}`}
                   >
                     <td className="px-4 py-2.5 text-[#0f172a]">
@@ -248,7 +249,7 @@ export default function CoachDailyPage() {
               {missing.map((c) => (
                 <tr
                   key={c.id}
-                  onClick={() => window.location.href = `/coach/dashboard/client/${c.id}`}
+                  onClick={() => go(`/coach/dashboard/client/${c.id}`)}
                   className="border-b border-[#f8fafc] cursor-pointer hover:bg-[#f8fafc]"
                 >
                   <td className="px-4 py-2.5 text-[#94a3b8]">{c.full_name}</td>

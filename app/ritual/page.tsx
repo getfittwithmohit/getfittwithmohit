@@ -8,6 +8,7 @@ import { PageLoader } from '@/components/ui/PageLoader'
 import { supabase } from '@/lib/supabase/client'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
 import { todayIST } from '@/lib/utils/istDate'
+import { go } from '@/lib/ui/navigate'
 
 const AUDIO_URL = process.env.NEXT_PUBLIC_STRANGEST_SECRET_URL || ''
 
@@ -287,7 +288,7 @@ export default function RitualPage() {
           )}
           <p className="text-white/60 text-sm mb-10">Keep showing up. Every day compounds.</p>
           <button
-            onClick={() => window.location.href = '/home'}
+            onClick={() => go('/home')}
             className="w-full bg-[#00D4E8] text-[#0a0a0f] min-h-[54px] rounded-2xl text-[17px] font-bold"
           >
             Back to Today
@@ -314,7 +315,7 @@ export default function RitualPage() {
       {/* Header */}
       <div className="px-6 pt-8 pb-6 max-w-lg mx-auto">
         <button
-          onClick={() => window.location.href = '/home'}
+          onClick={() => go('/home')}
           className="text-white/60 text-[15px] min-h-11 mb-3 flex items-center gap-1 hover:text-white transition-colors"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
@@ -516,7 +517,7 @@ export default function RitualPage() {
                         <div className="bg-white/5 rounded-xl p-4 text-center mb-4">
                           <p className="text-white/60 text-sm mb-3">No goal card yet.</p>
                           <button
-                            onClick={() => window.location.href = '/ritual/goal-card'}
+                            onClick={() => go('/ritual/goal-card')}
                             className="text-[#00D4E8] text-sm underline underline-offset-2"
                           >
                             Set up my goal card →
@@ -533,7 +534,7 @@ export default function RitualPage() {
                           I've read it ✓
                         </button>
                         <button
-                          onClick={() => window.location.href = '/ritual/goal-card'}
+                          onClick={() => go('/ritual/goal-card')}
                           className="px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white/50 border border-white/10 transition-colors"
                         >
                           Edit
