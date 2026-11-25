@@ -119,8 +119,8 @@ export function ClientWorkouts({ clientId, clientName }: { clientId: string; cli
         </div>
       )}
 
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 flex flex-col gap-3">
-        <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide">Training plan</p>
+      <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5 flex flex-col gap-3">
+        <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em]">Training plan</p>
         {plan ? (
           <div className="flex flex-wrap justify-between items-center gap-3">
             <div>
@@ -165,8 +165,8 @@ export function ClientWorkouts({ clientId, clientName }: { clientId: string; cli
         <Tile label="Last session" value={logs[0]?.completed_at ? formatDayLabel(istDate(new Date(logs[0].completed_at))) : '—'} />
       </div>
 
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden">
-        <p className="px-5 py-3 text-xs font-medium text-[#94a3b8] uppercase tracking-wide border-b border-[#e2e8f0]">Recent sessions</p>
+      <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden">
+        <p className="px-5 py-3 text-xs font-bold text-[#475569] uppercase tracking-[0.12em] border-b border-[#e2e8f0]">Recent sessions</p>
         {logs.length === 0 && <p className="text-sm text-[#94a3b8] text-center py-10">No workouts logged yet.</p>}
         {logs.map((l) => (
           <div key={l.id} className="border-b border-[#f1f5f9]">
@@ -226,7 +226,7 @@ function formatOffset(days: number) {
 
 function Tile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-white border border-[#e2e8f0] rounded-xl px-3 py-2.5">
+    <div className="bg-white rounded-2xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] px-3 py-2.5">
       <p className="text-[10px] text-[#94a3b8] uppercase tracking-wide">{label}</p>
       <p className="text-sm font-semibold text-[#0f172a] mt-0.5">{value}</p>
     </div>

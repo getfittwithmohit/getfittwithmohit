@@ -164,7 +164,7 @@ export function CallDrafts({
       )}
 
       {pasteOpen && (
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col gap-3">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <label className="text-xs text-[#64748b]">For</label>
             <select value={pasteWeek} onChange={(e) => setPasteWeek(Number(e.target.value))} className="text-sm border border-[#e2e8f0] rounded-lg px-2 py-1.5 bg-white">
@@ -257,7 +257,7 @@ export function CallDrafts({
       })}
 
       {applied.map((d) => (
-        <div key={d.id} className="bg-white border border-[#e2e8f0] rounded-xl">
+        <div key={d.id} className="bg-white rounded-2xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)]">
           <button onClick={() => setOpenApplied(openApplied === d.id ? null : d.id)} className="w-full flex items-center justify-between px-4 py-3 text-left">
             <span className="text-xs text-[#64748b]">✅ Week {d.week_number} notes saved · WhatsApp recap</span>
             <span className="text-xs text-[#94a3b8]">{openApplied === d.id ? '▲' : '▼'}</span>
