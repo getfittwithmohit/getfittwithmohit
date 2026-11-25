@@ -3,7 +3,7 @@
 import { toast } from '@/lib/ui/feedback'
 import { useState } from 'react'
 import { useOnboardingStore } from '@/store/onboardingStore'
-import { ProgressBar } from '@/components/ui/ProgressBar'
+import { FormShell } from '@/components/layout/FormShell'
 import { SuccessScreen } from '@/components/layout/SuccessScreen'
 import { Step01Personal } from '@/components/forms/onboarding/Step01Personal'
 import { Step02Metrics } from '@/components/forms/onboarding/Step02Metrics'
@@ -172,39 +172,15 @@ useEffect(() => {
   if (checkingClient) return <PageLoader />
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
-
-      {/* Header */}
-     <div className="bg-[#1a1f3a] text-center py-8 px-4 relative">
-  <button
-    onClick={signOut}
-    className="absolute top-4 right-4 text-xs text-white/30 hover:text-white/60 transition-colors"
-  >
-    Sign out
-  </button>
-  <div className="flex flex-col items-center gap-3">
-    <img
-      src="/logo.png"
-      alt="GetFittWithMohit"
-      className="w-20 h-20 object-contain"
-    />
-    <h2 className="text-white text-xl font-medium">
-      Client Onboarding
-    </h2>
-    <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed">
-      Takes 10–12 minutes. Be as honest as possible — the more you
-      share, the more personalised your programme will be.
-    </p>
-  </div>
-</div>
-
-      {/* Progress */}
-      <div className="max-w-2xl mx-auto px-4 mt-6">
-        <ProgressBar current={currentStep} total={11} />
-      </div>
-
-      {/* Sections */}
-      <div className="max-w-2xl mx-auto px-4 mt-6 pb-16">
+    <FormShell
+      eyebrow="Client onboarding"
+      title={data.personal.first_name ? `Welcome, ${data.personal.first_name}.` : 'Welcome to GFM 1:1.'}
+      subtitle="Takes 10–12 minutes. Be as honest as possible — the more you share, the more personalised your programme will be."
+      progress={{ current: currentStep, total: 11 }}
+      back={null}
+      topRight={<button onClick={signOut} className="text-[15px] min-h-11 px-1" style={{ color: '#64748b' }}>Sign out</button>}
+      stepKey={currentStep}
+    >
 
         {currentStep === 1 && (
           <Step01Personal onNext={next} />
@@ -250,7 +226,6 @@ useEffect(() => {
   />
 )}
 
-      </div>
-    </div>
+    </FormShell>
   )
 }

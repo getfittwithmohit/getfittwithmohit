@@ -30,8 +30,8 @@ export function Step06Obstacle({ onNext, onBack }: Props) {
       title="What has stopped you before — and what are you willing to do differently this time?"
       subtitle="This is the most honest question. Not what went wrong — but what YOU are willing to change."
     >
-      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
-        <p className="text-sm text-[#64748b] leading-relaxed">
+      <div className="bg-[#E6F7F9] rounded-2xl p-4">
+        <p className="m-0 text-[15px] text-[#334155] leading-relaxed">
           The programme can be perfect — but it only works if you show up
           differently. Coach Mohit needs to know what you're
           <strong className="text-[#0f172a]"> actually willing to change </strong>

@@ -39,11 +39,11 @@ export function Step05Values({ onNext, onBack }: Props) {
       title="Which values matter most to you on this journey?"
       subtitle="Choose up to 5. These become the filter for every decision — on hard days, your values lead the way."
     >
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-[#64748b]">
+      <div className="flex items-center justify-between gap-3">
+        <p className="m-0 text-sm text-[#64748b]">
           Select up to 5 that feel most true to you
         </p>
-        <p className="text-xs font-medium text-[#00D4E8]">
+        <p className="m-0 text-sm font-semibold text-[#007A8A] whitespace-nowrap">
           {selected.length} / {MAX_VALUES} selected
         </p>
       </div>
@@ -61,13 +61,13 @@ export function Step05Values({ onNext, onBack }: Props) {
               onClick={() => toggle(value)}
               disabled={isDisabled}
               className={`
-                py-2.5 px-3 rounded-lg text-xs font-medium border
+                min-h-11 px-2 rounded-xl text-sm font-medium active:scale-[0.97]
                 transition-all duration-150 text-center
                 ${isSelected
-                  ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#00D4E8]'
+                  ? 'bg-[#1a1f3a] text-[#00D4E8]'
                   : isDisabled
-                    ? 'bg-[#f8fafc] text-[#c4cdd6] border-[#e2e8f0] cursor-not-allowed'
-                    : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00D4E8] hover:text-[#00D4E8]'
+                    ? 'bg-[#F7F9FB] text-[#c4cdd6] cursor-not-allowed'
+                    : 'bg-[#F2F4F7] text-[#0f172a] hover:bg-[#E8ECF1]'
                 }
               `}
             >
@@ -79,7 +79,7 @@ export function Step05Values({ onNext, onBack }: Props) {
 
       {/* Selected preview */}
       {selected.length > 0 && (
-        <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-3">
+        <div className="bg-[#F7F9FB] rounded-2xl p-3">
           <p className="text-xs text-[#64748b] mb-2">Your values</p>
           <div className="flex flex-wrap gap-2">
             {selected.map((v) => (

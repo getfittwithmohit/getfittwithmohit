@@ -1,4 +1,6 @@
 import { go } from '@/lib/ui/navigate'
+import { Screen, T } from '@/components/ui/ios'
+
 interface SuccessScreenProps {
   name: string
   message?: string
@@ -13,68 +15,45 @@ export function SuccessScreen({
   title,
 }: SuccessScreenProps) {
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl p-8 shadow-sm border border-[#e2e8f0] max-w-md w-full text-center">
-
-        <div className="w-16 h-16 bg-[#00D4E8] rounded-full flex items-center justify-center mx-auto mb-5">
-          <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
-            <path
-              d="M8 16l5 5 11-11"
-              stroke="#1a1f3a"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+    <Screen>
+      <div className="rounded-3xl px-6 pt-10 pb-8 text-center mt-6 gfm-pop" style={{ background: T.navy }}>
+        <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-5" style={{ background: T.cyan }}>
+          <svg viewBox="0 0 32 32" width="34" height="34" fill="none" aria-hidden="true">
+            <path d="M8 16l5 5 11-11" stroke={T.navy} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-
-        <h2 className="text-xl font-medium text-[#0f172a] mb-2">
-  {title || (name === 'you' ? 'All done!' : `Thank you, ${name}!`)}
-</h2>
-        <p className="text-sm text-[#64748b] leading-relaxed mb-6">
-          {message}
-        </p>
-
-        {/* Booking section — only for check-in */}
-        {showBooking && (
-          <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-5 mb-6 text-left">
-            <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3 text-center">
-              Next Step
-            </p>
-            <p className="text-sm font-medium text-[#0f172a] text-center mb-1">
-              📅 Book your review call
-            </p>
-            <p className="text-xs text-[#64748b] text-center leading-relaxed mb-4">
-              Coach Mohit is available Saturday & Sunday.
-              He'll have reviewed your check-in before the call.
-            </p>
-            <button
-              onClick={() => window.open(
-                'https://cal.com/fittnesscoach/weekly-review-call-for-1-1-clients-only?overlayCalendar=true',
-                '_blank'
-              )}
-              className="w-full bg-[#00D4E8] text-[#1a1f3a] py-3 rounded-xl text-sm font-medium hover:bg-[#00BED1] transition-colors"
-            >
-              Open Booking Calendar →
-            </button>
-          </div>
-        )}
-
-        {/* Home button */}
-        <button
-          onClick={() => go('/home')}
-          className="text-xs text-[#64748b] hover:text-[#64748b] transition-colors mb-6 block w-full"
-        >
-          ← Back to Home
-        </button>
-
-        <div className="bg-[#1a1f3a] rounded-xl py-3 px-6 inline-block">
-          <p className="text-[#00D4E8] text-xs font-medium tracking-widest">
-            TRANSFORM TO INSPIRE
-          </p>
-        </div>
-
+        <h2 className="m-0 text-[26px] leading-tight font-extrabold tracking-tight text-white">
+          {title || (name === 'you' ? 'All done!' : `Thank you, ${name}!`)}
+        </h2>
+        <p className="m-0 mt-3 text-base leading-relaxed text-white/75">{message}</p>
+        <p className="m-0 mt-6 text-xs font-bold tracking-[0.2em]" style={{ color: T.cyan }}>TRANSFORM TO INSPIRE</p>
       </div>
-    </div>
+
+      {/* Booking — only after the weekly check-in */}
+      {showBooking && (
+        <div className="bg-white rounded-2xl p-5">
+          <p className="m-0 text-xs font-bold uppercase tracking-[0.12em]" style={{ color: T.teal }}>Next step</p>
+          <p className="m-0 mt-1 text-[19px] font-bold" style={{ color: T.ink }}>Book your review call</p>
+          <p className="m-0 mt-1 mb-4 text-[15px] leading-relaxed" style={{ color: T.ter }}>
+            Coach Mohit is available Saturday &amp; Sunday. He&apos;ll have reviewed your check-in before the call.
+          </p>
+          <button
+            onClick={() => window.open('https://cal.com/fittnesscoach/weekly-review-call-for-1-1-clients-only?overlayCalendar=true', '_blank')}
+            className="w-full min-h-[54px] rounded-2xl text-[17px] font-bold"
+            style={{ background: T.cyan, color: T.navy }}
+          >
+            Open booking calendar
+          </button>
+        </div>
+      )}
+
+      <button
+        onClick={() => go('/home')}
+        className="w-full min-h-[54px] rounded-2xl text-base font-semibold"
+        style={showBooking ? { background: '#fff', color: T.ink, border: `1px solid ${T.line}` } : { background: T.cyan, color: T.navy }}
+      >
+        Back to Today
+      </button>
+    </Screen>
   )
 }

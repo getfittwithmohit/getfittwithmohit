@@ -15,14 +15,12 @@ export function EnvironmentSelector({ selected, onSelect, onNext }: Props) {
   ][]
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#e2e8f0]">
-      <span className="inline-block bg-[#1a1f3a] text-[#00D4E8] text-xs px-3 py-1 rounded-full mb-4 tracking-wide">
-        Step 1 — Choose Environment
-      </span>
-      <h3 className="text-lg font-medium text-[#0f172a] mb-1">
+    <div className="bg-white rounded-3xl p-5 sm:p-6" style={{ boxShadow: '0 1px 2px rgba(15,23,42,0.04), 0 0 0 1px rgba(15,23,42,0.04)' }}>
+      <p className="m-0 mb-1.5 text-xs font-bold tracking-[0.12em] uppercase text-[#007A8A]">Step 1 · Choose environment</p>
+      <h3 className="m-0 text-[22px] leading-tight font-bold tracking-tight text-[#0f172a]">
         Where are you doing this assessment?
       </h3>
-      <p className="text-sm text-[#64748b] mb-6 leading-relaxed">
+      <p className="m-0 mt-1.5 mb-5 text-[15px] text-[#64748b] leading-relaxed">
         Select your environment — instructions and tests will be
         tailored specifically for it.
       </p>
@@ -34,21 +32,21 @@ export function EnvironmentSelector({ selected, onSelect, onNext }: Props) {
             type="button"
             onClick={() => onSelect(key)}
             className={`
-              p-4 rounded-xl border text-center transition-all duration-150
+              p-4 rounded-2xl text-center transition-all duration-150 active:scale-[0.98]
               ${selected === key
-                ? 'bg-[#1a1f3a] border-[#00D4E8]'
-                : 'bg-white border-[#e2e8f0] hover:border-[#00D4E8]'
+                ? 'bg-[#1a1f3a] ring-2 ring-[#00D4E8]'
+                : 'bg-[#F2F4F7] hover:bg-[#E8ECF1]'
               }
             `}
           >
-            <div className="text-2xl mb-1">{protocol.emoji}</div>
-            <div className={`text-sm font-medium mb-0.5 ${
+            <div className="text-3xl mb-1.5">{protocol.emoji}</div>
+            <div className={`text-base font-semibold mb-0.5 ${
               selected === key ? 'text-[#00D4E8]' : 'text-[#0f172a]'
             }`}>
               {protocol.label}
             </div>
-            <div className={`text-xs ${
-              selected === key ? 'text-[#00D4E8]/60' : 'text-[#64748b]'
+            <div className={`text-[13px] leading-snug ${
+              selected === key ? 'text-white/60' : 'text-[#64748b]'
             }`}>
               {protocol.description}
             </div>
@@ -56,13 +54,13 @@ export function EnvironmentSelector({ selected, onSelect, onNext }: Props) {
         ))}
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex">
         <button
           onClick={onNext}
           disabled={!selected}
-          className="bg-[#00D4E8] text-[#1a1f3a] px-8 py-2.5 rounded-lg text-sm font-medium hover:bg-[#00BED1] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex-1 min-h-[54px] px-5 rounded-2xl text-[17px] font-bold bg-[#00D4E8] text-[#1a1f3a] hover:bg-[#00C4D7] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Start Assessment
+          Start assessment
         </button>
       </div>
     </div>

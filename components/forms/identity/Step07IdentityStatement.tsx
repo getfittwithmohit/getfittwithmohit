@@ -30,11 +30,11 @@ export function Step07IdentityStatement({ onNext, onBack }: Props) {
       title="Complete this sentence — and mean it."
       subtitle="Goals are outcomes. Identity is who you are. When things get hard, your identity answers the question."
     >
-      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
-        <p className="text-xs font-medium text-[#00D4E8] mb-1">
+      <div className="bg-[#E6F7F9] rounded-2xl p-4">
+        <p className="m-0 text-xs font-bold uppercase tracking-[0.12em] text-[#007A8A] mb-1.5">
           Phase 3 — Commitment
         </p>
-        <p className="text-sm text-[#64748b] leading-relaxed">
+        <p className="m-0 text-[15px] text-[#334155] leading-relaxed">
           When things get hard — and they will — you won't ask
           "do I feel like working out?" You'll ask
           <strong className="text-[#0f172a]"> "what would a person like me do?"</strong>
@@ -44,11 +44,11 @@ export function Step07IdentityStatement({ onNext, onBack }: Props) {
 
       {/* Prefix */}
       <div>
-        <p className="text-xs font-medium text-[#64748b] mb-2">
+        <p className="m-0 text-[15px] font-semibold text-[#0f172a] mb-2">
           Complete this sentence
         </p>
         <div className="flex items-start gap-2">
-          <span className="text-sm font-medium text-[#00D4E8] mt-2.5 flex-shrink-0">
+          <span className="text-base font-semibold text-[#007A8A] flex-shrink-0">
             I am someone who...
           </span>
         </div>

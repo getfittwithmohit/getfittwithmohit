@@ -30,8 +30,8 @@ export function Step09Commitment({ onNext, onBack }: Props) {
       title="Make one commitment to yourself — right now."
       subtitle="Not to Coach Mohit. Not to your family. To yourself. One thing you will do differently from today."
     >
-      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
-        <p className="text-sm text-[#64748b] leading-relaxed">
+      <div className="bg-[#E6F7F9] rounded-2xl p-4">
+        <p className="m-0 text-[15px] text-[#334155] leading-relaxed">
           Keep it <strong className="text-[#0f172a]">specific</strong> and keep it
           <strong className="text-[#0f172a]"> real</strong>. Not "I will be healthier."
           Something you can actually measure — something that, if you did it every day
@@ -41,11 +41,11 @@ export function Step09Commitment({ onNext, onBack }: Props) {
 
       {/* Prefix */}
       <div>
-        <p className="text-xs font-medium text-[#64748b] mb-2">
+        <p className="m-0 text-[15px] font-semibold text-[#0f172a] mb-2">
           Your commitment
         </p>
         <div className="mb-2">
-          <span className="text-sm font-medium text-[#00D4E8]">
+          <span className="text-base font-semibold text-[#007A8A]">
             I commit to...
           </span>
         </div>

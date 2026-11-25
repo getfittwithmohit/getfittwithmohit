@@ -30,11 +30,11 @@ export function Step04IdentityPerson({ onNext, onBack }: Props) {
       title="Who is the person who lives that life?"
       subtitle="Not goals. Not outcomes. Who are they? How do they think? How do they treat their body?"
     >
-      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
-        <p className="text-xs font-medium text-[#00D4E8] mb-1">
+      <div className="bg-[#E6F7F9] rounded-2xl p-4">
+        <p className="m-0 text-xs font-bold uppercase tracking-[0.12em] text-[#007A8A] mb-1.5">
           Phase 2 — Identity · James Clear
         </p>
-        <p className="text-sm text-[#64748b] leading-relaxed">
+        <p className="m-0 text-[15px] text-[#334155] leading-relaxed">
           "Every action you take is a vote for the type of person you want to become."
           The goal isn't to lose 15kg. The goal is to become the kind of person who
           takes care of their body — <strong className="text-[#0f172a]">consistently,
