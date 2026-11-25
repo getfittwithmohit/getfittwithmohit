@@ -26,7 +26,7 @@ export function tabIndex(pathname: string) {
 const SHOW_ON = [
   /^\/home(\/progress|\/report)?$/,
   /^\/(train|learn|me)$/,
-  /^\/me\/(photos|nutrition)$/,
+  /^\/me\/(photos|nutrition|recipes)$/,
   /^\/workout\/plan$/,
   /^\/plate$/,
   /^\/leaderboard$/,

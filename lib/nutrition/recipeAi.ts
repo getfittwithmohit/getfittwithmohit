@@ -7,7 +7,7 @@ import { callClaude, MODEL } from './ai'
 import { nutrientsFor, type Food } from './foods'
 import {
   MEAL_TYPES, PROTEIN_KEYS, RECIPE_TAGS, dietOf,
-  type MealType, type ProteinKey, type Recipe, type RecipeIngredient,
+  type MealType, type ProteinKey, type Recipe, type RecipeExtra, type RecipeIngredient, type RecipeTranslation,
 } from './recipes'
 
 const STR = { type: 'string' }
@@ -176,4 +176,44 @@ ${ingredientCatalog(args.foods.filter((f) => slugs.includes(f.slug)))}`
 
   const out = await callClaude<{ recipe: RawRecipe; summary: string[] }>(prompt, schema, 8000)
   return { recipe: normaliseRecipe(out.recipe, bySlug), summary: (out.summary || []).slice(0, 4) }
+}
+
+// ── Translation for "Send to whoever's cooking" ─────────────────────────────
+
+const LANG_NAME = { hi: 'Hindi', mr: 'Marathi' } as const
+
+export async function translateRecipe(args: { recipe: Recipe; foods: Food[]; lang: 'hi' | 'mr' }): Promise<Omit<RecipeTranslation, 'at'>> {
+  const bySlug = new Map(args.foods.map((f) => [f.slug, f]))
+  const slugs = Array.from(new Set([...args.recipe.ingredients.map((i) => i.food), ...args.recipe.swaps.map((s) => s.food)])).filter((s) => bySlug.has(s))
+  const schema = obj({
+    title: STR,
+    names: arr(obj({ food: { type: 'string', enum: slugs }, name: STR })),
+    extras: arr(obj({ name: STR, amount: STR })),
+    steps: arr(STR),
+    tip: STR,
+  })
+  const lang = LANG_NAME[args.lang]
+  const prompt = `Translate this home recipe into everyday spoken ${lang}, written in Devanagari, for a home cook in Mumbai/Maharashtra (could be a family member or a hired cook). Use the words people actually say in the kitchen — common English loan words are fine where that's what people say (e.g. "capsicum", "paneer", "non-stick"). Keep it short and clear. Keep numbers as digits. Do not add or remove anything.
+
+- title: the dish name as people say it in ${lang}.
+- names: for EACH food slug below, the short everyday ${lang} name of that ingredient (e.g. "पनीर", "प्याज़"/"कांदा"). No weights, no brackets.
+- extras: same order and count as given; translate name and amount.
+- steps: same order and count as given.
+- tip: translate.
+
+FOODS (slug → English name):
+${slugs.map((s) => `${s} → ${bySlug.get(s)!.name}${bySlug.get(s)!.local_name ? ` (${bySlug.get(s)!.local_name})` : ''}`).join('\n')}
+
+TITLE: ${args.recipe.title}
+EXTRAS: ${JSON.stringify(args.recipe.extras)}
+STEPS: ${JSON.stringify(args.recipe.steps.map((s) => s.text))}
+TIP: ${args.recipe.tip || ''}`
+
+  const out = await callClaude<{ title: string; names: { food: string; name: string }[]; extras: RecipeExtra[]; steps: string[]; tip: string }>(prompt, schema, 4000)
+  const names: Record<string, string> = {}
+  for (const n of out.names || []) if (slugs.includes(n.food) && n.name?.trim()) names[n.food] = n.name.trim()
+  // Never return a shorter list than the original: fall back to English per line.
+  const steps = args.recipe.steps.map((s, i) => (out.steps?.[i] || '').trim() || s.text)
+  const extras = args.recipe.extras.map((x, i) => ({ name: out.extras?.[i]?.name?.trim() || x.name, amount: out.extras?.[i]?.amount?.trim() || x.amount }))
+  return { title: out.title?.trim() || args.recipe.title, names, extras, steps, tip: out.tip?.trim() || args.recipe.tip || '' }
 }

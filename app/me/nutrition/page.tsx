@@ -6,8 +6,11 @@ import { PageLoader } from '@/components/ui/PageLoader'
 import { Card, LargeTitle, Screen, SectionTitle, Skeleton, T } from '@/components/ui/ios'
 import { describeItem, optionTotals, PLATE_RULES, type Level, type PlanDoc } from '@/lib/nutrition/plan'
 import type { Food } from '@/lib/nutrition/foods'
+import Link from 'next/link'
+import { Icon } from '@/components/ui/Icon'
 
 interface Payload {
+  recipes?: { id: string; title: string; dish_food: string; minutes: number }[]
   plan: { name: string; doc: PlanDoc; version: number; published_at: string | null; change_note: string | null } | null
   foods: Food[]
 }
@@ -40,6 +43,12 @@ export default function MyNutritionPage() {
     () => new Map((data?.foods || []).map((f) => [f.slug, { ...f, kcal: +f.kcal, protein_g: +f.protein_g, carbs_g: +f.carbs_g, fat_g: +f.fat_g, fibre_g: +f.fibre_g } as Food])),
     [data]
   )
+
+  const recipesFor = useMemo(() => {
+    const m = new Map<string, NonNullable<Payload['recipes']>>()
+    for (const r of data?.recipes || []) m.set(r.dish_food, [...(m.get(r.dish_food) || []), r])
+    return m
+  }, [data])
 
   if (checking) return <PageLoader />
 
@@ -98,6 +107,15 @@ export default function MyNutritionPage() {
             {doc.targets.water_l ? <p className="m-0 text-[15px]" style={{ color: T.sec }}>Water: {doc.targets.water_l} litres a day.</p> : null}
           </Card>
 
+          <Link href="/me/recipes" className="flex items-center gap-3 bg-white rounded-2xl p-4" style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}>
+            <span className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#FDF1E3', color: '#B45309' }}><Icon name="book" size={22} /></span>
+            <span className="flex-1 min-w-0">
+              <span className="block text-base font-semibold" style={{ color: T.ink }}>Recipe book</span>
+              <span className="block text-[13px]" style={{ color: T.ter }}>Sized for your portion and your family</span>
+            </span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
+          </Link>
+
           {doc.rules.filter(Boolean).length > 0 && (
             <>
               <SectionTitle>Your rules</SectionTitle>
@@ -129,6 +147,11 @@ export default function MyNutritionPage() {
                       {o.items.map((it, j) => <li key={j}>{describeItem(it, foods.get(it.food), level).replace(' · ', ' — ')}</li>)}
                     </ul>
                     {o.why && <p className="m-0 text-[15px] leading-snug" style={{ color: T.teal }}>{o.why}</p>}
+                    {[...new Set(o.items.map((it) => it.food))].flatMap((slug) => recipesFor.get(slug) || []).map((r) => (
+                      <Link key={r.id} href={`/me/recipes/${r.id}`} className="mt-1 flex items-center justify-center gap-2 min-h-12 rounded-2xl text-[15px] font-bold" style={{ background: T.cyan, color: T.navy }}>
+                        <Icon name="plate" size={18} />How to cook it · {r.minutes} min
+                      </Link>
+                    ))}
                     {o.tip && <p className="m-0 text-sm" style={{ color: T.ter }}>Tip: {o.tip}</p>}
                   </Card>
                 )

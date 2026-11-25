@@ -35,7 +35,13 @@ export async function GET() {
     ? await admin.from('foods').select('slug, name, local_name, kcal, protein_g, carbs_g, fat_g, fibre_g, measures, diet').in('slug', slugs)
     : { data: [] }
 
+  // Approved recipes that teach a dish on this plan ("How to cook it")
+  const { data: recipes } = slugs.length
+    ? await admin.from('recipes').select('id, title, dish_food, minutes').eq('status', 'approved').in('dish_food', slugs)
+    : { data: [] }
+
   return NextResponse.json({
+    recipes: recipes || [],
     plan: { name: plan.name, doc: plan.published, version: plan.version, published_at: plan.published_at, change_note: plan.change_note },
     foods: foods || [],
   })

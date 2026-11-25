@@ -43,6 +43,9 @@ create table if not exists public.recipes (
 
 -- Added after the first version: safe on an existing table
 alter table public.recipes add column if not exists extras jsonb not null default '[]';
+-- Hindi/Marathi versions for "Send to whoever's cooking", made on first use:
+-- { "hi": { "at": "<recipe updated_at>", "title": …, "names": {slug: name}, "extras": […], "steps": […], "tip": … } }
+alter table public.recipes add column if not exists translations jsonb not null default '{}';
 
 create index if not exists recipes_status on public.recipes (status);
 create index if not exists recipes_dish_food on public.recipes (dish_food) where status = 'approved';
