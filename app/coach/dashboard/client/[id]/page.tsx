@@ -608,7 +608,7 @@ export default function ClientProgressPage() {
 
       {/* Tabs */}
       <div className="sticky top-0 z-20 bg-[#F2F4F7]/90 backdrop-blur-md mt-3">
-        <div className="max-w-3xl mx-auto px-3 md:px-4 py-2 flex gap-1.5 overflow-x-auto" role="tablist">
+        <div className="max-w-3xl mx-auto px-3 md:px-4 py-2 flex gap-1.5 overflow-x-auto gfm-no-scrollbar" role="tablist">
           {[
             { key: 'brief', label: 'Brief' },
             { key: 'progress', label: 'Progress' },

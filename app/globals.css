@@ -161,3 +161,7 @@ html {
   .gfm-shimmer { animation: none; }
   .gfm-from-right, .gfm-from-left { animation: gfm-fade-in 0.18s ease-out; }
 }
+
+/* Horizontal chip/tile rows: swipe or trackpad-scroll, no visible bar */
+.gfm-no-scrollbar { scrollbar-width: none; }
+.gfm-no-scrollbar::-webkit-scrollbar { display: none; }

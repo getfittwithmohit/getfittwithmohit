@@ -187,10 +187,10 @@ export function ClientList({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1 min-h-0">
 
       {/* Filter tabs */}
-      <div className="flex gap-1.5 px-3 py-3 overflow-x-auto flex-shrink-0">
+      <div className="flex gap-1.5 px-3 py-3 overflow-x-auto gfm-no-scrollbar flex-shrink-0">
         {tabs.map((tab) => (
           <button
             key={tab.key}
