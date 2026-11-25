@@ -9,6 +9,8 @@ interface Props {
   steps: { text: string; minutes?: number | null }[]
   ingredients: { name: string; amount: string; prep?: string }[]
   onClose: () => void
+  /** Called after the last step (defaults to onClose) */
+  onFinish?: () => void
 }
 
 function beep() {
@@ -31,7 +33,7 @@ const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, 
 
 // One step per screen, big type, a timer where the step has one, and the
 // screen kept awake while cooking.
-export function CookMode({ title, steps, ingredients, onClose }: Props) {
+export function CookMode({ title, steps, ingredients, onClose, onFinish }: Props) {
   const [idx, setIdx] = useState(0)
   const [left, setLeft] = useState<number | null>(null)
   const [running, setRunning] = useState(false)
@@ -70,7 +72,7 @@ export function CookMode({ title, steps, ingredients, onClose }: Props) {
   }, [running, total])
 
   const go = (to: number) => { setIdx(to); setLeft(null); setRunning(false) }
-  const finish = () => { celebrate(); onClose() }
+  const finish = () => { celebrate(); (onFinish || onClose)() }
   const shown = left ?? total
 
   return (

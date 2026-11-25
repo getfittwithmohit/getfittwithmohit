@@ -16,6 +16,8 @@ function normalise(row: Record<string, unknown>): Recipe {
     extras: (row.extras as Recipe['extras']) || [],
     steps: (row.steps as Recipe['steps']) || [],
     swaps: (row.swaps as Recipe['swaps']) || [],
+    likes: Number(row.likes) || 0,
+    dislikes: Number(row.dislikes) || 0,
   }
 }
 

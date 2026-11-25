@@ -32,6 +32,17 @@ export default function RecipePage() {
   })
   const [cooking, setCooking] = useState(false)
   const [sharing, setSharing] = useState(false)
+  const [vote, setVote] = useState<boolean | null>(() => {
+    try { const v = localStorage.getItem(`gfm:rv:${id}`); return v === null ? null : v === '1' } catch { return null }
+  })
+  const [askVote, setAskVote] = useState(false)
+
+  const sendVote = (liked: boolean) => {
+    setVote(liked)
+    setAskVote(false)
+    try { localStorage.setItem(`gfm:rv:${id}`, liked ? '1' : '0') } catch { /* private mode */ }
+    fetch('/api/me/recipes/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, liked }) }).catch(() => {})
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -211,12 +222,34 @@ export default function RecipePage() {
       </Card>
 
 
+      {/* Would you cook it again? Feeds Recipe Autopilot */}
+      <div id="cook-again" className="rounded-3xl p-5 flex flex-col gap-3 transition-shadow" style={{ background: '#fff', boxShadow: askVote ? `0 0 0 2px ${T.cyan}` : '0 0 0 1px rgba(15,23,42,0.04)' }}>
+        <p className="m-0 text-base font-bold">{vote === null ? 'Cooked it? Would you cook it again?' : vote ? 'Glad you liked it.' : 'Thanks — Coach Mohit will make it better.'}</p>
+        <div className="grid grid-cols-2 gap-2">
+          {([[true, 'Yes, again'], [false, 'Not really']] as const).map(([v, l]) => (
+            <button key={l} onClick={() => sendVote(v)} aria-pressed={vote === v}
+              className="min-h-12 rounded-2xl text-[15px] font-semibold inline-flex items-center justify-center gap-2 transition-colors"
+              style={vote === v ? { background: T.navy, color: '#fff' } : { background: '#F2F4F7', color: T.ink }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={v ? undefined : { transform: 'rotate(180deg)' }}><path d="M7 10v12M15 5.88L14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" /></svg>
+              {l}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {cooking && (
         <CookMode
           title={title}
           steps={steps}
           ingredients={[...pot, ...extras.map((x) => ({ name: x.name, amount: x.amount }))]}
           onClose={() => setCooking(false)}
+          onFinish={() => {
+            setCooking(false)
+            if (vote === null) {
+              setAskVote(true)
+              setTimeout(() => document.getElementById('cook-again')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 350)
+            }
+          }}
         />
       )}
       {sharing && (

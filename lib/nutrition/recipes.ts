@@ -61,10 +61,21 @@ export interface Recipe {
   swaps: RecipeSwap[]
   dish_food: string | null
   status: 'draft' | 'approved' | 'rejected'
+  source?: 'coach' | 'autopilot'
+  review?: RecipeReview | null
+  likes?: number
+  dislikes?: number
   ai_model?: string | null
   approved_at?: string | null
   created_at?: string
   updated_at?: string
+}
+
+// The AI reviewer's verdict on an Autopilot recipe
+export interface RecipeReview {
+  verdict: 'publish' | 'needs_coach'
+  reason: string
+  notes?: string[]
 }
 
 const ZERO: Nutrients = { kcal: 0, protein: 0, carbs: 0, fat: 0, fibre: 0 }

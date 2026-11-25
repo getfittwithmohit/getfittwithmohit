@@ -59,3 +59,38 @@ create policy recipes_coach_all on public.recipes
 drop policy if exists recipes_read_approved on public.recipes;
 create policy recipes_read_approved on public.recipes
   for select to authenticated using (status = 'approved');
+
+-- ── Recipe Autopilot ────────────────────────────────────────────────────────
+-- source:  'coach' (made in the editor) or 'autopilot'
+-- review:  the AI reviewer's verdict { "verdict": "publish"|"needs_coach", "reason": "…", "notes": [...] }
+-- likes / dislikes: "Would you cook this again?" from clients
+alter table public.recipes add column if not exists source   text not null default 'coach';
+alter table public.recipes add column if not exists review   jsonb;
+alter table public.recipes add column if not exists likes    integer not null default 0;
+alter table public.recipes add column if not exists dislikes integer not null default 0;
+
+-- One vote per client per recipe (written by the server only)
+create table if not exists public.recipe_feedback (
+  recipe_id  uuid not null references public.recipes(id) on delete cascade,
+  client_id  uuid not null references public.clients(id) on delete cascade,
+  liked      boolean not null,
+  created_at timestamptz not null default now(),
+  primary key (recipe_id, client_id)
+);
+alter table public.recipe_feedback enable row level security;
+drop policy if exists recipe_feedback_coach_read on public.recipe_feedback;
+create policy recipe_feedback_coach_read on public.recipe_feedback
+  for select to authenticated using (public.gfm_is_coach());
+
+-- Autopilot switch and last run (a single row)
+create table if not exists public.recipe_settings (
+  id           integer primary key default 1 check (id = 1),
+  autopilot    boolean not null default true,
+  last_run_at  timestamptz,
+  last_summary jsonb
+);
+insert into public.recipe_settings (id) values (1) on conflict (id) do nothing;
+alter table public.recipe_settings enable row level security;
+drop policy if exists recipe_settings_coach_all on public.recipe_settings;
+create policy recipe_settings_coach_all on public.recipe_settings
+  for all to authenticated using (public.gfm_is_coach()) with check (public.gfm_is_coach());
