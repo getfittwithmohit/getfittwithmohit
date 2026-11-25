@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase/client'
 import { getCurrentClient } from '@/lib/supabase/queries/auth'
 import { todayIST } from '@/lib/utils/istDate'
 import { go } from '@/lib/ui/navigate'
+import { Screen, T } from '@/components/ui/ios'
 
 const AUDIO_URL = process.env.NEXT_PUBLIC_STRANGEST_SECRET_URL || ''
 
@@ -261,323 +262,194 @@ export default function RitualPage() {
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
   const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()]
 
+  const primary = 'w-full min-h-[50px] rounded-2xl text-base font-semibold disabled:opacity-40 flex items-center justify-center gap-2'
+  const secondary = 'min-h-[50px] px-5 rounded-2xl text-base font-medium border'
+  const primaryStyle = { background: T.navy, color: T.cyan }
+  const secondaryStyle = { borderColor: T.line, color: T.sec, background: '#fff' }
+
   // Already done or just finished
   if (alreadyDone || finished) {
     const streak = streakData?.current_streak || 1
     const longest = streakData?.longest_streak || 1
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-6">
-        <div className="max-w-sm w-full text-center">
-          <div className="mb-6 flex justify-center text-[#F59E0B]"><Icon name="flame" size={64} strokeWidth={1.6} /></div>
-          <h1 className="text-4xl font-bold text-white mb-1">{streak}</h1>
-          <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-1">
-            {streak === 1 ? 'day streak' : 'days strong'}
+      <Screen>
+        <div className="min-h-[80vh] flex flex-col items-center justify-center text-center gap-2 px-4">
+          <div className="gfm-pop w-24 h-24 rounded-full flex items-center justify-center mb-2" style={{ background: '#FEF3C7', color: '#F59E0B' }}>
+            <Icon name="flame" size={52} strokeWidth={1.8} />
+          </div>
+          <p className="m-0 text-6xl font-extrabold tracking-tight">{streak}</p>
+          <p className="m-0 text-sm font-bold tracking-[0.12em] uppercase" style={{ color: T.teal }}>{streak === 1 ? 'day streak' : 'days strong'}</p>
+          {longest > streak && <p className="m-0 text-[15px]" style={{ color: T.ter }}>Personal best: {longest} days</p>}
+          <p className="m-0 mt-4 text-[17px] leading-relaxed max-w-xs" style={{ color: T.sec }}>
+            {alreadyDone ? 'Already done today. Come back tomorrow and keep the fire burning.' : 'Ritual complete. You showed up. That is everything.'}
           </p>
-          {longest > streak && (
-            <p className="text-white/60 text-sm mb-8">Personal best: {longest} days</p>
-          )}
-          {!alreadyDone && (
-            <p className="text-white/50 text-sm leading-relaxed mb-2">
-              Ritual complete. You showed up. That is everything.
-            </p>
-          )}
-          {alreadyDone && (
-            <p className="text-white/50 text-sm leading-relaxed mb-2">
-              Already done today. Come back tomorrow and keep the fire burning.
-            </p>
-          )}
-          <p className="text-white/60 text-sm mb-10">Keep showing up. Every day compounds.</p>
-          <button
-            onClick={() => go('/home')}
-            className="w-full bg-[#00D4E8] text-[#0a0a0f] min-h-[54px] rounded-2xl text-[17px] font-bold"
-          >
-            Back to Today
-          </button>
+          <p className="m-0 text-[15px]" style={{ color: T.ter }}>Keep showing up. Every day compounds.</p>
+          <button onClick={() => go('/home')} className={`${primary} mt-8 max-w-sm`} style={primaryStyle}>Back to Today</button>
         </div>
-      </div>
+      </Screen>
     )
   }
 
-
   const ITEMS = [
-    { id: 'secret', icon: 'headphones' as IconName, label: 'The Strangest Secret', sub: 'Listen · Earl Nightingale · ~30 mins' },
+    { id: 'secret', icon: 'headphones' as IconName, label: 'The Strangest Secret', sub: 'Listen · Earl Nightingale · ~30 min' },
     { id: 'goals', icon: 'target' as IconName, label: 'Goal Card', sub: 'Read your quarterly goals out loud' },
-    { id: 'affirmations', icon: 'mic' as IconName, label: 'Affirmations', sub: 'Listen to your voice · Your identity' },
-    { id: 'write', icon: 'pen' as IconName, label: '20 Goals', sub: 'Write fresh · 10 per page · Present tense' },
+    { id: 'affirmations', icon: 'mic' as IconName, label: 'Affirmations', sub: 'Your voice, your identity' },
+    { id: 'write', icon: 'pen' as IconName, label: '20 Goals', sub: 'Write fresh · present tense' },
   ]
-  const allDone = ITEMS.every((it) => completedSteps.includes(it.id))
+  const doneCount = completedSteps.filter((id) => ITEMS.some((it) => it.id === id)).length
+  const allDone = doneCount === ITEMS.length
+  const remaining = ITEMS.length - doneCount
+  const pct = doneCount / ITEMS.length
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
+    <Screen>
       <audio ref={audioRef} src={AUDIO_URL} preload="metadata" />
       {affirmationUrl && <audio ref={affAudioRef} src={affirmationUrl} />}
 
-      {/* Header */}
-      <div className="px-6 pt-8 pb-6 max-w-lg mx-auto">
-        <button
-          onClick={() => go('/home')}
-          className="text-white/60 text-[15px] min-h-11 mb-3 flex items-center gap-1 hover:text-white transition-colors"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
-          Today
-        </button>
-        <p className="text-[#00D4E8] text-xs font-medium tracking-widest uppercase mb-1">
-          {dayName} · Daily Ritual
-        </p>
-        <h1 className="text-white text-[28px] leading-tight font-bold mb-1">
-          {greeting}, {firstName}.
-        </h1>
-        <p className="text-white/60 text-base">
-          {completedSteps.length === 0
-            ? 'The world is quiet. This time is yours.'
-            : completedSteps.length < 5
-              ? `${completedSteps.filter((id) => ITEMS.some((it) => it.id === id)).length} of ${ITEMS.length} complete · Keep going.`
-              : 'All done. Complete your ritual below.'}
-        </p>
+      <button onClick={() => go('/home')} className="self-start text-[17px] min-h-11 flex items-center gap-0.5 -ml-1" style={{ color: T.teal }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+        Today
+      </button>
 
-        {/* Streak badge */}
-        {streakData?.current_streak > 0 && (
-          <div className="flex items-center gap-2 mt-4">
-            <span className="text-[#F59E0B]"><Icon name="flame" size={18} /></span>
-            <span className="text-white/70 text-sm">{streakData.current_streak} day streak</span>
-          </div>
-        )}
+      {/* Hero */}
+      <div className="rounded-3xl p-5 flex items-center gap-4" style={{ background: T.navy }}>
+        <div className="relative w-16 h-16 flex-shrink-0">
+          <svg viewBox="0 0 36 36" className="w-16 h-16 -rotate-90" aria-hidden="true">
+            <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="3" />
+            <circle cx="18" cy="18" r="15.5" fill="none" stroke={T.cyan} strokeWidth="3" strokeLinecap="round"
+              strokeDasharray={`${pct * 97.4} 97.4`} style={{ transition: 'stroke-dasharray 0.5s ease' }} />
+          </svg>
+          <span className="absolute inset-0 flex items-center justify-center text-white text-base font-bold">{doneCount}/{ITEMS.length}</span>
+        </div>
+        <div className="min-w-0">
+          <p className="m-0 text-xs font-bold tracking-[0.12em] uppercase" style={{ color: T.cyan }}>{dayName} · Morning ritual</p>
+          <p className="m-0 mt-0.5 text-white text-[22px] leading-tight font-bold">{greeting}, {firstName}.</p>
+          <p className="m-0 mt-1 text-[15px] text-white/70">
+            {doneCount === 0 ? 'The world is quiet. This time is yours.' : allDone ? 'All done. Seal it below.' : `${remaining} to go · keep going.`}
+          </p>
+          {streakData?.current_streak > 0 && (
+            <p className="m-0 mt-1.5 text-sm text-white/70 flex items-center gap-1.5"><span style={{ color: '#F59E0B' }}><Icon name="flame" size={16} /></span>{streakData.current_streak} day streak</p>
+          )}
+        </div>
       </div>
 
-      {/* Ritual list */}
-      <div className="px-4 pb-6 max-w-lg mx-auto space-y-2">
-
+      {/* Steps */}
+      <div className="flex flex-col gap-2.5">
         {ITEMS.map((item) => {
           const done = completedSteps.includes(item.id)
           const open = expanded === item.id
-
           return (
-            <div
-              key={item.id}
-              className="rounded-2xl border transition-all duration-300 overflow-hidden"
-              style={{
-                borderColor: done
-                  ? 'rgba(0,212,232,0.3)'
-                  : open
-                    ? 'rgba(255,255,255,0.15)'
-                    : 'rgba(255,255,255,0.07)',
-                background: done
-                  ? 'rgba(0,212,232,0.05)'
-                  : open
-                    ? 'rgba(255,255,255,0.05)'
-                    : 'rgba(255,255,255,0.02)',
-              }}
-            >
-              {/* Row */}
-              <button
-                onClick={() => setExpanded(open ? null : item.id)}
-                className="w-full flex items-center gap-4 px-5 py-4 text-left"
-              >
-                <span className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${done ? 'bg-[#00D4E8]/15 text-[#00D4E8]' : 'bg-white/[0.06] text-white/80'}`}><Icon name={item.icon} size={20} /></span>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-base font-semibold ${done ? 'text-[#00D4E8]' : 'text-white'}`}>
-                    {item.label}
-                  </p>
-                  <p className="text-sm text-white/60 mt-0.5 truncate">{item.sub}</p>
-                </div>
+            <div key={item.id} className="bg-white rounded-2xl overflow-hidden transition-shadow" style={{ boxShadow: open ? '0 4px 20px rgba(15,23,42,0.08)' : 'none' }}>
+              <button onClick={() => setExpanded(open ? null : item.id)} className="w-full flex items-center gap-3.5 px-4 py-3.5 text-left min-h-[68px]" aria-expanded={open}>
+                <span className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={done ? { background: '#DCFCE7', color: '#15803D' } : { background: '#E6F7F9', color: T.teal }}>
+                  <Icon name={item.icon} size={22} />
+                </span>
+                <span className="flex-1 min-w-0">
+                  <span className="block text-[17px] font-semibold" style={{ color: done ? '#15803D' : T.ink }}>{item.label}</span>
+                  <span className="block text-sm truncate" style={{ color: T.ter }}>{item.sub}</span>
+                </span>
                 {done ? (
-                  <div className="w-6 h-6 rounded-full bg-[#00D4E8] flex items-center justify-center flex-shrink-0">
-                    <svg viewBox="0 0 12 12" width="12" height="12" fill="none">
-                      <path d="M2 6l3 3 5-5" stroke="#0a0a0f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
+                  <span className="gfm-pop w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#16A34A' }}>
+                    <svg viewBox="0 0 12 12" width="13" height="13" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </span>
                 ) : (
-                  <div
-                    className="w-5 h-5 flex-shrink-0 transition-transform duration-200"
-                    style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
-                  >
-                    <svg viewBox="0 0 20 20" width="20" height="20" fill="none">
-                      <path d="M5 8l5 5 5-5" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
+                  <span className="flex-shrink-0 transition-transform duration-200" style={{ color: '#94a3b8', transform: open ? 'rotate(180deg)' : 'none' }}>
+                    <svg viewBox="0 0 20 20" width="20" height="20" fill="none"><path d="M5 8l5 5 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </span>
                 )}
               </button>
 
-              {/* Expanded content */}
               {open && (
-                <div className="px-5 pb-5 border-t border-white/5 pt-4">
+                <div className="gfm-page px-4 pb-4 pt-3 border-t" style={{ borderColor: T.line }}>
 
                   {/* ── STRANGEST SECRET ── */}
                   {item.id === 'secret' && (
-                    <div>
-                      <p className="text-white/65 text-sm leading-relaxed mb-5">
-                        Listen with your eyes closed. Let every word land before the day begins.
-                      </p>
-
-                      <div className="bg-white/5 rounded-2xl p-5 mb-4">
-                        {/* Waveform */}
-                        <div className="flex items-center justify-center gap-0.5 h-8 mb-4">
+                    <div className="flex flex-col gap-4">
+                      <p className="m-0 text-[15px] leading-relaxed" style={{ color: T.sec }}>Listen with your eyes closed. Let every word land before the day begins.</p>
+                      <div className="rounded-2xl p-5" style={{ background: T.navy }}>
+                        <div className="flex items-center justify-center gap-[3px] h-9 mb-4" aria-hidden="true">
                           {Array.from({ length: 32 }).map((_, i) => (
-                            <div
-                              key={i}
-                              className="w-1 rounded-full"
-                              style={{
-                                height: isPlaying ? `${8 + (i % 7) * 4}px` : '4px',
-                                background: isPlaying ? '#00D4E8' : 'rgba(255,255,255,0.15)',
-                                transition: 'height 0.3s ease',
-                                animationDelay: `${i * 50}ms`,
-                              }}
-                            />
+                            <div key={i} className="w-1 rounded-full" style={{ height: isPlaying ? `${8 + ((i * 7) % 11) * 2.4}px` : '4px', background: isPlaying ? T.cyan : 'rgba(255,255,255,0.18)', transition: 'height 0.3s ease' }} />
                           ))}
                         </div>
-
-                        {/* Progress */}
                         <div className="flex justify-between text-sm text-white/60 mb-2">
                           <span>{formatTime(audioTime)}</span>
                           <span>{audioDuration ? formatTime(audioDuration) : '30:00'}</span>
                         </div>
-                        <div className="w-full h-0.5 bg-white/10 rounded-full mb-4 overflow-hidden">
-                          <div
-                            className="h-full bg-[#00D4E8] rounded-full transition-all duration-1000"
-                            style={{ width: `${audioDuration ? (audioTime / audioDuration) * 100 : 0}%` }}
-                          />
+                        <div className="w-full h-1 bg-white/10 rounded-full mb-5 overflow-hidden">
+                          <div className="h-full rounded-full transition-all duration-1000" style={{ background: T.cyan, width: `${audioDuration ? (audioTime / audioDuration) * 100 : 0}%` }} />
                         </div>
-
-                        {/* Controls */}
-                        <div className="flex items-center justify-center gap-4">
-                          <button
-                            onClick={() => { if (audioRef.current) audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 30) }}
-                            className="text-white/60 text-sm hover:text-white/60 transition-colors"
-                          >
-                            -30s
+                        <div className="flex items-center justify-center gap-6">
+                          <button onClick={() => { if (audioRef.current) audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime - 30) }} className="text-white/70 text-[15px] min-h-11 min-w-11">−30s</button>
+                          <button onClick={toggleAudio} aria-label={isPlaying ? 'Pause' : 'Play'} className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: T.cyan }}>
+                            {isPlaying
+                              ? <svg viewBox="0 0 24 24" width="22" height="22" fill={T.navy}><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+                              : <svg viewBox="0 0 24 24" width="22" height="22" fill={T.navy}><polygon points="8,5 19,12 8,19" /></svg>}
                           </button>
-                          <button
-                            onClick={toggleAudio}
-                            className="w-14 h-14 rounded-full bg-[#00D4E8] flex items-center justify-center transition-transform active:scale-95"
-                          >
-                            {isPlaying ? (
-                              <svg viewBox="0 0 24 24" width="20" height="20" fill="#0a0a0f">
-                                <rect x="6" y="5" width="4" height="14" rx="1" />
-                                <rect x="14" y="5" width="4" height="14" rx="1" />
-                              </svg>
-                            ) : (
-                              <svg viewBox="0 0 24 24" width="20" height="20" fill="#0a0a0f">
-                                <polygon points="8,5 19,12 8,19" />
-                              </svg>
-                            )}
-                          </button>
-                          <button
-                            onClick={() => { if (audioRef.current) audioRef.current.currentTime = Math.min(audioDuration, audioRef.current.currentTime + 30) }}
-                            className="text-white/60 text-sm hover:text-white/60 transition-colors"
-                          >
-                            +30s
-                          </button>
+                          <button onClick={() => { if (audioRef.current) audioRef.current.currentTime = Math.min(audioDuration, audioRef.current.currentTime + 30) }} className="text-white/70 text-[15px] min-h-11 min-w-11">+30s</button>
                         </div>
                       </div>
-
-                      <p className="text-white/60 text-sm text-center mb-4">
+                      <p className="m-0 text-sm text-center" style={{ color: listenedEnough ? '#15803D' : T.ter }}>
                         {listenedEnough ? '✓ Ready to mark complete' : 'Listen for at least 5 minutes to mark complete'}
                       </p>
-
                       <div className="flex gap-2">
-                        <button
-                          onClick={() => markDone('secret')}
-                          disabled={!listenedEnough}
-                          className="flex-1 py-3 rounded-xl text-sm font-medium transition-all disabled:opacity-25"
-                          style={{ background: '#00D4E8', color: '#0a0a0f' }}
-                        >
-                          Mark complete ✓
-                        </button>
-                        <button
-                          onClick={() => markDone('secret')}
-                          className="px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white/50 transition-colors border border-white/10"
-                        >
-                          Skip
-                        </button>
+                        <button onClick={() => markDone('secret')} disabled={!listenedEnough} className={primary} style={primaryStyle}>Mark complete</button>
+                        <button onClick={() => markDone('secret')} className={secondary} style={secondaryStyle}>Skip</button>
                       </div>
                     </div>
                   )}
 
                   {/* ── GOAL CARD ── */}
                   {item.id === 'goals' && (
-                    <div>
-                      <p className="text-white/65 text-sm leading-relaxed mb-4">
-                        Read these out loud. Slowly. With full conviction they are already done.
-                      </p>
-
+                    <div className="flex flex-col gap-3">
+                      <p className="m-0 text-[15px] leading-relaxed" style={{ color: T.sec }}>Read these out loud. Slowly. With full conviction they are already done.</p>
                       {goalCard ? (
-                        <div className="space-y-3 mb-4">
-                          {[
-                            { label: 'Goal One', text: goalCard.goal1_text, deadline: goalCard.goal1_deadline },
-                            { label: 'Goal Two', text: goalCard.goal2_text, deadline: goalCard.goal2_deadline },
-                          ].map((g, i) => (
-                            <div key={i} className="bg-white/5 rounded-xl p-4">
-                              <p className="text-[#00D4E8] text-xs tracking-widest uppercase mb-2">{g.label}</p>
-                              <p className="text-white text-sm leading-relaxed">{g.text}</p>
-                              {g.deadline && <p className="text-white/60 text-sm mt-2">By: {g.deadline}</p>}
-                            </div>
-                          ))}
-                        </div>
+                        [
+                          { label: 'Goal one', text: goalCard.goal1_text, deadline: goalCard.goal1_deadline },
+                          { label: 'Goal two', text: goalCard.goal2_text, deadline: goalCard.goal2_deadline },
+                        ].map((g, i) => (
+                          <div key={i} className="rounded-2xl p-4" style={{ background: '#F8FAFC', border: `1px solid ${T.line}` }}>
+                            <p className="m-0 mb-1.5 text-xs font-bold tracking-[0.1em] uppercase" style={{ color: T.teal }}>{g.label}</p>
+                            <p className="m-0 text-[17px] leading-relaxed font-medium">{g.text}</p>
+                            {g.deadline && <p className="m-0 mt-2 text-sm" style={{ color: T.ter }}>By {g.deadline}</p>}
+                          </div>
+                        ))
                       ) : (
-                        <div className="bg-white/5 rounded-xl p-4 text-center mb-4">
-                          <p className="text-white/60 text-sm mb-3">No goal card yet.</p>
-                          <button
-                            onClick={() => go('/ritual/goal-card')}
-                            className="text-[#00D4E8] text-sm underline underline-offset-2"
-                          >
-                            Set up my goal card →
-                          </button>
+                        <div className="rounded-2xl p-5 text-center" style={{ background: '#F8FAFC', border: `1px dashed ${T.line}` }}>
+                          <p className="m-0 mb-2 text-[15px]" style={{ color: T.sec }}>No goal card yet.</p>
+                          <button onClick={() => go('/ritual/goal-card')} className="text-[15px] font-semibold" style={{ color: T.teal }}>Set up my goal card →</button>
                         </div>
                       )}
-
                       <div className="flex gap-2">
-                        <button
-                          onClick={() => markDone('goals')}
-                          className="flex-1 py-3 rounded-xl text-sm font-medium"
-                          style={{ background: '#00D4E8', color: '#0a0a0f' }}
-                        >
-                          I've read it ✓
-                        </button>
-                        <button
-                          onClick={() => go('/ritual/goal-card')}
-                          className="px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white/50 border border-white/10 transition-colors"
-                        >
-                          Edit
-                        </button>
+                        <button onClick={() => markDone('goals')} className={primary} style={primaryStyle}>I’ve read it</button>
+                        <button onClick={() => go('/ritual/goal-card')} className={secondary} style={secondaryStyle}>Edit</button>
                       </div>
                     </div>
                   )}
 
                   {/* ── AFFIRMATIONS ── */}
                   {item.id === 'affirmations' && (
-                    <div>
-                      <p className="text-white/65 text-sm leading-relaxed mb-4">
-                        Your own voice is the most powerful signal your mind receives. Hear yourself say who you are becoming.
-                      </p>
+                    <div className="flex flex-col gap-3">
+                      <p className="m-0 text-[15px] leading-relaxed" style={{ color: T.sec }}>Your own voice is the most powerful signal your mind receives. Hear yourself say who you are becoming.</p>
 
                       {!affirmationText && !generatingAff && (
-                        <button
-                          onClick={generateAffirmations}
-                          className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-sm text-white/50 hover:border-[#00D4E8]/40 transition-colors mb-3"
-                        >
-                          Generate my affirmations →
-                        </button>
+                        <button onClick={generateAffirmations} className="w-full min-h-[50px] rounded-2xl text-[15px] font-semibold" style={{ background: '#E6F7F9', color: T.teal }}>Write my affirmations →</button>
                       )}
-
                       {generatingAff && (
-                        <div className="flex items-center gap-3 py-3 mb-3">
-                          <div className="w-4 h-4 border border-white/20 border-t-[#00D4E8] rounded-full animate-spin flex-shrink-0" />
-                          <p className="text-white/60 text-sm">Generating your affirmations...</p>
+                        <div className="flex items-center gap-3 py-2">
+                          <div className="w-5 h-5 border-2 rounded-full animate-spin flex-shrink-0" style={{ borderColor: T.line, borderTopColor: T.teal }} />
+                          <p className="m-0 text-[15px]" style={{ color: T.sec }}>Writing your affirmations…</p>
                         </div>
                       )}
 
                       {affirmationText && (
                         <>
-                          {/* Affirmation preview */}
-                          <div className="bg-white/5 rounded-xl p-4 max-h-32 overflow-y-auto mb-3">
-                            <p className="text-white/65 text-sm leading-relaxed whitespace-pre-line">
-                              {affirmationText.split('\n').slice(0, 10).join('\n')}...
-                            </p>
+                          <div className="rounded-2xl p-4 max-h-40 overflow-y-auto" style={{ background: '#F8FAFC', border: `1px solid ${T.line}` }}>
+                            <p className="m-0 text-[15px] leading-relaxed whitespace-pre-line" style={{ color: T.sec }}>{affirmationText.split('\n').slice(0, 10).join('\n')}…</p>
                           </div>
 
-                          {/* Player */}
                           {affirmationUrl && (
-                            <div className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-3 mb-3">
+                            <div className="flex items-center gap-3 rounded-2xl px-4 py-3" style={{ background: T.navy }}>
                               <button
                                 onClick={() => {
                                   const audio = affAudioRef.current
@@ -585,138 +457,85 @@ export default function RitualPage() {
                                   if (affPlaying) { audio.pause(); setAffPlaying(false) }
                                   else { audio.play(); setAffPlaying(true); audio.onended = () => setAffPlaying(false) }
                                 }}
-                                className="w-10 h-10 rounded-full bg-[#00D4E8] flex items-center justify-center flex-shrink-0"
+                                aria-label={affPlaying ? 'Pause' : 'Play'}
+                                className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: T.cyan }}
                               >
-                                {affPlaying ? (
-                                  <svg viewBox="0 0 24 24" width="16" height="16" fill="#0a0a0f">
-                                    <rect x="6" y="5" width="4" height="14" rx="1" />
-                                    <rect x="14" y="5" width="4" height="14" rx="1" />
-                                  </svg>
-                                ) : (
-                                  <svg viewBox="0 0 24 24" width="16" height="16" fill="#0a0a0f">
-                                    <polygon points="8,5 19,12 8,19" />
-                                  </svg>
-                                )}
+                                {affPlaying
+                                  ? <svg viewBox="0 0 24 24" width="16" height="16" fill={T.navy}><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+                                  : <svg viewBox="0 0 24 24" width="16" height="16" fill={T.navy}><polygon points="8,5 19,12 8,19" /></svg>}
                               </button>
                               <div>
-                                <p className="text-white/60 text-sm font-medium">Your affirmation recording</p>
-                                <p className="text-white/60 text-sm">{affPlaying ? 'Playing...' : 'Tap to listen'}</p>
+                                <p className="m-0 text-white text-[15px] font-semibold">Your affirmation recording</p>
+                                <p className="m-0 text-white/60 text-sm">{affPlaying ? 'Playing…' : 'Tap to listen'}</p>
                               </div>
                             </div>
                           )}
 
-                          {/* Record */}
                           {!recording && !uploadingRec && (
-                            <button
-                              onClick={startRecording}
-                              className="w-full bg-white/5 border border-white/10 py-3 rounded-xl text-sm text-white/65 hover:border-red-500/40 hover:text-red-400 transition-all flex items-center justify-center gap-2 mb-3"
-                            >
-                              <span className="w-2 h-2 rounded-full bg-red-500" />
+                            <button onClick={startRecording} className="w-full min-h-[50px] rounded-2xl text-[15px] font-medium flex items-center justify-center gap-2" style={{ background: '#fff', border: `1px solid ${T.line}`, color: T.ink }}>
+                              <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
                               {affirmationUrl ? 'Re-record' : 'Record my affirmations'}
                             </button>
                           )}
-
                           {recording && (
-                            <div className="bg-red-950/30 border border-red-500/20 rounded-xl p-4 mb-3 flex items-center justify-between">
+                            <div className="rounded-2xl p-4 flex items-center justify-between" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
                               <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                <span className="text-red-400 text-sm font-medium">{formatTime(recordingTime)}</span>
+                                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                                <span className="text-[15px] font-semibold text-red-600">Recording {formatTime(recordingTime)}</span>
                               </div>
-                              <button
-                                onClick={stopRecording}
-                                className="bg-red-500 text-white px-4 py-1.5 rounded-lg text-sm font-medium"
-                              >
-                                Stop
-                              </button>
+                              <button onClick={stopRecording} className="bg-red-500 text-white px-5 min-h-11 rounded-xl text-[15px] font-semibold">Stop</button>
                             </div>
                           )}
-
                           {uploadingRec && (
-                            <div className="flex items-center gap-2 py-2 mb-3">
-                              <div className="w-3 h-3 border border-white/20 border-t-[#00D4E8] rounded-full animate-spin" />
-                              <p className="text-white/60 text-sm">Saving recording...</p>
+                            <div className="flex items-center gap-2 py-2">
+                              <div className="w-4 h-4 border-2 rounded-full animate-spin" style={{ borderColor: T.line, borderTopColor: T.teal }} />
+                              <p className="m-0 text-[15px]" style={{ color: T.sec }}>Saving recording…</p>
                             </div>
                           )}
                         </>
                       )}
 
                       <div className="flex gap-2">
-                        <button
-                          onClick={() => markDone('affirmations')}
-                          className="flex-1 py-3 rounded-xl text-sm font-medium"
-                          style={{ background: '#00D4E8', color: '#0a0a0f' }}
-                        >
-                          {affirmationUrl ? "I've listened ✓" : 'Mark complete ✓'}
-                        </button>
-                        <button
-                          onClick={() => markDone('affirmations')}
-                          className="px-4 py-3 rounded-xl text-sm text-white/60 hover:text-white/50 border border-white/10 transition-colors"
-                        >
-                          Skip
-                        </button>
+                        <button onClick={() => markDone('affirmations')} className={primary} style={primaryStyle}>{affirmationUrl ? 'I’ve listened' : 'Mark complete'}</button>
+                        <button onClick={() => markDone('affirmations')} className={secondary} style={secondaryStyle}>Skip</button>
                       </div>
                     </div>
                   )}
 
                   {/* ── 20 GOALS ── */}
                   {item.id === 'write' && (
-                    <div>
-                      <p className="text-white/65 text-sm leading-relaxed mb-4">
-                        Do not look at yesterday's list. Write fresh. Present tense — as if already achieved.
-                      </p>
-
-                      {/* Page toggle */}
-                      <div className="flex bg-white/5 rounded-xl p-1 mb-4">
-                        {[1, 2].map(p => (
-                          <button
-                            key={p}
-                            onClick={() => setGoalsPage(p)}
-                            className="flex-1 py-2 rounded-lg text-sm font-medium transition-all"
-                            style={{
-                              background: goalsPage === p ? '#00D4E8' : 'transparent',
-                              color: goalsPage === p ? '#0a0a0f' : 'rgba(255,255,255,0.3)',
-                            }}
-                          >
-                            Page {p} (Goals {p === 1 ? '1–10' : '11–20'})
+                    <div className="flex flex-col gap-3">
+                      <p className="m-0 text-[15px] leading-relaxed" style={{ color: T.sec }}>Don’t look at yesterday’s list. Write fresh, in the present tense — as if already achieved.</p>
+                      <div className="grid grid-cols-2 gap-1 p-1 rounded-xl" style={{ background: '#EEF2F6' }} role="tablist">
+                        {[1, 2].map((pg) => (
+                          <button key={pg} role="tab" aria-selected={goalsPage === pg} onClick={() => setGoalsPage(pg)}
+                            className="py-2 rounded-lg text-sm font-semibold transition-all"
+                            style={goalsPage === pg ? { background: '#fff', color: T.ink, boxShadow: '0 1px 2px rgba(0,0,0,0.08)' } : { color: T.ter }}>
+                            Goals {pg === 1 ? '1–10' : '11–20'}
                           </button>
                         ))}
                       </div>
-
-                      <div className="space-y-2 mb-4">
+                      <div className="flex flex-col gap-2">
                         {Array.from({ length: 10 }).map((_, i) => {
                           const idx = goalsPage === 1 ? i : i + 10
                           return (
-                            <div key={idx} className="flex items-center gap-2">
-                              <span className="text-[#00D4E8] text-sm font-medium w-5 text-right flex-shrink-0">
-                                {idx + 1}.
-                              </span>
+                            <label key={idx} className="flex items-center gap-2.5">
+                              <span className="text-sm font-bold w-6 text-right flex-shrink-0" style={{ color: T.teal }}>{idx + 1}</span>
                               <input
                                 type="text"
                                 value={goals[idx]}
-                                onChange={e => {
-                                  const updated = [...goals]
-                                  updated[idx] = e.target.value
-                                  setGoals(updated)
-                                }}
-                                placeholder={`Goal ${idx + 1}...`}
-                                className="flex-1 bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-white text-sm placeholder:text-white/15 focus:outline-none focus:border-[#00D4E8]/30 transition-colors"
+                                onChange={(e) => { const u = [...goals]; u[idx] = e.target.value; setGoals(u) }}
+                                placeholder="I am…"
+                                className="flex-1 min-h-11 rounded-xl px-3.5 text-base focus:outline-none"
+                                style={{ background: '#F8FAFC', border: `1px solid ${T.line}` }}
                               />
-                            </div>
+                            </label>
                           )
                         })}
                       </div>
-
-                      <button
-                        onClick={saveGoals}
-                        disabled={savingGoals}
-                        className="w-full py-3 rounded-xl text-sm font-medium disabled:opacity-50"
-                        style={{ background: '#00D4E8', color: '#0a0a0f' }}
-                      >
-                        {savingGoals ? 'Saving...' : 'Save & complete ✓'}
-                      </button>
+                      <button onClick={saveGoals} disabled={savingGoals} className={primary} style={primaryStyle}>{savingGoals ? 'Saving…' : 'Save & complete'}</button>
                     </div>
                   )}
-
                 </div>
               )}
             </div>
@@ -724,33 +543,21 @@ export default function RitualPage() {
         })}
       </div>
 
-      {/* Complete ritual button */}
-      <div className="px-4 pb-10 max-w-lg mx-auto">
+      {/* Seal the ritual */}
+      <div className="mt-2 flex flex-col gap-2">
         {allDone ? (
-          <button
-            onClick={completeRitual}
-            disabled={finishing}
-            className="w-full min-h-[54px] rounded-2xl text-[17px] font-bold disabled:opacity-50 transition-all flex items-center justify-center gap-2"
-            style={{ background: '#00D4E8', color: '#0a0a0f' }}
-          >
-            {finishing ? 'Completing...' : <><Icon name="flame" size={18} />Complete my ritual</>}
+          <button onClick={completeRitual} disabled={finishing} className="w-full min-h-[56px] rounded-2xl text-[17px] font-bold flex items-center justify-center gap-2 disabled:opacity-50" style={{ background: T.cyan, color: T.navy }}>
+            {finishing ? 'Completing…' : <><Icon name="flame" size={20} />Complete my ritual</>}
           </button>
         ) : (
-          <div className="text-center">
-            <p className="text-white/60 text-sm mb-3">
-              {5 - completedSteps.length} item{5 - completedSteps.length !== 1 ? 's' : ''} remaining
-            </p>
-            <button
-              onClick={completeRitual}
-              disabled={finishing}
-              className="w-full min-h-[54px] rounded-2xl text-base font-medium text-white/70 border border-white/15 disabled:opacity-50"
-            >
-              {finishing ? 'Completing...' : 'Complete ritual anyway'}
+          <>
+            <p className="m-0 text-center text-sm" style={{ color: T.ter }}>{remaining} step{remaining !== 1 ? 's' : ''} remaining</p>
+            <button onClick={completeRitual} disabled={finishing} className="w-full min-h-[52px] rounded-2xl text-base font-medium disabled:opacity-50" style={{ background: '#fff', border: `1px solid ${T.line}`, color: T.sec }}>
+              {finishing ? 'Completing…' : 'Complete ritual anyway'}
             </button>
-          </div>
+          </>
         )}
       </div>
-
-    </div>
+    </Screen>
   )
 }
