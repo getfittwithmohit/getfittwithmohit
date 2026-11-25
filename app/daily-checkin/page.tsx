@@ -1,5 +1,6 @@
 'use client'
 
+import { celebrate } from '@/lib/ui/feel'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { useClient } from '@/hooks/useClient'
@@ -231,6 +232,7 @@ export default function DailyCheckinPage() {
       setXp(xpRows)
       setEditing(false)
       setJustSaved({ onTime: result.onTime, coachNotified: result.coachNotified })
+      celebrate()
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
       setError((err as Error).message)

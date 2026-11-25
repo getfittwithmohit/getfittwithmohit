@@ -1,5 +1,6 @@
 'use client'
 
+import { celebrate } from '@/lib/ui/feel'
 import { Icon, type IconName } from '@/components/ui/Icon'
 import { toast } from '@/lib/ui/feedback'
 import { useState, useEffect, useRef } from 'react'
@@ -251,6 +252,7 @@ export default function RitualPage() {
       const data = await res.json()
       setStreakData({ current_streak: data.streak, longest_streak: data.longest })
       setFinished(true)
+      celebrate()
     } catch (err) { console.error(err) }
     finally { setFinishing(false) }
   }

@@ -1,5 +1,6 @@
 'use client'
 
+import { celebrate } from '@/lib/ui/feel'
 import { toast } from '@/lib/ui/feedback'
 import { useEffect, useState } from 'react'
 import { useClient } from '@/hooks/useClient'
@@ -191,6 +192,7 @@ fetch('/api/checkin', {
 
     reset()
     setSubmitted(true)
+    celebrate()
   } catch (error: any) {
     console.error('Checkin error:', error)
     toast('Something went wrong. Please try again.')

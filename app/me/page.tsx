@@ -4,10 +4,9 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useClient } from '@/hooks/useClient'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
-import { PageLoader } from '@/components/ui/PageLoader'
 import { getCached, setCached } from '@/lib/ui/cache'
 import { Icon } from '@/components/ui/Icon'
-import { Badge, Card, Group, Row, Screen, SectionTitle, T } from '@/components/ui/ios'
+import { Badge, Card, Group, Row, Screen, SectionTitle, T, ScreenSkeleton } from '@/components/ui/ios'
 import { supabase } from '@/lib/supabase/client'
 import { signOut } from '@/lib/supabase/queries/auth'
 import { getLeaderboard } from '@/lib/supabase/queries/dailyCheckin'
@@ -60,7 +59,7 @@ export default function MePage() {
     return () => { cancelled = true }
   }, [checking, loading, client])
 
-  if (checking || loading) return <PageLoader />
+  if (checking || loading) return <ScreenSkeleton title="Me" blocks={[120, 88, 64, 64]} />
 
   const name = client?.full_name || 'You'
   const initials = name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()

@@ -1,5 +1,6 @@
 'use client'
 
+import { celebrate } from '@/lib/ui/feel'
 import Link from 'next/link'
 import { confirmDialog } from '@/lib/ui/feedback'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -300,6 +301,7 @@ export default function WorkoutPage() {
       setLog({ ...log, status: 'completed', completed_at: new Date().toISOString(), total_volume_kg: totalVolume(sets) })
       setPhase('summary')
       beep(1, 660)
+      celebrate()
     } catch (err) {
       setError((err as Error).message + ' — tap Finish again.')
     } finally {

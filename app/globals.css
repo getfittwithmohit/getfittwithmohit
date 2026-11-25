@@ -138,3 +138,26 @@ html {
 @media (prefers-reduced-motion: reduce) {
   .gfm-toast, .gfm-pop, .gfm-page { animation: none; }
 }
+
+/* ── Loading shimmer ── */
+@keyframes gfm-shimmer {
+  from { background-position: 150% 0; }
+  to   { background-position: -50% 0; }
+}
+.gfm-shimmer {
+  background: linear-gradient(100deg, #E8ECF1 30%, #F6F8FA 50%, #E8ECF1 70%);
+  background-size: 200% 100%;
+  animation: gfm-shimmer 1.3s ease-in-out infinite;
+}
+
+/* ── Tab switch: a short slide in the direction of travel. Ends on
+   transform:none so fixed bars and sheets behave normally afterwards. ── */
+@keyframes gfm-from-right { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes gfm-from-left  { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+.gfm-from-right { animation: gfm-from-right 0.24s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.gfm-from-left  { animation: gfm-from-left 0.24s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .gfm-shimmer { animation: none; }
+  .gfm-from-right, .gfm-from-left { animation: gfm-fade-in 0.18s ease-out; }
+}

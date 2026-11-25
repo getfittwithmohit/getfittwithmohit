@@ -4,13 +4,13 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useClient } from '@/hooks/useClient'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
-import { PageLoader } from '@/components/ui/PageLoader'
 import { Icon } from '@/components/ui/Icon'
-import { Badge, Card, Group, LargeTitle, Row, Screen, SectionTitle, Skeleton, T } from '@/components/ui/ios'
+import { Badge, Card, Group, LargeTitle, Row, Screen, SectionTitle, Skeleton, T, ScreenSkeleton } from '@/components/ui/ios'
 import { SaverSheet } from '@/components/today/SaverSheet'
 import { WeekFocus } from '@/components/today/WeekFocus'
 import { loadToday, type TodayData, type TodayStep } from '@/lib/today/loadToday'
 import { getCached, setCached } from '@/lib/ui/cache'
+import { PullToRefresh } from '@/components/ui/PullToRefresh'
 
 const DAILY_QUOTES = [
   'The pain of discipline is lighter than the weight of regret.',
@@ -37,6 +37,14 @@ export default function TodayPage() {
   const { client, loading } = useClient()
   const [data, setData] = useState<TodayData | null>(() => getCached<TodayData>('today') ?? null)
   const [saverOpen, setSaverOpen] = useState(false)
+  const [focusKey, setFocusKey] = useState(0)
+
+  const refresh = async () => {
+    if (!client) return
+    const d = await loadToday(client)
+    setData(setCached('today', d))
+    setFocusKey((k) => k + 1)
+  }
 
   useEffect(() => {
     if (checking || loading || !client) return
@@ -45,7 +53,7 @@ export default function TodayPage() {
     return () => { cancelled = true }
   }, [checking, loading, client])
 
-  if (checking || loading) return <PageLoader />
+  if (checking || loading) return <ScreenSkeleton title="Today" blocks={[88, 220, 64, 64]} />
 
   if (!client) {
     return (
@@ -74,6 +82,7 @@ export default function TodayPage() {
 
   return (
     <Screen>
+      <PullToRefresh onRefresh={refresh} />
       <LargeTitle eyebrow={date} title="Today" right={avatar} />
 
       {!data ? (
@@ -87,7 +96,7 @@ export default function TodayPage() {
         <TodayList data={data} greeting={`${greeting}, ${firstName}`} onSaver={() => setSaverOpen(true)} />
       )}
 
-      <WeekFocus />
+      <WeekFocus key={focusKey} />
 
       <SectionTitle>Thought for today</SectionTitle>
       <Card>

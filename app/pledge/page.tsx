@@ -1,5 +1,6 @@
 'use client'
 
+import { celebrate } from '@/lib/ui/feel'
 import { toast } from '@/lib/ui/feedback'
 import { useState, useEffect, useRef } from 'react'
 import { usePledgeStore } from '@/store/pledgeStore'
@@ -133,6 +134,7 @@ useEffect(() => {
       setSignedPledge({ full_name: data.full_name, signed_at: signedAt })
       reset()
       setSubmitted(true)
+      celebrate()
     } catch (error: any) {
       console.error('Pledge error:', error)
       toast('Something went wrong. Please try again.')
