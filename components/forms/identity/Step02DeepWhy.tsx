@@ -30,11 +30,11 @@ export function Step02DeepWhy({ onNext, onBack }: Props) {
       title="But why does that matter to you?"
       subtitle="Most people stop at the surface. Keep asking why — the real reason is usually 3–4 layers deeper."
     >
-      <div className="bg-gradient-to-br from-[#00D4E8]/5 to-[#4a7fd4]/5 border border-[#00D4E8]/15 rounded-xl p-4">
-        <p className="text-xs font-medium text-[#00D4E8] mb-1">
+      <div className="bg-[#E6F7F9] rounded-2xl p-4">
+        <p className="m-0 text-xs font-bold uppercase tracking-[0.12em] text-[#007A8A] mb-1.5">
           The 5 Whys — Simon Sinek
         </p>
-        <p className="text-sm text-[#64748b] leading-relaxed">
+        <p className="m-0 text-[15px] text-[#334155] leading-relaxed">
           "I want to lose weight." — But why? "To look better." — But why does that matter?
           Keep asking. The real reason is rarely about the body. It's about how you want
           to <strong className="text-[#0f172a]">feel</strong>, how you want to

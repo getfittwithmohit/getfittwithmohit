@@ -62,12 +62,12 @@ export function TestRenderer({
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#e2e8f0]">
+    <div className="bg-white rounded-3xl p-5 sm:p-6" style={{ boxShadow: '0 1px 2px rgba(15,23,42,0.04), 0 0 0 1px rgba(15,23,42,0.04)' }}>
 
       {/* Test header */}
       <div className="flex items-center gap-2 mb-4">
         <span
-          className="text-xs font-medium px-2.5 py-1 rounded-full"
+          className="text-xs font-semibold px-3 py-1 rounded-full"
           style={{
             background: `${paramColor}15`,
             color: paramColor,
@@ -75,25 +75,25 @@ export function TestRenderer({
         >
           {test.parameter}
         </span>
-        <span className="text-xs text-[#64748b]">
+        <span className="text-[13px] text-[#64748b]">
           Test {testNumber} of {totalTests}
         </span>
       </div>
 
-      <h3 className="text-lg font-medium text-[#0f172a] mb-4">
+      <h3 className="m-0 mb-4 text-[22px] leading-tight font-bold tracking-tight text-[#0f172a]">
         {test.name}
       </h3>
 
       {/* Instructions */}
-      <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4 mb-5">
-        <p className="text-xs font-medium text-[#0f172a] mb-2">
+      <div className="bg-[#F7F9FB] rounded-2xl p-4 mb-5">
+        <p className="m-0 mb-3 text-xs font-bold uppercase tracking-[0.12em] text-[#475569]">
           How to do it
         </p>
-        <ol className="space-y-1.5">
+        <ol className="m-0 p-0 list-none space-y-2.5">
           {test.instructions.map((instruction, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-[#64748b]">
+            <li key={i} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-[#334155]">
               <span
-                className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5"
+                className="w-6 h-6 rounded-full flex items-center justify-center text-[13px] font-bold flex-shrink-0 mt-0.5"
                 style={{ background: `${paramColor}15`, color: paramColor }}
               >
                 {i + 1}
@@ -103,8 +103,8 @@ export function TestRenderer({
           ))}
         </ol>
         {test.tip && (
-          <div className="mt-3 pt-3 border-t border-[#e2e8f0]">
-            <p className="text-xs text-[#64748b]">
+          <div className="mt-3 pt-3 border-t border-[#E5E7EB]">
+            <p className="m-0 text-sm leading-relaxed text-[#64748b]">
               <span className="font-medium text-[#0f172a]">Tip: </span>
               {test.tip}
             </p>
@@ -113,12 +113,12 @@ export function TestRenderer({
       </div>
 
       {/* Result fields */}
-      <div className="flex flex-col gap-3 mb-4">
+      <div className="flex flex-col gap-4 mb-5">
         {test.fields.map((field) => (
           <div key={field.label}>
-            <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+            <label className="text-[15px] font-semibold text-[#0f172a] mb-1.5 block">
               {field.label}
-              <span className="text-[#64748b] ml-1">({field.unit})</span>
+              <span className="text-[#64748b] ml-1 font-normal">({field.unit})</span>
             </label>
             <input
               ref={(el) => { fieldRefs.current[field.label] = el }}
@@ -127,15 +127,15 @@ export function TestRenderer({
               defaultValue={
                 existingResult?.fields[field.label] || ''
               }
-              className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#00D4E8] transition-colors"
+              className="w-full px-4 min-h-[50px] text-base rounded-xl text-[#0f172a] bg-[#F2F4F7] placeholder:text-[#94a3b8] border border-transparent focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
             />
           </div>
         ))}
       </div>
 
       {/* Effort level */}
-      <div className="mb-4">
-        <p className="text-xs font-medium text-[#64748b] mb-2">
+      <div className="mb-5">
+        <p className="m-0 text-[15px] font-semibold text-[#0f172a] mb-2.5">
           Effort level
         </p>
         <div className="flex gap-2">
@@ -145,11 +145,11 @@ export function TestRenderer({
               type="button"
               onClick={() => setEffort(level)}
               className={`
-                flex-1 py-2 px-3 rounded-lg text-xs font-medium border
+                flex-1 min-h-11 px-3 rounded-full text-[15px] font-medium border active:scale-[0.97]
                 transition-all duration-150
                 ${effort === level
                   ? effortColors[level]
-                  : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#94a3b8]'
+                  : 'bg-[#F2F4F7] text-[#0f172a] border-transparent hover:bg-[#E8ECF1]'
                 }
               `}
             >
@@ -161,7 +161,7 @@ export function TestRenderer({
 
       {/* Pain / discomfort */}
       <div className="mb-6">
-        <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+        <label className="text-[15px] font-semibold text-[#0f172a] mb-1.5 block">
           Pain or discomfort?
           <span className="text-[#64748b] ml-1 font-normal">(optional)</span>
         </label>
@@ -170,23 +170,23 @@ export function TestRenderer({
           defaultValue={existingResult?.pain || ''}
           placeholder="Note any pain, tightness or discomfort during this test..."
           rows={2}
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#00D4E8] resize-none transition-colors"
+          className="w-full px-4 py-3 text-base leading-relaxed rounded-xl text-[#0f172a] bg-[#F2F4F7] placeholder:text-[#94a3b8] border border-transparent focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 resize-none transition-colors"
         />
       </div>
 
       {/* Nav */}
-      <div className="flex justify-between pt-4 border-t border-[#e2e8f0]">
+      <div className="flex items-center gap-2.5 pt-2">
         <button
           onClick={onBack}
-          className="px-6 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#64748b] hover:bg-[#f8fafc] transition-colors"
+          className="min-h-[54px] px-5 rounded-2xl text-base font-medium bg-white text-[#475569] border border-[#E5E7EB] hover:bg-[#F8FAFC] transition-colors"
         >
-          {testNumber === 1 ? '← Change environment' : '← Back'}
+          {testNumber === 1 ? 'Change place' : 'Back'}
         </button>
         <button
           onClick={handleNext}
-          className="bg-[#00D4E8] text-[#1a1f3a] px-8 py-2.5 rounded-lg text-sm font-medium hover:bg-[#00BED1] transition-colors"
+          className="flex-1 min-h-[54px] px-5 rounded-2xl text-[17px] font-bold bg-[#00D4E8] text-[#1a1f3a] hover:bg-[#00C4D7] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {isLast ? 'View Results' : 'Next Test →'}
+          {isLast ? 'View results' : 'Next test →'}
         </button>
       </div>
     </div>

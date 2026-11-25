@@ -3,7 +3,8 @@
 import { toast } from '@/lib/ui/feedback'
 import { useState } from 'react'
 import { useIdentityStore } from '@/store/identityStore'
-import { ProgressBar } from '@/components/ui/ProgressBar'
+import { FormShell } from '@/components/layout/FormShell'
+import { NavButtons } from '@/components/ui/NavButtons'
 import { IdentityCard } from '@/components/identity/IdentityCard'
 import { SuccessScreen } from '@/components/layout/SuccessScreen'
 import { Step01SurfaceGoal } from '@/components/forms/identity/Step01SurfaceGoal'
@@ -16,10 +17,8 @@ import { Step07IdentityStatement } from '@/components/forms/identity/Step07Ident
 import { Step08Anchor } from '@/components/forms/identity/Step08Anchor'
 import { Step09Commitment } from '@/components/forms/identity/Step09Commitment'
 import { supabase } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/Button'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
-import { go } from '@/lib/ui/navigate'
 
 const TOTAL_STEPS = 9
 
@@ -118,56 +117,14 @@ await supabase.from('identity_cards').insert({
   const phaseInfo = PHASE_LABELS[currentStep]
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
-
-      {/* Header */}
-     <div className="bg-[#1a1f3a] px-6 py-5">
-  <div className="max-w-2xl mx-auto">
-    <button
-      onClick={() => go('/home')}
-      className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
+    <FormShell
+      eyebrow="Purpose & Identity"
+      title={showCard ? 'Who you are becoming' : 'A conversation with yourself'}
+      subtitle={showCard ? undefined : 'This is not a form. Take your time — your honest answers here become your anchor.'}
+      badge={showCard ? undefined : { text: `Phase: ${phaseInfo.phase}`, color: phaseInfo.color }}
+      progress={showCard ? undefined : { current: currentStep, total: TOTAL_STEPS, label: `Step ${currentStep} of ${TOTAL_STEPS}` }}
+      stepKey={showCard ? 'card' : currentStep}
     >
-      ← Home
-    </button>
-    <div className="flex flex-col items-center gap-3">
-      <img
-        src="/logo.png"
-        alt="GetFittWithMohit"
-        className="w-16 h-16 object-contain"
-      />
-      <h2 className="text-white text-xl font-medium">
-        Purpose & Identity
-      </h2>
-      <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed text-center">
-        This is not a form. This is a conversation with yourself.
-        Take your time — your honest answers here become your anchor.
-      </p>
-      {!showCard && (
-        <span
-          className="inline-block text-xs font-medium px-3 py-1 rounded-full"
-          style={{
-            background: `${phaseInfo.color}20`,
-            color: phaseInfo.color,
-            border: `1px solid ${phaseInfo.color}40`,
-          }}
-        >
-          Phase: {phaseInfo.phase}
-        </span>
-      )}
-    </div>
-  </div>
-</div>
-
-      {/* Progress */}
-      {!showCard && (
-        <div className="max-w-2xl mx-auto px-4 mt-6">
-          <ProgressBar current={currentStep} total={TOTAL_STEPS} />
-        </div>
-      )}
-
-      {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 mt-6 pb-16">
-
         {/* Steps */}
         {!showCard && (
           <>
@@ -185,16 +142,10 @@ await supabase.from('identity_cards').insert({
 
         {/* Identity Card view */}
         {showCard && (
-          <div className="flex flex-col gap-4">
-            <div className="text-center mb-2">
-              <h3 className="text-lg font-medium text-[#0f172a] mb-1">
-                Here is who you are becoming.
-              </h3>
-              <p className="text-sm text-[#64748b]">
-                Coach Mohit will keep this card and return to it every time
-                you need a reminder of why you started.
-              </p>
-            </div>
+          <>
+            <p className="m-0 px-1 text-[15px] leading-relaxed text-[#64748b]">
+              Coach Mohit will keep this card and return to it every time you need a reminder of why you started.
+            </p>
 
             <IdentityCard
               data={data}
@@ -204,26 +155,9 @@ await supabase.from('identity_cards').insert({
               onCoachNotesChange={setCoachNotes}
             />
 
-            {/* Actions */}
-            <div className="flex justify-between mt-2">
-              <button
-                onClick={back}
-                className="px-6 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#64748b] hover:bg-[#f8fafc] transition-colors"
-              >
-                ← Back
-              </button>
-              <Button
-  variant="secondary"
-  onClick={handleSubmit}
-  loading={submitting}
->
-  Submit & Complete →
-</Button>
-            </div>
-          </div>
+            <NavButtons onBack={back} onNext={handleSubmit} loading={submitting} nextLabel="Submit & complete" />
+          </>
         )}
-
-      </div>
-    </div>
+    </FormShell>
   )
 }

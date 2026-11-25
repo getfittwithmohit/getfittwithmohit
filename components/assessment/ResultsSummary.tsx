@@ -6,7 +6,6 @@ import {
   Parameter,
   AssessmentTest,
 } from '@/lib/constants/assessment'
-import { Button } from '@/components/ui/Button'
 
 interface Props {
   results: TestResult[]
@@ -32,7 +31,7 @@ function ResultCard({ result, test }: ResultCardProps) {
   }
 
   return (
-    <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4">
+    <div className="bg-[#F7F9FB] rounded-2xl p-4">
       <div className="flex items-start justify-between mb-2">
         <div>
           <span
@@ -41,13 +40,13 @@ function ResultCard({ result, test }: ResultCardProps) {
           >
             {result.parameter}
           </span>
-          <p className="text-sm font-medium text-[#0f172a] mt-1">
+          <p className="m-0 text-base font-semibold text-[#0f172a] mt-1.5">
             {test.name}
           </p>
         </div>
         <div className="text-right">
           {mainField && (
-            <p className="text-lg font-medium" style={{ color }}>
+            <p className="m-0 text-[26px] leading-none font-extrabold tracking-tight mb-1" style={{ color }}>
               {mainField[1] || '–'}
             </p>
           )}
@@ -75,14 +74,12 @@ export function ResultsSummary({
   submitting,
 }: Props) {
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#e2e8f0]">
-      <span className="inline-block bg-[#1a1f3a] text-[#00D4E8] text-xs px-3 py-1 rounded-full mb-4 tracking-wide">
-        Assessment Complete
-      </span>
-      <h3 className="text-lg font-medium text-[#0f172a] mb-1">
+    <div className="bg-white rounded-3xl p-5 sm:p-6" style={{ boxShadow: '0 1px 2px rgba(15,23,42,0.04), 0 0 0 1px rgba(15,23,42,0.04)' }}>
+      <p className="m-0 mb-1.5 text-xs font-bold tracking-[0.12em] uppercase text-[#007A8A]">Assessment complete</p>
+      <h3 className="m-0 text-[22px] leading-tight font-bold tracking-tight text-[#0f172a]">
         Your Results
       </h3>
-      <p className="text-sm text-[#64748b] mb-6 leading-relaxed">
+      <p className="m-0 mt-1.5 mb-5 text-[15px] text-[#64748b] leading-relaxed">
         Great work completing your bi-weekly assessment. Coach Mohit
         will review these results and update your programme within 24 hours.
       </p>
@@ -100,32 +97,32 @@ export function ResultsSummary({
 
       {/* Coach notes */}
       <div className="mb-6">
-        <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-2">
+        <p className="m-0 text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-2">
           Coach Mohit's Notes
         </p>
         <textarea
           placeholder="Coach Mohit will add his observations after reviewing your results..."
           rows={3}
           readOnly
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#64748b] bg-[#f8fafc] resize-none"
+          className="w-full px-4 py-3 text-base rounded-xl text-[#64748b] bg-[#F2F4F7] border border-transparent resize-none"
         />
       </div>
 
       {/* Nav */}
-      <div className="flex justify-between pt-4 border-t border-[#e2e8f0]">
+      <div className="flex items-center gap-2.5 pt-2">
         <button
           onClick={onBack}
-          className="px-6 py-2.5 border border-[#e2e8f0] rounded-lg text-sm text-[#64748b] hover:bg-[#f8fafc] transition-colors"
+          className="min-h-[54px] px-5 rounded-2xl text-base font-medium bg-white text-[#475569] border border-[#E5E7EB] hover:bg-[#F8FAFC] transition-colors"
         >
-          ← Back
+          Back
         </button>
-        <Button
-  variant="secondary"
-  onClick={onSubmit}
-  loading={submitting}
->
-  Submit to Coach Mohit →
-</Button>
+        <button
+          onClick={onSubmit}
+          disabled={submitting}
+          className="flex-1 min-h-[54px] px-5 rounded-2xl text-[17px] font-bold bg-[#00D4E8] text-[#1a1f3a] hover:bg-[#00C4D7] transition-colors disabled:opacity-60"
+        >
+          {submitting ? 'Submitting…' : 'Submit to Coach Mohit'}
+        </button>
       </div>
     </div>
   )

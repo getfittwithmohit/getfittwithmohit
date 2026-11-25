@@ -15,7 +15,7 @@ import { TestResult } from '@/lib/types/forms'
 import { supabase } from '@/lib/supabase/client'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
-import { go } from '@/lib/ui/navigate'
+import { FormShell } from '@/components/layout/FormShell'
 
 type Screen = 'environment' | 'test' | 'results'
 
@@ -142,64 +142,14 @@ if (clientId) {
     )
   }
 
-  // Progress for test screen
-  const testProgress = tests.length > 0
-    ? Math.round((data.currentTestIndex / tests.length) * 100)
-    : 0
-
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
-
-      {/* Header */}
-      <div className="bg-[#1a1f3a] px-6 py-5">
-  <div className="max-w-2xl mx-auto">
-    <button
-      onClick={() => go('/home')}
-      className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
+    <FormShell
+      eyebrow="Bi-weekly assessment"
+      title={screen === 'results' ? 'Your results' : screen === 'test' && currentTest ? `${currentTest.parameter} test` : 'Where are you training?'}
+      subtitle={screen === 'environment' ? 'Self-administered · 20–30 minutes · every 2 weeks' : undefined}
+      progress={screen === 'test' ? { current: data.currentTestIndex + 1, total: tests.length, label: `Test ${data.currentTestIndex + 1} of ${tests.length}${protocol ? ` · ${protocol.label}` : ''}` } : undefined}
+      stepKey={screen === 'test' ? `t${data.currentTestIndex}` : screen}
     >
-      ← Home
-    </button>
-    <div className="flex flex-col items-center gap-3">
-      <img
-        src="/logo.png"
-        alt="GetFittWithMohit"
-        className="w-16 h-16 object-contain"
-      />
-      <h2 className="text-white text-xl font-medium">
-        Bi-Weekly Assessment
-      </h2>
-      <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed text-center">
-        Self-administered · Takes 20–30 minutes · Do this every 2 weeks
-      </p>
-    </div>
-  </div>
-</div>
-
-      {/* Progress bar — only during tests */}
-      {screen === 'test' && (
-        <div className="max-w-2xl mx-auto px-4 mt-6">
-          <div className="flex justify-between text-xs text-[#64748b] mb-2">
-            <span>
-              Test {data.currentTestIndex + 1} of {tests.length}
-              {protocol && ` · ${protocol.label}`}
-            </span>
-            <span>{testProgress}%</span>
-          </div>
-          <div className="w-full bg-[#e2e8f0] rounded-full h-1.5 overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${testProgress}%`,
-                background: 'linear-gradient(90deg, #00D4E8, #4a7fd4)',
-              }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 mt-6 pb-16">
-
         {screen === 'environment' && (
           <EnvironmentSelector
             selected={data.environment}
@@ -234,8 +184,6 @@ if (clientId) {
             submitting={submitting}
           />
         )}
-
-      </div>
-    </div>
+    </FormShell>
   )
 }

@@ -3,7 +3,7 @@
 import { toast } from '@/lib/ui/feedback'
 import { useState } from 'react'
 import { useMidJourneyStore } from '@/store/midJourneyStore'
-import { ProgressBar } from '@/components/ui/ProgressBar'
+import { FormShell } from '@/components/layout/FormShell'
 import { SuccessScreen } from '@/components/layout/SuccessScreen'
 import { CoachPanel } from '@/components/forms/midjourney/CoachPanel'
 import { StepTracker } from '@/components/forms/midjourney/StepTracker'
@@ -128,68 +128,46 @@ export default function MidJourneyPage() {
 }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
-
-      {/* Header */}
-      <div className="bg-[#1a1f3a] px-6 py-5">
-  <div className="max-w-2xl mx-auto">
-    <button
-      onClick={() => go('/home')}
-      className="text-white/40 hover:text-white/70 text-xs flex items-center gap-1 transition-colors mb-4"
+    <FormShell
+      eyebrow="Mid-journey onboarding"
+      title="Moving into the premium system"
+      subtitle="For existing clients transitioning into GFM 1:1."
+      badge={{ text: 'Transferred client · existing journey', color: '#C084FC' }}
+      progress={mode === 'client' ? { current: clientStep, total: TOTAL_CLIENT_STEPS, label: `Step ${clientStep} of ${TOTAL_CLIENT_STEPS}` } : undefined}
+      stepKey={mode === 'client' ? `c${clientStep}` : 'coach'}
     >
-      ← Home
-    </button>
-    <div className="flex flex-col items-center gap-3">
-      <img
-        src="/logo.png"
-        alt="GetFittWithMohit"
-        className="w-16 h-16 object-contain"
-      />
-      <h2 className="text-white text-xl font-medium">
-        Mid-Journey Onboarding
-      </h2>
-      <p className="text-white/60 text-sm max-w-md mx-auto leading-relaxed text-center">
-        For existing clients transitioning into the premium system.
-      </p>
-      <span className="inline-block text-xs font-medium px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-        Transferred Client · Existing Journey
-      </span>
-    </div>
-  </div>
-</div>
-
       {/* Mode toggle */}
-      <div className="max-w-2xl mx-auto px-4 mt-6">
-        <div className="flex bg-[#e2e8f0] rounded-xl p-1 gap-1">
+      <div>
+        <div className="flex bg-[#E4E8EE] rounded-xl p-1 gap-1">
           <button
             onClick={() => setMode('coach')}
             className={`
-              flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+              flex-1 min-h-11 rounded-lg text-[15px] font-semibold transition-all duration-150
               ${mode === 'coach'
-                ? 'bg-[#1a1f3a] text-[#00D4E8]'
+                ? 'bg-white text-[#0f172a] shadow-sm'
                 : 'text-[#64748b] hover:text-[#0f172a]'
               }
             `}
           >
-            🔒 Coach View — Pre-fill
+            Coach pre-fill
           </button>
           <button
             onClick={() => setMode('client')}
             className={`
-              flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+              flex-1 min-h-11 rounded-lg text-[15px] font-semibold transition-all duration-150
               ${mode === 'client'
-                ? 'bg-[#1a1f3a] text-[#00D4E8]'
+                ? 'bg-white text-[#0f172a] shadow-sm'
                 : 'text-[#64748b] hover:text-[#0f172a]'
               }
             `}
           >
-            👤 Client View — Complete
+            Client completes
           </button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 mt-6 pb-16">
+      <div>
 
         {/* Coach view */}
         {mode === 'coach' && (
@@ -205,13 +183,6 @@ export default function MidJourneyPage() {
               totalSteps={TOTAL_CLIENT_STEPS}
             />
 
-            {/* Progress */}
-            <div className="mb-6">
-              <ProgressBar
-                current={clientStep}
-                total={TOTAL_CLIENT_STEPS}
-              />
-            </div>
 
             {clientStep === 1 && (
               <ClientStep01 onNext={next} />
@@ -232,6 +203,6 @@ export default function MidJourneyPage() {
         )}
 
       </div>
-    </div>
+    </FormShell>
   )
 }
