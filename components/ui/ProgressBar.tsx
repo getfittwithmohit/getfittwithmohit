@@ -3,23 +3,23 @@ interface ProgressBarProps {
   total: number
 }
 
+// One segment per section: done segments are filled, the current one glows.
 export function ProgressBar({ current, total }: ProgressBarProps) {
-  const pct = Math.round((current / total) * 100)
-
   return (
     <div className="w-full">
-      <div className="flex justify-between text-sm text-[#64748b] mb-2">
+      <div className="flex justify-between text-[13px] font-semibold mb-2 text-[#64748b]">
         <span>Section {current} of {total}</span>
-        <span>{pct}%</span>
+        <span>{Math.round((current / total) * 100)}%</span>
       </div>
-      <div className="w-full bg-[#e2e8f0] rounded-full h-1.5 overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all duration-500 ease-out"
-          style={{
-            width: `${pct}%`,
-            background: 'linear-gradient(90deg, #00D4E8, #4a7fd4)',
-          }}
-        />
+      <div className="flex gap-1" role="progressbar" aria-valuemin={1} aria-valuemax={total} aria-valuenow={current}>
+        {Array.from({ length: total }, (_, i) => (
+          <div key={i} className="flex-1 h-1.5 rounded-full overflow-hidden bg-[#E2E8F0]">
+            <div
+              className="h-full rounded-full transition-all duration-500 ease-out"
+              style={{ width: i < current ? '100%' : '0%', background: i === current - 1 ? '#00D4E8' : '#1a1f3a' }}
+            />
+          </div>
+        ))}
       </div>
     </div>
   )

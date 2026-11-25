@@ -1,3 +1,5 @@
+import { LABEL, ERROR, REQUIRED, CHIP, CHIP_ON, CHIP_OFF } from './fieldStyles'
+
 interface RadioGroupProps {
   label?: string
   required?: boolean
@@ -16,35 +18,28 @@ export function RadioGroup({
   error,
 }: RadioGroupProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2.5">
       {label && (
-        <label className="text-sm font-medium text-[#475569]">
+        <label className={LABEL}>
           {label}
-          {required && <span className="text-[#00D4E8] ml-0.5">*</span>}
+          {required && <span className={REQUIRED}>*</span>}
         </label>
       )}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2" role="radiogroup">
         {options.map((opt) => (
           <button
             key={opt}
             type="button"
+            role="radio"
+            aria-checked={value === opt}
             onClick={() => onChange(opt)}
-            className={`
-              px-4 min-h-10 rounded-full text-sm border
-              transition-all duration-150
-              ${value === opt
-                ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#00D4E8]'
-                : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00D4E8]'
-              }
-            `}
+            className={`px-4 min-h-11 rounded-full text-[15px] font-medium ${CHIP} ${value === opt ? CHIP_ON : CHIP_OFF}`}
           >
             {opt}
           </button>
         ))}
       </div>
-      {error && (
-        <span className="text-sm text-[#ef4444]">{error}</span>
-      )}
+      {error && <span className={ERROR}>{error}</span>}
     </div>
   )
 }

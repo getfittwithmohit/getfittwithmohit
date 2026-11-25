@@ -75,25 +75,25 @@ export function Step02Adherence({ onNext, onBack, prefilled = false }: Props) {
       subtitle="Honest numbers only. Coach Mohit can only help you if he knows what actually happened."
     >
       {prefilled && (
-        <div className="bg-[#E6F7F9] rounded-xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed">
+        <div className="bg-[#E6F7F9] rounded-2xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed">
           <strong>Pre-filled from your daily check-ins.</strong> Just check it and change anything that’s off.
         </div>
       )}
       <div>
-        <p className="text-sm font-medium text-[#64748b] mb-2">
+        <p className="text-[15px] font-semibold text-[#0f172a] mb-2.5">
           Workouts completed this week
-          <span className="text-[#00D4E8] ml-0.5">*</span>
+          <span className="text-[#007A8A] ml-0.5">*</span>
         </p>
-        <div className="flex gap-2">
+        <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${WORKOUT_DAYS.length}, minmax(0, 1fr))` }}>
           {WORKOUT_DAYS.map((day) => (
             <button
               key={day}
               type="button"
               onClick={() => { setValue('workouts_completed', day); setError('') }}
-              className={`w-10 h-10 rounded-lg text-sm font-medium border transition-all duration-150 ${
+              className={`h-11 rounded-lg text-base font-semibold transition-all duration-150 active:scale-[0.97] ${
                 workoutsCompleted === day
-                  ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#00D4E8]'
-                  : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00D4E8]'
+                  ? 'bg-[#1a1f3a] text-[#00D4E8]'
+                  : 'bg-[#F2F4F7] text-[#475569] hover:bg-[#E8ECF1]'
               }`}
             >
               {day}
@@ -136,20 +136,20 @@ export function Step02Adherence({ onNext, onBack, prefilled = false }: Props) {
       />
 
       <div>
-        <p className="text-sm font-medium text-[#64748b] mb-2">
+        <p className="text-[15px] font-semibold text-[#0f172a] mb-2.5">
           How many days did you complete your SAVER routine?
-          <span className="text-[#00D4E8] ml-0.5">*</span>
+          <span className="text-[#007A8A] ml-0.5">*</span>
         </p>
-        <div className="flex gap-2">
+        <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${SAVER_DAYS.length}, minmax(0, 1fr))` }}>
           {SAVER_DAYS.map((day) => (
             <button
               key={day}
               type="button"
               onClick={() => setValue('saver_days', day)}
-              className={`w-10 h-10 rounded-lg text-sm font-medium border transition-all duration-150 ${
+              className={`h-11 rounded-lg text-base font-semibold transition-all duration-150 active:scale-[0.97] ${
                 saverDays === day
-                  ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#00D4E8]'
-                  : 'bg-white text-[#64748b] border-[#e2e8f0] hover:border-[#00D4E8]'
+                  ? 'bg-[#1a1f3a] text-[#00D4E8]'
+                  : 'bg-[#F2F4F7] text-[#475569] hover:bg-[#E8ECF1]'
               }`}
             >
               {day}
@@ -176,7 +176,7 @@ export function Step02Adherence({ onNext, onBack, prefilled = false }: Props) {
       />
 
       {error && (
-        <p className="text-sm text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+        <p className="text-[15px] text-[#B91C1C] bg-[#FEF2F2] rounded-xl px-4 py-3">
           {error}
         </p>
       )}

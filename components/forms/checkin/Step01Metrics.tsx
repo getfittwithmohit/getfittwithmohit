@@ -105,14 +105,14 @@ export function Step01Metrics({ onNext, fullMeasure = false, previous }: Props) 
       title="Body Metrics"
       subtitle="Weigh yourself first thing in the morning — same time, same conditions every week."
     >
-      <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4">
+      <div className="bg-[#F7F9FB] rounded-2xl p-4">
         <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3">vs Last Week</p>
         <MetricRow label="Weight" current={weightVal} previous={previous?.weight_kg != null ? String(previous.weight_kg) : ''} unit="kg" />
         <MetricRow label="Waist" current={waistVal} previous={previous?.waist_inches != null ? String(previous.waist_inches) : ''} unit="in" />
       </div>
 
       {fullMeasure && (
-        <div className="bg-[#E6F7F9] rounded-xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed">
+        <div className="bg-[#E6F7F9] rounded-2xl px-4 py-3 text-[15px] text-[#0f172a] leading-relaxed">
           <strong>Measurement week.</strong> Please measure all five places today — this is what your inches-lost is based on.
         </div>
       )}
@@ -154,7 +154,7 @@ export function Step01Metrics({ onNext, fullMeasure = false, previous }: Props) 
       <Input label="Any other measurement" placeholder="e.g. arm 14 inches..." {...register('other_measurement')} />
 
       {error && (
-        <p className="text-sm text-[#ef4444] bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+        <p className="text-[15px] text-[#B91C1C] bg-[#FEF2F2] rounded-xl px-4 py-3">
           {error}
         </p>
       )}

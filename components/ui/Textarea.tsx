@@ -1,4 +1,5 @@
 import { TextareaHTMLAttributes, forwardRef } from 'react'
+import { FIELD, FIELD_ERROR, LABEL, HINT, ERROR, REQUIRED } from './fieldStyles'
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string
@@ -12,33 +13,19 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
-          <label className="text-sm font-medium text-[#475569]">
+          <label className={LABEL}>
             {label}
-            {required && <span className="text-[#00D4E8] ml-0.5">*</span>}
+            {required && <span className={REQUIRED}>*</span>}
           </label>
         )}
-        {hint && (
-          <span className="text-sm text-[#64748b]">{hint}</span>
-        )}
+        {hint && <span className={HINT}>{hint}</span>}
         <textarea
           ref={ref}
           rows={3}
-          className={`
-            w-full px-3 py-2.5 text-sm
-            border border-[#e2e8f0] rounded-lg
-            text-[#0f172a] bg-white
-            placeholder:text-[#94a3b8]
-            focus:outline-none focus:border-[#00D4E8]
-            transition-colors duration-150
-            resize-none
-            ${error ? 'border-[#ef4444]' : ''}
-            ${className}
-          `}
+          className={`${FIELD} py-3 leading-relaxed resize-none ${error ? FIELD_ERROR : ''} ${className}`}
           {...props}
         />
-        {error && (
-          <span className="text-sm text-[#ef4444]">{error}</span>
-        )}
+        {error && <span className={ERROR}>{error}</span>}
       </div>
     )
   }
