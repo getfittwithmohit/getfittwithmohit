@@ -56,14 +56,14 @@ export function DailyHistory({ clientId }: { clientId: string }) {
     <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-4">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {stats.map((s) => (
-          <div key={s.label} className="bg-white border border-[#e2e8f0] rounded-xl px-3 py-2.5">
+          <div key={s.label} className="bg-white rounded-2xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] px-3 py-2.5">
             <p className="text-[10px] text-[#94a3b8] uppercase tracking-wide">{s.label}</p>
             <p className="text-sm font-semibold text-[#0f172a] mt-0.5">{s.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden">
+      <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden">
         <div className="grid grid-cols-[5.5rem_repeat(6,minmax(0,1fr))] gap-1 px-3 py-2 text-[10px] text-[#94a3b8] uppercase tracking-wide border-b border-[#e2e8f0]">
           <span>Day</span><span>Workout</span><span>Nutr.</span><span>Steps</span><span>Sleep</span><span>Energy</span><span>Water</span>
         </div>

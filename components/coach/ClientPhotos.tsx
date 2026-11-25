@@ -114,13 +114,13 @@ export function ClientPhotos({ clientId, clientName = '' }: { clientId: string; 
       <section>
         <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3">Progress photos</p>
         {photos.length === 0 ? (
-          <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 text-sm text-[#64748b]">
+          <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5 text-sm text-[#64748b]">
             No photos yet. Photos added during onboarding (front, side, back) will show here as Week 1.
           </div>
         ) : (
           <div className="flex flex-col gap-4">
             {photos.map((set) => (
-              <div key={set.id} className="bg-white border border-[#e2e8f0] rounded-2xl p-4">
+              <div key={set.id} className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4">
                 <div className="flex items-baseline justify-between mb-3">
                   <p className="text-base font-semibold text-[#0f172a]">
                     {set.week === 1 ? 'Week 1 · Before' : `Week ${set.week ?? '?'}`}
@@ -160,9 +160,9 @@ export function ClientPhotos({ clientId, clientName = '' }: { clientId: string; 
       <section>
         <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mb-3">Blood work</p>
         {reports.length === 0 ? (
-          <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 text-sm text-[#64748b]">No blood-work reports uploaded.</div>
+          <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5 text-sm text-[#64748b]">No blood-work reports uploaded.</div>
         ) : (
-          <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden">
             {reports.map((r, i) => (
               <div key={r.id} className={`flex items-center gap-3 px-4 py-3 ${i ? 'border-t border-[#e2e8f0]' : ''}`}>
                 <div className="flex-1 min-w-0">

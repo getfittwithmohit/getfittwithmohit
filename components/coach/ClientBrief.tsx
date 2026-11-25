@@ -42,7 +42,7 @@ function asText(name: string, b: CoachBrief) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="bg-white border border-[#e2e8f0] rounded-2xl p-5">
+    <section className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5">
       <p className="text-xs font-semibold text-[#64748b] uppercase tracking-wide mb-3">{title}</p>
       {children}
     </section>
@@ -120,7 +120,7 @@ export function ClientBrief({ clientId, clientName }: { clientId: string; client
       {busy && !b && <div className="h-64 rounded-2xl bg-white border border-[#e2e8f0] animate-pulse" />}
 
       {!b && !busy && !error && (
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 text-[15px] text-[#475569] leading-relaxed">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-6 text-[15px] text-[#475569] leading-relaxed">
           Tap <strong>Write brief</strong> before your call. It shows what changed, red flags, wins, three talking points and
           small plan tweaks — every number comes straight from {clientName.split(' ')[0] || 'the client'}’s data.
         </div>

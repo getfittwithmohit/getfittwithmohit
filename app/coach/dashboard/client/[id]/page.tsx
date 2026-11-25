@@ -13,6 +13,7 @@ import { ClientNutrition } from '@/components/nutrition/coach/ClientNutrition'
 import { useParams } from 'next/navigation'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
+import { Icon } from '@/components/ui/Icon'
 import {
   getClientProgress,
   getThisWeekCheckinStatus,
@@ -70,8 +71,8 @@ function InfoSection({ title, data }: { title: string; data: Record<string, any>
   )
   if (!entries.length) return null
   return (
-    <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 mb-4">
-      <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">{title}</p>
+    <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-6 mb-4">
+      <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-4">{title}</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
         {entries.map(([key, value]) => (
           <div key={key}>
@@ -386,12 +387,12 @@ export default function ClientProgressPage() {
     const setter = source === 'client' ? setEditData : setBodyMetrics
     return (
       <div>
-        <label className="text-xs font-medium text-[#64748b] mb-1.5 block">{label}</label>
+        <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">{label}</label>
         <input
           type={type}
           value={data?.[key] || ''}
           onChange={(e) => setter((prev: any) => ({ ...prev, [key]: e.target.value }))}
-          className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+          className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
         />
       </div>
     )
@@ -572,44 +573,42 @@ export default function ClientProgressPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-[#F2F4F7] text-[#0f172a]">
 
       {/* Header */}
-      <div className="bg-[#1a1f3a] px-4 md:px-6 py-4 md:py-5">
-        <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 md:gap-3 min-w-0">
-            <button
-              onClick={() => (window.history.length > 1 ? window.history.back() : window.close())}
-              className="text-white/60 hover:text-white text-sm md:text-xs min-h-11 pr-1 md:mr-2 transition-colors flex-shrink-0"
-            >
-              ‹ Back
-            </button>
-            <img src="/logo.png" alt="GetFittWithMohit" className="hidden md:block w-10 h-10 object-contain" />
+      <div className="max-w-3xl mx-auto px-3 md:px-4 pt-3 md:pt-6">
+        <button
+          onClick={() => (window.history.length > 1 ? window.history.back() : window.close())}
+          className="text-[17px] min-h-11 flex items-center gap-0.5 -ml-1 text-[#007A8A]"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+          Dashboard
+        </button>
+        <div className="mt-1 rounded-3xl bg-[#1a1f3a] p-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-14 h-14 rounded-full bg-[#00D4E8] text-[#1a1f3a] flex items-center justify-center text-lg font-extrabold flex-shrink-0">
+              {(client?.full_name || '?').split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase()}
+            </div>
             <div className="min-w-0">
-              <h1 className="text-white text-lg font-medium truncate">{client?.full_name}</h1>
-              <p className="text-white/50 text-xs truncate">
+              <p className="m-0 text-xs font-bold tracking-[0.12em] uppercase text-[#00D4E8] truncate">
                 Week {currentWeek} · {client?.phase}
               </p>
+              <h1 className="m-0 mt-0.5 text-white text-[24px] leading-tight font-extrabold tracking-tight truncate">{client?.full_name}</h1>
             </div>
           </div>
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <button
-              onClick={() => setExportOpen(true)}
-              className="text-white/70 hover:text-white text-xs font-medium px-3 min-h-9 rounded-full border border-white/15 hover:border-white/25 transition-colors whitespace-nowrap"
-            >
-              Export data
-            </button>
-            <div className="hidden md:block text-right">
-              <p className="text-[#00D4E8] text-xs font-medium tracking-wide">GETFITTWITHMOHIT</p>
-              <p className="text-white/40 text-xs">Transform to Inspire</p>
-            </div>
-          </div>
+          <button
+            onClick={() => setExportOpen(true)}
+            aria-label="Export data"
+            className="flex-shrink-0 inline-flex items-center justify-center gap-1.5 text-white/80 hover:text-white text-sm font-semibold w-10 sm:w-auto sm:px-3.5 min-h-10 rounded-full bg-white/10 hover:bg-white/15 transition-colors whitespace-nowrap"
+          >
+            <Icon name="file" size={16} /><span className="hidden sm:inline">Export</span>
+          </button>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white border-b border-[#e2e8f0] sticky top-0 z-20">
-        <div className="max-w-3xl mx-auto px-2 md:px-4 flex gap-0 overflow-x-auto" role="tablist">
+      <div className="sticky top-0 z-20 bg-[#F2F4F7]/90 backdrop-blur-md mt-3">
+        <div className="max-w-3xl mx-auto px-3 md:px-4 py-2 flex gap-1.5 overflow-x-auto" role="tablist">
           {[
             { key: 'brief', label: 'Brief' },
             { key: 'progress', label: 'Progress' },
@@ -631,24 +630,23 @@ export default function ClientProgressPage() {
               }}
               role="tab"
               aria-selected={tab === t.key}
-              className={`px-3 md:px-4 py-3.5 text-[15px] md:text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
+              className={`px-4 min-h-10 rounded-full text-[15px] font-semibold transition-colors whitespace-nowrap flex-shrink-0 ${
                 tab === t.key
-                  ? 'border-[#00D4E8] text-[#0f172a]'
-                  : 'border-transparent text-[#64748b] hover:text-[#0f172a]'
+                  ? 'bg-[#1a1f3a] text-white'
+                  : 'bg-white text-[#475569] hover:text-[#0f172a]'
               }`}
             >
               {t.label}
             </button>
           ))}
         </div>
-        <div aria-hidden="true" className="md:hidden pointer-events-none absolute right-0 top-0 bottom-0 w-10" style={{ background: 'linear-gradient(to right, rgba(255,255,255,0), #fff)' }} />
       </div>
 
       {/* Progress Tab */}
       {tab === 'progress' && (
-        <div className="max-w-3xl mx-auto px-4 py-6">
+        <div className="max-w-3xl mx-auto px-3 md:px-4 py-4">
           <div className="mb-2">
-            <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-3">
+            <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-3">
               Programme Status
             </p>
             <StatusCards
@@ -663,7 +661,7 @@ export default function ClientProgressPage() {
             />
           </div>
 
-          <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-3">
+          <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-3">
             Achievements & Streaks
           </p>
           <StreaksPanel
@@ -676,11 +674,11 @@ export default function ClientProgressPage() {
             doingThisFor={pledge?.doing_this_for || null}
           />
 
-          <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-4">
+          <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5 mb-4">
             <BodyChart checkins={checkins} startWeight={startWeight} />
           </div>
 
-          <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-3">
+          <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-3">
             Weekly Trends
           </p>
           <TrendCharts checkins={checkins} />
@@ -698,11 +696,11 @@ export default function ClientProgressPage() {
 
       {/* Edit Profile Tab */}
       {tab === 'edit' && editData && (
-        <div className="max-w-3xl mx-auto px-4 py-6">
+        <div className="max-w-3xl mx-auto px-3 md:px-4 py-4">
 
           {/* Section 1 — Personal */}
-          <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 mb-4">
-            <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">
+          <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-6 mb-4">
+            <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-4">
               Personal Information
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -714,8 +712,8 @@ export default function ClientProgressPage() {
               {field('Occupation', 'occupation')}
               {field('Date of birth', 'date_of_birth', 'date')}
               <div>
-                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">Age</label>
-                <div className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm bg-[#f8fafc] text-[#64748b]">
+                <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">Age</label>
+                <div className="w-full px-3.5 py-2.5 bg-[#F7F9FB] border border-transparent rounded-xl text-[15px] text-[#64748b]">
                   {editData.date_of_birth ? `${calcAge(editData.date_of_birth)} years` : '—'}
                 </div>
               </div>
@@ -723,17 +721,17 @@ export default function ClientProgressPage() {
           </div>
 
           {/* Section 2 — Programme */}
-          <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 mb-4">
-            <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">
+          <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-6 mb-4">
+            <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-4">
               Programme
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">Phase</label>
+                <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">Phase</label>
                 <select
                   value={editData.phase}
                   onChange={(e) => setEditData((p: any) => ({ ...p, phase: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
                 >
                   {PHASES.map((p) => (
                     <option key={p} value={p}>{p}</option>
@@ -741,11 +739,11 @@ export default function ClientProgressPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">Risk status</label>
+                <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">Risk status</label>
                 <select
                   value={editData.risk_status}
                   onChange={(e) => setEditData((p: any) => ({ ...p, risk_status: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
                 >
                   {RISK_OPTIONS.map((r) => (
                     <option key={r.value} value={r.value}>{r.label}</option>
@@ -753,26 +751,26 @@ export default function ClientProgressPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+                <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">
                   Start date
                 </label>
                 <input
                   type="date"
                   value={editData.start_date || ''}
                   onChange={(e) => setEditData((p: any) => ({ ...p, start_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+                <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">
                   Current week (auto-calculated from start date on save)
                 </label>
-                <div className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm bg-[#f8fafc] text-[#64748b]">
+                <div className="w-full px-3.5 py-2.5 bg-[#F7F9FB] border border-transparent rounded-xl text-[15px] text-[#64748b]">
                   Week {editData.current_week}
                 </div>
               </div>
               <div>
-                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+                <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">
                   Programme duration (weeks)
                 </label>
                 <input
@@ -781,11 +779,11 @@ export default function ClientProgressPage() {
                   onChange={(e) => setEditData((p: any) => ({ ...p, program_duration_weeks: e.target.value }))}
                   placeholder="12"
                   disabled={!!editData.subscription_end_date}
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors disabled:bg-[#f8fafc] disabled:text-[#94a3b8]"
+                  className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors disabled:bg-[#f8fafc] disabled:text-[#94a3b8]"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+                <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">
                   Subscription end date (optional — custom ends, renewals, pauses)
                 </label>
                 <div className="flex gap-2">
@@ -793,7 +791,7 @@ export default function ClientProgressPage() {
                     type="date"
                     value={editData.subscription_end_date || ''}
                     onChange={(e) => setEditData((p: any) => ({ ...p, subscription_end_date: e.target.value }))}
-                    className="flex-1 min-w-0 px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                    className="flex-1 min-w-0 px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
                   />
                   {editData.subscription_end_date && (
                     <button
@@ -818,8 +816,8 @@ export default function ClientProgressPage() {
           </div>
 
           {/* Section 3 — Body Metrics */}
-          <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 mb-4">
-            <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">
+          <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-6 mb-4">
+            <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-4">
               Body Metrics
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -828,10 +826,10 @@ export default function ClientProgressPage() {
 
               {/* Height — Feet + Inches */}
               <div className="col-span-2">
-                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">Height</label>
+                <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">Height</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs text-[#94a3b8] mb-1 block">Feet</label>
+                    <label className="text-[13px] font-medium text-[#64748b] mb-1 block">Feet</label>
                     <select
                       value={heightFeet ?? ''}
                       onChange={(e) => {
@@ -839,7 +837,7 @@ export default function ClientProgressPage() {
                         setHeightFeet(v)
                         if (v != null && heightInch == null) setHeightInch(0)
                       }}
-                      className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                      className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
                     >
                       <option value="">— ft</option>
                       {FEET_OPTIONS.map((f) => (
@@ -848,12 +846,12 @@ export default function ClientProgressPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs text-[#94a3b8] mb-1 block">Inches</label>
+                    <label className="text-[13px] font-medium text-[#64748b] mb-1 block">Inches</label>
                     <select
                       value={heightInch ?? ''}
                       disabled={heightFeet == null}
                       onChange={(e) => setHeightInch(e.target.value === '' ? null : parseInt(e.target.value))}
-                      className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors disabled:bg-[#f8fafc]"
+                      className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors disabled:bg-[#f8fafc]"
                     >
                       <option value="">— in</option>
                       {INCH_OPTIONS.map((i) => (
@@ -877,13 +875,13 @@ export default function ClientProgressPage() {
               {field('Chest (inches)', 'chest_inches', 'number', 'metrics')}
               {field('Hip (inches)', 'hip_inches', 'number', 'metrics')}
               <div className="col-span-2">
-                <label className="text-xs font-medium text-[#64748b] mb-1.5 block">Primary goal</label>
+                <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">Primary goal</label>
                 <input
                   type="text"
                   value={bodyMetrics?.primary_goal || ''}
                   onChange={(e) => setBodyMetrics((p: any) => ({ ...p, primary_goal: e.target.value }))}
                   placeholder="e.g. Fat loss, muscle gain, body recomposition..."
-                  className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
                 />
               </div>
             </div>
@@ -891,8 +889,8 @@ export default function ClientProgressPage() {
 
           {/* Check-in history — read only */}
           {checkins.length > 0 && (
-            <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 mb-4">
-              <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">
+            <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-6 mb-4">
+              <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-4">
                 Check-in History ({checkins.length} total)
               </p>
               <div className="flex flex-col gap-2">
@@ -1044,13 +1042,13 @@ export default function ClientProgressPage() {
 
           {/* Assessments */}
           {assessments.length > 0 && (
-            <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 mb-4">
-              <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-4">
+            <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-6 mb-4">
+              <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-4">
                 Assessments ({assessments.length} total)
               </p>
               <div className="flex flex-col gap-3">
                 {assessments.map((a: any, i: number) => (
-                  <div key={i} className="p-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl">
+                  <div key={i} className="p-4 bg-[#F7F9FB] rounded-2xl">
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-sm font-medium text-[#0f172a]">
                         Assessment #{assessments.length - i}
@@ -1096,13 +1094,13 @@ export default function ClientProgressPage() {
 
       {/* Weekly Calls Tab */}
       {tab === 'calls' && (
-        <div className="max-w-3xl mx-auto px-4 py-6">
+        <div className="max-w-3xl mx-auto px-3 md:px-4 py-4">
 
           {/* Programme summary */}
-          <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-5">
+          <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5 mb-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-[#94a3b8] uppercase tracking-wide mb-1">Programme</p>
+                <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-1">Programme</p>
                 <p className="text-lg font-semibold text-[#0f172a]">
                   Week {currentWeek} of {editData?.program_duration_weeks || client?.program_duration_weeks || 12}
                 </p>
@@ -1131,8 +1129,8 @@ export default function ClientProgressPage() {
           </div>
 
           {/* Program duration setting */}
-          <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 mb-5">
-            <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+          <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5 mb-5">
+            <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">
               Programme duration (weeks)
             </label>
             <div className="flex gap-3 items-center">
@@ -1141,7 +1139,7 @@ export default function ClientProgressPage() {
                 value={editData?.program_duration_weeks || ''}
                 onChange={(e) => setEditData((p: any) => ({ ...p, program_duration_weeks: e.target.value }))}
                 placeholder="12"
-                className="w-32 px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                className="w-32 px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
               />
               <button
                 onClick={async () => {
@@ -1151,7 +1149,7 @@ export default function ClientProgressPage() {
                     .eq('id', clientId)
                   toast('Programme duration updated', 'success')
                 }}
-                className="bg-[#1a1f3a] text-[#00D4E8] px-5 py-2.5 rounded-lg text-xs font-medium hover:bg-[#141930] transition-colors"
+                className="bg-[#1a1f3a] text-[#00D4E8] px-5 min-h-10 rounded-xl text-sm font-semibold hover:bg-[#141930] transition-colors"
               >
                 Update
               </button>
@@ -1191,7 +1189,7 @@ export default function ClientProgressPage() {
                 <div
                   key={call.week_number}
                   id={`call-week-${call.week_number}`}
-                  className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden scroll-mt-4"
+                  className="bg-white rounded-2xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden scroll-mt-4"
                 >
                   <div
                     className="flex items-center justify-between px-4 py-3 cursor-pointer"
@@ -1241,30 +1239,30 @@ export default function ClientProgressPage() {
                       {callForm.status === 'completed' && (
                         <div className="flex flex-col gap-2 mb-3">
                           <div>
-                            <label className="text-xs text-[#94a3b8] mb-1 block">What we discussed</label>
+                            <label className="text-[13px] font-medium text-[#64748b] mb-1 block">What we discussed</label>
                             <textarea
                               value={callForm.discussed}
                               onChange={(e) => setCallForm((p) => ({ ...p, discussed: e.target.value }))}
                               rows={activeDraft ? 4 : 2}
-                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
+                              className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-sm focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 resize-none"
                             />
                           </div>
                           <div>
-                            <label className="text-xs text-[#94a3b8] mb-1 block">What we're changing</label>
+                            <label className="text-[13px] font-medium text-[#64748b] mb-1 block">What we're changing</label>
                             <textarea
                               value={callForm.changes}
                               onChange={(e) => setCallForm((p) => ({ ...p, changes: e.target.value }))}
                               rows={activeDraft ? 4 : 2}
-                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
+                              className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-sm focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 resize-none"
                             />
                           </div>
                           <div>
-                            <label className="text-xs text-[#94a3b8] mb-1 block">Next week's focus</label>
+                            <label className="text-[13px] font-medium text-[#64748b] mb-1 block">Next week's focus</label>
                             <textarea
                               value={callForm.next_focus}
                               onChange={(e) => setCallForm((p) => ({ ...p, next_focus: e.target.value }))}
                               rows={activeDraft ? 4 : 2}
-                              className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
+                              className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-sm focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 resize-none"
                             />
                           </div>
                           <label className="flex items-start gap-2 text-xs text-[#0f172a] cursor-pointer">
@@ -1285,7 +1283,7 @@ export default function ClientProgressPage() {
                       <button
                         onClick={() => saveCall(call.week_number)}
                         disabled={savingCall}
-                        className="w-full bg-[#1a1f3a] text-[#00D4E8] py-2.5 rounded-lg text-xs font-medium disabled:opacity-50"
+                        className="w-full bg-[#1a1f3a] text-[#00D4E8] min-h-11 rounded-xl text-sm font-semibold disabled:opacity-50"
                       >
                         {savingCall ? 'Saving...' : 'Save'}
                       </button>
@@ -1302,7 +1300,7 @@ export default function ClientProgressPage() {
       {/* Report Tab */}
       {/* Check-ins Tab — full weekly_checkins data, ordered like the coach's SQL query */}
       {tab === 'checkins' && (
-        <div className="max-w-3xl mx-auto px-4 py-6">
+        <div className="max-w-3xl mx-auto px-3 md:px-4 py-4">
           {checkins.length === 0 ? (
             <p className="text-sm text-[#94a3b8] text-center py-16">
               No check-ins yet.
@@ -1314,7 +1312,7 @@ export default function ClientProgressPage() {
                 .map((c, i) => {
                   const isOpen = expandedCheckin === c.id
                   return (
-                    <div key={c.id} className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden">
+                    <div key={c.id} className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden">
                       <button
                         onClick={() => setExpandedCheckin(isOpen ? null : c.id)}
                         className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-[#f8fafc] transition-colors"
@@ -1396,13 +1394,13 @@ export default function ClientProgressPage() {
       {tab === 'nutrition' && <ClientNutrition clientId={clientId} clientName={client?.full_name || ''} />}
 
       {tab === 'brief' && (
-        <div className="max-w-3xl mx-auto px-4 py-6">
+        <div className="max-w-3xl mx-auto px-3 md:px-4 py-4">
           <ClientBrief clientId={clientId} clientName={client?.full_name || ''} />
         </div>
       )}
 
       {tab === 'photos' && (
-        <div className="max-w-3xl mx-auto px-4 py-6">
+        <div className="max-w-3xl mx-auto px-3 md:px-4 py-4">
           <ClientPhotos clientId={clientId} clientName={client?.full_name || ''} />
         </div>
       )}
@@ -1498,7 +1496,7 @@ export default function ClientProgressPage() {
                 readOnly
                 value={buildExportText()}
                 rows={16}
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-xs font-mono focus:outline-none resize-none"
+                className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-xs font-mono focus:outline-none resize-none"
               />
             </div>
             <div className="flex gap-3 px-6 py-4 border-t border-[#e2e8f0]">
