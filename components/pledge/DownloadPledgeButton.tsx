@@ -60,15 +60,15 @@ export function DownloadPledgeButton({ fullName, signedAt, className }: Download
         type="button"
         onClick={handleDownload}
         disabled={busy || !fullName}
-        className="w-full py-3.5 rounded-xl text-sm font-medium border border-[#00D4E8] text-[#00D4E8] hover:bg-[#00D4E8]/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full min-h-[54px] rounded-2xl text-base font-semibold border border-[#00D4E8]/60 text-[#00D4E8] hover:bg-[#00D4E8]/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {busy ? 'Preparing your pledge…' : '↓ Download my pledge (PDF)'}
       </button>
-      <p className="text-white/30 text-xs mt-2 text-center">
+      <p className="text-white/45 text-sm mt-2.5 text-center">
         Keep it on your phone. Read it every morning and every night.
       </p>
       {error && (
-        <p role="alert" className="text-red-300 text-xs mt-2 text-center">
+        <p role="alert" className="text-red-300 text-sm mt-2 text-center">
           {error}
         </p>
       )}
