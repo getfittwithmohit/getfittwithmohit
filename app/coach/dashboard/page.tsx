@@ -92,7 +92,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Tools */}
-        <div className={`${hideOnPhone} gap-2 overflow-x-auto -mx-3 px-3 md:mx-0 md:px-0 pb-1 md:grid md:grid-cols-7`}>
+        <div className={`${hideOnPhone} gap-2 overflow-x-auto gfm-no-scrollbar -mx-3 px-3 md:mx-0 md:px-0 pb-1 md:grid md:grid-cols-7`}>
           {TOOLS.map((t) => (
             <button
               key={t.href}
@@ -149,19 +149,21 @@ export default function DashboardPage() {
         <div className="flex gap-4 items-start">
 
           <div
-            className={`${selected ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-shrink-0 flex-col bg-white rounded-3xl overflow-hidden md:sticky md:top-4 md:max-h-[calc(100vh-2rem)]`}
+            className={`${selected ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-shrink-0 flex-col bg-white rounded-3xl overflow-hidden md:sticky md:top-4 md:h-[calc(100vh-2rem)]`}
             style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}
           >
             <div className="px-4 pt-4 pb-1 flex items-center gap-2">
               <Icon name="users" size={18} />
               <span className="text-[17px] font-bold">Clients</span>
             </div>
+            <div className="flex-1 min-h-0 flex flex-col">
             <ClientList
               clients={clients}
               selectedId={selected?.id || null}
               onSelect={(c) => { setSelected(c); window.scrollTo(0, 0) }}
               onStatusChange={setClientStatus}
             />
+            </div>
           </div>
 
           <div
