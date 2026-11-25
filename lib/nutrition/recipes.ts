@@ -1,0 +1,168 @@
+// Recipes — types and math. Pure functions, no network.
+// A recipe is stored for ONE client portion. Everything the client sees
+// (macros, swapped grams, family-pot amounts) is calculated here from the food
+// library, never typed in by hand or guessed by AI.
+
+import { nutrientsFor, type Food, type Nutrients } from './foods'
+
+export const PROTEIN_KEYS = ['paneer', 'egg', 'chicken', 'fish', 'dal', 'soya', 'tofu', 'curd'] as const
+export type ProteinKey = (typeof PROTEIN_KEYS)[number]
+export const PROTEIN_LABEL: Record<ProteinKey, string> = {
+  paneer: 'Paneer', egg: 'Eggs', chicken: 'Chicken', fish: 'Fish', dal: 'Dal & legumes', soya: 'Soya', tofu: 'Tofu', curd: 'Curd & whey',
+}
+
+export const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack'] as const
+export type MealType = (typeof MEAL_TYPES)[number]
+
+export const RECIPE_TAGS = ['weekday', 'sunday_prep', 'tiffin', 'no_cook'] as const
+export const TAG_LABEL: Record<string, string> = { weekday: 'Weekday', sunday_prep: 'Sunday prep', tiffin: 'Tiffin-friendly', no_cook: 'No cooking' }
+
+export type RecipeDiet = 'vegan' | 'veg' | 'egg' | 'nonveg'
+export const DIET_LABEL: Record<RecipeDiet, string> = { vegan: 'Vegan', veg: 'Veg', egg: 'Egg', nonveg: 'Non-veg' }
+
+export interface RecipeIngredient {
+  food: string // foods.slug
+  grams: number // for one portion
+  prep?: string
+  is_protein?: boolean
+}
+
+// Spices, herbs and salt: listed for the cook, not counted in macros.
+export interface RecipeExtra {
+  name: string
+  amount: string // per portion, e.g. "¼ tsp", "to taste"
+}
+
+export interface RecipeStep {
+  text: string
+  minutes?: number | null
+}
+
+export interface RecipeSwap {
+  food: string
+  note?: string
+}
+
+export interface Recipe {
+  id: string
+  title: string
+  protein_key: ProteinKey
+  meal_types: MealType[]
+  diet: RecipeDiet
+  jain_ok: boolean
+  minutes: number
+  equipment: string[]
+  tags: string[]
+  portion_label: string | null
+  ingredients: RecipeIngredient[]
+  extras: RecipeExtra[]
+  steps: RecipeStep[]
+  tip: string | null
+  swaps: RecipeSwap[]
+  dish_food: string | null
+  status: 'draft' | 'approved' | 'rejected'
+  ai_model?: string | null
+  approved_at?: string | null
+  created_at?: string
+  updated_at?: string
+}
+
+const ZERO: Nutrients = { kcal: 0, protein: 0, carbs: 0, fat: 0, fibre: 0 }
+const add = (a: Nutrients, b: Nutrients): Nutrients => ({
+  kcal: a.kcal + b.kcal, protein: a.protein + b.protein, carbs: a.carbs + b.carbs, fat: a.fat + b.fat, fibre: a.fibre + b.fibre,
+})
+
+// Macros for one portion. Unknown foods count as zero (and are flagged by checks).
+export function portionTotals(ingredients: RecipeIngredient[], bySlug: Map<string, Food>): Nutrients {
+  return ingredients.reduce((sum, i) => {
+    const f = bySlug.get(i.food)
+    return f ? add(sum, nutrientsFor(f, i.grams)) : sum
+  }, ZERO)
+}
+
+export const mainProtein = (r: Pick<Recipe, 'ingredients'>) => r.ingredients.find((i) => i.is_protein) || null
+
+// Round swap weights the way people measure: eggs by the egg, the rest by 5 g.
+function roundGrams(food: Food, grams: number): number {
+  const egg = food.measures.find((m) => /\begg\b/i.test(m.label) && m.grams > 30 && m.grams < 70)
+  if (egg) return Math.max(1, Math.round(grams / egg.grams)) * egg.grams
+  return Math.max(5, Math.round(grams / 5) * 5)
+}
+
+// Grams of `swap` that give the same protein as the recipe's main protein.
+export function swapGrams(r: Pick<Recipe, 'ingredients'>, swap: Food, bySlug: Map<string, Food>): number | null {
+  const main = mainProtein(r)
+  const mainFood = main && bySlug.get(main.food)
+  if (!main || !mainFood || swap.protein_g <= 0) return null
+  const protein = (mainFood.protein_g * main.grams) / 100
+  return roundGrams(swap, (protein / swap.protein_g) * 100)
+}
+
+// The ingredient list with the main protein replaced by `swapSlug`.
+export function applySwap(r: Pick<Recipe, 'ingredients'>, swapSlug: string, bySlug: Map<string, Food>): RecipeIngredient[] {
+  const swap = bySlug.get(swapSlug)
+  const grams = swap ? swapGrams(r, swap, bySlug) : null
+  if (!swap || grams === null) return r.ingredients
+  return r.ingredients.map((i) => (i.is_protein ? { ...i, food: swapSlug, grams } : i))
+}
+
+// Diet and Jain flag follow from the ingredients, so they can never be wrong.
+export function dietOf(ingredients: RecipeIngredient[], bySlug: Map<string, Food>): { diet: RecipeDiet; jain_ok: boolean } {
+  const foods = ingredients.map((i) => bySlug.get(i.food)).filter(Boolean) as Food[]
+  const diet: RecipeDiet = foods.some((f) => f.diet === 'nonveg') ? 'nonveg'
+    : foods.some((f) => f.diet === 'egg') ? 'egg'
+      : foods.length && foods.every((f) => f.is_vegan) ? 'vegan' : 'veg'
+  return { diet, jain_ok: foods.length > 0 && foods.every((f) => f.is_jain_ok) }
+}
+
+// Family pot: one portion × people, in kitchen-friendly numbers.
+export function potAmount(food: Food | undefined, gramsPerPortion: number, people: number): string {
+  const g = gramsPerPortion * people
+  if (food) {
+    const egg = food.measures.find((m) => /\begg\b/i.test(m.label) && m.grams > 30 && m.grams < 70)
+    if (egg) {
+      const n = Math.round(g / egg.grams)
+      const unit = egg.label.replace(/^[\d½¼¾.\s]+/, '') // "egg" or "egg white"
+      return `${n} ${n === 1 ? unit : `${unit}s`}`
+    }
+    if (food.category === 'fats') {
+      const tsp = Math.round(g / 5 * 2) / 2
+      return `${fmtNum(tsp)} tsp`
+    }
+  }
+  if (g >= 1000) return `${fmtNum(Math.round(g / 100) / 10)} kg`
+  return `${Math.round(g)} g`
+}
+
+const fmtNum = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1).replace(/\.0$/, ''))
+
+export interface RecipeCheck {
+  ok: boolean
+  label: string
+  value: string
+}
+
+// What the coach sees before approving.
+export function recipeChecks(r: Recipe, bySlug: Map<string, Food>): RecipeCheck[] {
+  const t = portionTotals(r.ingredients, bySlug)
+  const snackOnly = r.meal_types.length > 0 && r.meal_types.every((m) => m === 'snack')
+  const minP = snackOnly ? 10 : 20
+  const oil = r.ingredients.reduce((s, i) => (bySlug.get(i.food)?.category === 'fats' ? s + i.grams : s), 0)
+  const missing = r.ingredients.filter((i) => !bySlug.has(i.food)).map((i) => i.food)
+  const weekday = !r.tags.includes('sunday_prep')
+  const checks: RecipeCheck[] = [
+    { ok: t.protein >= minP, label: `Protein ≥ ${minP} g per portion`, value: `${Math.round(t.protein)} g` },
+    { ok: !weekday || r.minutes <= 20, label: weekday ? 'Weekday ≤ 20 min' : 'Sunday prep', value: `${r.minutes} min` },
+    { ok: oil <= 5.5, label: 'Oil/ghee ≤ 1 tsp per portion', value: `${fmtNum(Math.round(oil / 5 * 2) / 2)} tsp` },
+    { ok: !!mainProtein(r), label: 'Main protein marked', value: mainProtein(r) ? (bySlug.get(mainProtein(r)!.food)?.name || '?') : 'none' },
+    { ok: r.steps.length >= 3 && r.steps.length <= 8, label: '3–8 clear steps', value: String(r.steps.length) },
+  ]
+  if (missing.length) checks.unshift({ ok: false, label: 'Foods not in library', value: missing.join(', ') })
+  return checks
+}
+
+export const emptyRecipe = (): Omit<Recipe, 'id'> => ({
+  title: '', protein_key: 'paneer', meal_types: ['lunch'], diet: 'veg', jain_ok: false, minutes: 20,
+  equipment: [], tags: ['weekday'], portion_label: null, ingredients: [], extras: [], steps: [], tip: null, swaps: [],
+  dish_food: null, status: 'draft',
+})
