@@ -14,7 +14,7 @@ export const admin = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } }
 )
 
-const MODEL = process.env.NUTRITION_MODEL || process.env.PEAK_PLATE_MODEL || 'claude-sonnet-5-5'
+export const MODEL = process.env.NUTRITION_MODEL || process.env.PEAK_PLATE_MODEL || 'claude-sonnet-5-5'
 const num = (v: unknown) => (v === null || v === undefined ? 0 : Number(v))
 
 // ── Context ──────────────────────────────────────────────────────────────────
@@ -125,11 +125,11 @@ export interface MealImage {
   caption?: string
 }
 
-type Content = string | ({ type: 'text'; text: string } | { type: 'image'; source: { type: 'base64'; media_type: string; data: string } })[]
+export type Content = string | ({ type: 'text'; text: string } | { type: 'image'; source: { type: 'base64'; media_type: string; data: string } })[]
 
 type AiError = Error & { status?: number; truncated?: boolean }
 
-async function callClaude<T>(prompt: Content, schema: object, maxTokens = 20000): Promise<T> {
+export async function callClaude<T>(prompt: Content, schema: object, maxTokens = 20000): Promise<T> {
   try {
     return await callClaudeOnce<T>(prompt, schema, maxTokens)
   } catch (e) {
