@@ -59,8 +59,11 @@ export function Step02Metrics({ onNext, onBack }: Props) {
   const heightInchRemainder = watch('height_in_remainder' as any) ?? 6
 
   const onSubmit = (values: any) => {
-    const totalInches = (Number(values.height_feet) || 0) * 12 + (Number(values.height_in_remainder) || 0)
-    updateMetrics({ ...values, height_inches: totalInches })
+    // The zod schema strips height_feet / height_in_remainder (they aren't in it),
+    // so `values` never has them — reading them gave 0 and saved NO height.
+    // Use the dropdowns' live values instead.
+    const totalInches = Number(heightFeet) * 12 + Number(heightInchRemainder)
+    updateMetrics({ ...values, height_inches: String(totalInches) })
     onNext()
   }
 
