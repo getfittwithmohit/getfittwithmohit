@@ -3,6 +3,7 @@
 import { toast } from '@/lib/ui/feedback'
 import { useState, useEffect, useRef } from 'react'
 import { ClientSummary } from '@/hooks/useClients'
+import { Icon } from '@/components/ui/Icon'
 
 type Filter = 'active' | 'red' | 'amber' | 'green' | 'paused' | 'inactive'
 
@@ -12,14 +13,6 @@ const PHASE_COLORS: Record<string, string> = {
   Building: '#00D4E8',
   Performance: '#22c55e',
   Maintenance: '#a855f7',
-}
-
-const PHASE_EMOJI: Record<string, string> = {
-  Onboarding: '📋',
-  Adaptation: '🌱',
-  Building: '💪',
-  Performance: '🔥',
-  Maintenance: '🏆',
 }
 
 const RISK_COLORS: Record<string, string> = {
@@ -120,13 +113,13 @@ export function ClientList({
     inactive: clients.filter((c) => c.status === 'inactive').length,
   }
 
-  const tabs: { key: Filter; label: string }[] = [
-    { key: 'active', label: `Active ${counts.active}` },
-    { key: 'red', label: `🔴 ${counts.red}` },
-    { key: 'amber', label: `🟡 ${counts.amber}` },
-    { key: 'green', label: `🟢 ${counts.green}` },
-    { key: 'paused', label: `⏸️ ${counts.paused}` },
-    { key: 'inactive', label: `⚪ ${counts.inactive}` },
+  const tabs: { key: Filter; label: string; dot?: string; count: number }[] = [
+    { key: 'active', label: 'All', count: counts.active },
+    { key: 'red', label: 'Risk', dot: '#EF4444', count: counts.red },
+    { key: 'amber', label: 'Watch', dot: '#F59E0B', count: counts.amber },
+    { key: 'green', label: 'On track', dot: '#22C55E', count: counts.green },
+    { key: 'paused', label: 'Paused', dot: '#D97706', count: counts.paused },
+    { key: 'inactive', label: 'Inactive', dot: '#94A3B8', count: counts.inactive },
   ]
 
   const toggleExpand = (clientId: string, e: React.MouseEvent) => {
@@ -197,35 +190,36 @@ export function ClientList({
     <div className="flex flex-col h-full">
 
       {/* Filter tabs */}
-      <div className="flex flex-wrap gap-1 p-3 border-b border-[#e2e8f0]">
+      <div className="flex gap-1.5 px-3 py-3 overflow-x-auto flex-shrink-0">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setFilter(tab.key)}
             className={`
-              py-1.5 px-2.5 rounded-lg text-xs font-medium
-              transition-all duration-150
+              flex-shrink-0 inline-flex items-center gap-1.5 min-h-9 px-3 rounded-full text-[13px] font-semibold whitespace-nowrap
+              transition-colors duration-150
               ${filter === tab.key
-                ? 'bg-[#1a1f3a] text-[#00D4E8]'
-                : 'text-[#64748b] hover:bg-[#f8fafc]'
+                ? 'bg-[#1a1f3a] text-white'
+                : 'bg-[#F2F4F7] text-[#475569] hover:bg-[#E8ECF1]'
               }
             `}
           >
+            {tab.dot && <span className="w-2 h-2 rounded-full" style={{ background: tab.dot }} />}
             {tab.label}
+            <span className={filter === tab.key ? 'text-white/60' : 'text-[#94a3b8]'}>{tab.count}</span>
           </button>
         ))}
       </div>
 
       {/* Client rows */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto px-2 pb-2">
         {filtered.length === 0 && (
-          <div className="text-center text-xs text-[#94a3b8] py-8">
+          <div className="text-center text-[15px] text-[#94a3b8] py-10">
             No clients in this category
           </div>
         )}
         {filtered.map((client) => {
           const phaseColor = PHASE_COLORS[client.phase] || '#64748b'
-          const phaseEmoji = PHASE_EMOJI[client.phase] || ''
           const riskColor = RISK_COLORS[client.risk_status] || '#22c55e'
           const isSelected = client.id === selectedId
           const current = currentMap[client.id]
@@ -236,22 +230,22 @@ export function ClientList({
           const accountCfg = ACCOUNT_STATUS_CONFIG[accountStatus]
 
           return (
-            <div key={client.id} className="border-b border-[#e2e8f0] relative">
+            <div key={client.id} className="relative">
               <div
                 onClick={() => onSelect(client)}
                 className={`
-                  flex items-center gap-3 px-4 py-3
+                  flex items-center gap-3 px-3 py-2.5 rounded-2xl
                   cursor-pointer
-                  transition-all duration-150
+                  transition-colors duration-150
                   ${isSelected
-                    ? 'bg-[#f0fdfd] border-l-2 border-l-[#00D4E8]'
-                    : 'hover:bg-[#f8fafc]'
+                    ? 'bg-[#E6F7F9]'
+                    : 'hover:bg-[#F7F9FB]'
                   }
                 `}
               >
                 {/* Avatar */}
                 <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0"
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
                   style={{
                     background: `${phaseColor}20`,
                     color: phaseColor,
@@ -262,11 +256,11 @@ export function ClientList({
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-[#0f172a] truncate">
+                  <div className="text-base font-semibold text-[#0f172a] truncate">
                     {client.full_name}
                   </div>
-                  <div className="text-xs text-[#94a3b8] mt-0.5">
-                    Wk {client.current_week} · {phaseEmoji} {client.phase}
+                  <div className="text-[13px] text-[#64748b] mt-0.5">
+                    Week {client.current_week} · {client.phase}
                   </div>
 
                   <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
@@ -281,14 +275,14 @@ export function ClientList({
                     {accountStatus === 'active' && current && callStatusCfg && (
                       <button
                         onClick={(e) => toggleExpand(client.id, e)}
-                        className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border transition-colors"
+                        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors"
                         style={{
                           background: callStatusCfg.bg,
                           color: callStatusCfg.color,
                           borderColor: callStatusCfg.border,
                         }}
                       >
-                        {callStatusCfg.emoji} Week {current.week} {callStatusCfg.label}
+                        Week {current.week} {callStatusCfg.label}
                       </button>
                     )}
                   </div>
@@ -298,16 +292,17 @@ export function ClientList({
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {accountStatus === 'active' && (
                     <div
-                      className="w-2 h-2 rounded-full flex-shrink-0"
+                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                       style={{ background: riskColor }}
                     />
                   )}
                   <button
                     onClick={(e) => toggleStatusMenu(client.id, e)}
-                    className="text-[#94a3b8] hover:text-[#64748b] text-sm leading-none px-1 transition-colors"
+                    className="w-8 h-8 -mr-1 rounded-full flex items-center justify-center text-[#94a3b8] hover:bg-[#F2F4F7] hover:text-[#475569] transition-colors"
                     title="Change account status"
+                    aria-label="Change account status"
                   >
-                    ⋮
+                    <Icon name="more" size={18} />
                   </button>
                 </div>
               </div>
@@ -316,7 +311,7 @@ export function ClientList({
               {isStatusMenuOpen && (
                 <div
                   ref={statusMenuRef}
-                  className="absolute right-4 top-12 z-20 bg-white border border-[#e2e8f0] rounded-xl shadow-lg overflow-hidden w-40"
+                  className="gfm-pop absolute right-2 top-12 z-20 bg-white rounded-2xl overflow-hidden w-44 p-1" style={{ boxShadow: '0 10px 30px rgba(15,23,42,0.15), 0 0 0 1px rgba(15,23,42,0.05)' }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {(['active', 'paused', 'inactive'] as const).map((s) => {
@@ -327,15 +322,15 @@ export function ClientList({
                         key={s}
                         onClick={() => handleStatusChange(client.id, s)}
                         disabled={updatingStatus || isCurrent}
-                        className={`w-full flex items-center gap-2 px-3 py-2.5 text-xs text-left transition-colors ${
-                          isCurrent ? 'bg-[#f8fafc]' : 'hover:bg-[#f8fafc]'
+                        className={`w-full flex items-center gap-2 px-3 min-h-11 rounded-xl text-[15px] text-left transition-colors ${
+                          isCurrent ? 'bg-[#F7F9FB]' : 'hover:bg-[#F2F4F7]'
                         } disabled:cursor-default`}
                       >
                         <span>{cfg.emoji}</span>
                         <span style={{ color: isCurrent ? cfg.color : '#0f172a' }}>
                           {cfg.label}
                         </span>
-                        {isCurrent && <span className="ml-auto text-[#00D4E8]">✓</span>}
+                        {isCurrent && <span className="ml-auto text-[#007A8A]"><Icon name="check" size={16} /></span>}
                       </button>
                     )
                   })}
@@ -345,10 +340,10 @@ export function ClientList({
               {/* Quick-mark call panel */}
               {isExpanded && current && (
                 <div
-                  className="px-4 pb-4 bg-[#fafbfc] border-t border-[#e2e8f0]"
+                  className="mx-1 mb-2 px-3 pb-3 bg-[#F7F9FB] rounded-2xl"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide mt-3 mb-2">
+                  <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] pt-3 mb-2">
                     Week {current.week} review call
                   </p>
 
@@ -361,10 +356,10 @@ export function ClientList({
                       <button
                         key={opt.value}
                         onClick={() => setForm((p) => ({ ...p, status: opt.value as any }))}
-                        className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-colors ${
+                        className={`flex-1 min-h-10 rounded-xl text-[13px] font-semibold transition-colors ${
                           form.status === opt.value
-                            ? 'bg-[#1a1f3a] text-[#00D4E8] border-[#1a1f3a]'
-                            : 'bg-white text-[#64748b] border-[#e2e8f0]'
+                            ? 'bg-[#1a1f3a] text-[#00D4E8]'
+                            : 'bg-white text-[#475569]'
                         }`}
                       >
                         {opt.label}
@@ -379,21 +374,21 @@ export function ClientList({
                         onChange={(e) => setForm((p) => ({ ...p, discussed: e.target.value }))}
                         placeholder="What we discussed..."
                         rows={2}
-                        className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
+                        className="w-full px-3 py-2.5 bg-white border border-transparent rounded-xl text-[15px] focus:outline-none focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 resize-none"
                       />
                       <textarea
                         value={form.changes}
                         onChange={(e) => setForm((p) => ({ ...p, changes: e.target.value }))}
                         placeholder="What we're changing..."
                         rows={2}
-                        className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
+                        className="w-full px-3 py-2.5 bg-white border border-transparent rounded-xl text-[15px] focus:outline-none focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 resize-none"
                       />
                       <textarea
                         value={form.next_focus}
                         onChange={(e) => setForm((p) => ({ ...p, next_focus: e.target.value }))}
                         placeholder="Next week's focus..."
                         rows={2}
-                        className="w-full px-3 py-2 border border-[#e2e8f0] rounded-lg text-xs focus:outline-none focus:border-[#00D4E8] resize-none"
+                        className="w-full px-3 py-2.5 bg-white border border-transparent rounded-xl text-[15px] focus:outline-none focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 resize-none"
                       />
                     </div>
                   )}
@@ -402,13 +397,13 @@ export function ClientList({
                     <button
                       onClick={() => handleMark(client.id, current.week)}
                       disabled={marking}
-                      className="flex-1 bg-[#1a1f3a] text-[#00D4E8] py-2 rounded-lg text-xs font-medium disabled:opacity-50"
+                      className="flex-1 bg-[#00D4E8] text-[#1a1f3a] min-h-11 rounded-xl text-[15px] font-bold disabled:opacity-50"
                     >
                       {marking ? 'Saving...' : 'Save'}
                     </button>
                     <button
                       onClick={() => setExpandedId(null)}
-                      className="px-4 py-2 rounded-lg text-xs text-[#94a3b8] border border-[#e2e8f0]"
+                      className="px-4 min-h-11 rounded-xl text-[15px] text-[#475569] bg-white"
                     >
                       Cancel
                     </button>

@@ -9,6 +9,17 @@ import { DetailPanel } from '@/components/dashboard/DetailPanel'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { go } from '@/lib/ui/navigate'
+import { Icon, type IconName } from '@/components/ui/Icon'
+
+const TOOLS: { href: string; icon: IconName; label: string; color: string }[] = [
+  { href: '/coach/dashboard/daily', icon: 'clipboard', label: 'Daily check-ins', color: '#007A8A' },
+  { href: '/coach/dashboard/workouts', icon: 'dumbbell', label: 'Workouts', color: '#4a7fd4' },
+  { href: '/coach/dashboard/nutrition', icon: 'leaf', label: 'Nutrition', color: '#16A34A' },
+  { href: '/plate', icon: 'plate', label: 'PEAK Plate', color: '#D97706' },
+  { href: '/coach/dashboard/content', icon: 'book', label: 'Courses & audios', color: '#7C3AED' },
+  { href: '/coach/dashboard/ideas', icon: 'bulb', label: 'PEAK Ideas', color: '#CA8A04' },
+  { href: '/coach/dashboard/blueprint-calculator', icon: 'calculator', label: 'Blueprint calc', color: '#1a1f3a' },
+]
 
 const PHASE_COLORS: Record<string, string> = {
   Onboarding: '#f59e0b',
@@ -49,145 +60,134 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
-        <p className="text-sm text-[#ef4444]">Error: {error}</p>
+      <div className="min-h-screen bg-[#F2F4F7] flex items-center justify-center px-6">
+        <p className="text-base text-[#B91C1C] bg-[#FEF2F2] rounded-2xl px-4 py-3">Error: {error}</p>
       </div>
     )
   }
 
-  return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
+  const hour = Number(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata', hour: 'numeric', hour12: false }))
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const today = new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'long', day: 'numeric', month: 'long' })
+  const hideOnPhone = selected ? 'hidden md:flex' : 'flex'
 
-      {/* Top bar */}
-      <div className={`${selected ? 'hidden md:flex' : 'flex'} bg-[#1a1f3a] px-4 md:px-6 py-4 flex-col md:flex-row md:items-center md:justify-between gap-3 flex-shrink-0`}>
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <img
-              src="/logo.png"
-              alt="GetFittWithMohit"
-              className="w-10 h-10 object-contain"
-            />
-            <div>
-              <h1 className="text-white text-sm font-medium tracking-wide">
-                GetFittWithMohit
-              </h1>
-              <p className="text-white/40 text-xs">Coach Dashboard</p>
+  return (
+    <div className="min-h-screen bg-[#F2F4F7] text-[#0f172a]">
+      <div className="max-w-7xl mx-auto px-3 md:px-6 py-4 md:py-6 flex flex-col gap-3 md:gap-4">
+
+        {/* Header */}
+        <div className={`${hideOnPhone} rounded-3xl bg-[#1a1f3a] p-5 md:px-6 items-center justify-between gap-x-4 gap-y-3 flex-wrap`}>
+          <div className="flex items-center gap-4 min-w-0">
+            <img src="/logo.png" alt="" className="w-12 h-12 object-contain flex-shrink-0" />
+            <div className="min-w-0">
+              <p className="m-0 text-xs font-bold tracking-[0.12em] uppercase text-[#00D4E8]">Coach dashboard<span className="hidden md:inline"> · {today}</span></p>
+              <h1 className="m-0 mt-0.5 text-white text-[22px] md:text-[26px] leading-tight font-bold tracking-tight">{greeting}, Mohit.</h1>
             </div>
           </div>
           {atRisk > 0 && (
-            <div className="md:hidden bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap">
-              ⚠ {atRisk} At-Risk
-            </div>
+            <span className="flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-full whitespace-nowrap bg-[#EF4444]/15 text-[#FCA5A5]">
+              <Icon name="alert" size={16} />{atRisk} at risk
+            </span>
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-2 md:flex md:items-center md:gap-3">
-          {[
-            { href: '/coach/dashboard/ideas', icon: '💡', label: 'PEAK Ideas' },
-            { href: '/coach/dashboard/workouts', icon: '🏋️', label: 'Workouts' },
-            { href: '/coach/dashboard/nutrition', icon: '🥗', label: 'Nutrition' },
-            { href: '/coach/dashboard/daily', icon: '📋', label: 'Daily Check-ins' },
-            { href: '/coach/dashboard/content', icon: '📚', label: 'Courses & Audios' },
-            { href: '/plate', icon: '🍽️', label: 'PEAK Plate' },
-            { href: '/coach/dashboard/blueprint-calculator', icon: '🧮', label: 'Blueprint Calculator' },
-          ].map(item => (
+        {/* Tools */}
+        <div className={`${hideOnPhone} gap-2 overflow-x-auto -mx-3 px-3 md:mx-0 md:px-0 pb-1 md:grid md:grid-cols-7`}>
+          {TOOLS.map((t) => (
             <button
-              key={item.href}
-              onClick={() => go(item.href)}
-              className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-1.5 text-center text-white/60 hover:text-white text-[11px] md:text-xs font-medium leading-tight px-2 py-2 md:px-3 md:py-1.5 rounded-xl md:rounded-full border border-white/10 hover:border-white/20 transition-colors md:whitespace-nowrap"
+              key={t.href}
+              onClick={() => go(t.href)}
+              className="flex-shrink-0 w-[5.75rem] md:w-auto flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-white px-2 py-3 text-center hover:shadow-md transition-shadow"
+              style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}
             >
-              <span className="text-base md:text-xs">{item.icon}</span>
-              <span>{item.label}</span>
+              <span className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${t.color}1A`, color: t.color }}>
+                <Icon name={t.icon} size={21} />
+              </span>
+              <span className="text-[13px] font-semibold leading-tight">{t.label}</span>
             </button>
           ))}
-          {atRisk > 0 && (
-            <div className="hidden md:block bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap">
-              ⚠ {atRisk} At-Risk
-            </div>
-          )}
         </div>
-      </div>
 
-      {/* Summary bar */}
-      <div className={`${selected ? 'hidden md:flex' : 'flex'} bg-white border-b border-[#e2e8f0] px-4 md:px-6 py-3 items-center gap-6 flex-shrink-0 overflow-x-auto`}>
-        <div className="text-center flex-shrink-0">
-          <div className="text-lg font-medium text-[#0f172a]">{total}</div>
-          <div className="text-xs text-[#94a3b8] uppercase tracking-wide">Total</div>
-        </div>
-        <div className="w-px h-8 bg-[#e2e8f0]" />
-        <div className="text-center flex-shrink-0">
-          <div className="text-lg font-medium text-[#22c55e]">{onTrack}</div>
-          <div className="text-xs text-[#94a3b8] uppercase tracking-wide">On Track</div>
-        </div>
-        <div className="text-center flex-shrink-0">
-          <div className="text-lg font-medium text-[#f59e0b]">{needsAttention}</div>
-          <div className="text-xs text-[#94a3b8] uppercase tracking-wide">Attention</div>
-        </div>
-        <div className="text-center flex-shrink-0">
-          <div className="text-lg font-medium text-[#ef4444]">{atRisk}</div>
-          <div className="text-xs text-[#94a3b8] uppercase tracking-wide">At Risk</div>
-        </div>
-        <div className="w-px h-8 bg-[#e2e8f0]" />
-        {phaseCounts.map(({ phase, count, color }) => (
-          <div key={phase} className="text-center flex-shrink-0">
-            <div className="text-lg font-medium" style={{ color }}>
-              {count}
-            </div>
-            <div className="text-xs text-[#94a3b8] uppercase tracking-wide">
-              {phase.slice(0, 5)}
-            </div>
+        {/* Summary */}
+        <div className={`${hideOnPhone} flex-col md:flex-row gap-2 md:gap-3`}>
+          <div className="grid grid-cols-4 gap-2 md:flex-1">
+            {[
+              { label: 'Active', value: total, color: '#0f172a' },
+              { label: 'On track', value: onTrack, color: '#16A34A' },
+              { label: 'Attention', value: needsAttention, color: '#D97706' },
+              { label: 'At risk', value: atRisk, color: '#DC2626' },
+            ].map((s) => (
+              <div key={s.label} className="bg-white rounded-2xl px-3 py-3 md:px-4" style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}>
+                <div className="text-[26px] leading-none font-extrabold tracking-tight" style={{ color: s.color }}>{s.value}</div>
+                <div className="mt-1.5 text-[13px] font-medium text-[#64748b]">{s.label}</div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-
-      {/* Subscriptions ending soon */}
-      <div className={selected ? 'hidden md:block' : undefined}>
-        <RenewalsPanel />
-      </div>
-
-      {/* Recorded calls: notes ready to review / calls to file */}
-      <div className={selected ? 'hidden md:block' : undefined}>
-        <CallNotesInbox clients={clients} />
-      </div>
-
-      {/* Main split view. Phones show one pane at a time: the list, or the
-          selected client full-screen with a back button. */}
-      <div className="flex flex-1 md:overflow-hidden">
-
-        <div className={`${selected ? 'hidden md:flex' : 'flex'} w-full md:w-72 flex-shrink-0 md:border-r border-[#e2e8f0] bg-white md:overflow-hidden flex-col`}>
-          <div className="px-4 py-3 border-b border-[#e2e8f0] flex items-center justify-between">
-            <span className="text-xs font-medium text-[#64748b] uppercase tracking-wide">
-              Clients
-            </span>
+          <div className="bg-white rounded-2xl px-4 py-3 flex items-center gap-x-4 gap-y-2 flex-wrap md:flex-nowrap" style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}>
+            {phaseCounts.map(({ phase, count, color }) => (
+              <div key={phase} className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full" style={{ background: color }} />
+                <span className="text-[15px] font-bold">{count}</span>
+                <span className="text-[13px] text-[#64748b]">{phase}</span>
+              </div>
+            ))}
           </div>
-          <ClientList
-            clients={clients}
-            selectedId={selected?.id || null}
-            onSelect={(c) => { setSelected(c); window.scrollTo(0, 0) }}
-            onStatusChange={setClientStatus}
-          />
         </div>
 
-        <div className={`${selected ? 'flex' : 'hidden md:flex'} flex-1 min-w-0 flex-col bg-white md:overflow-hidden`}>
-          {selected && (
-            <button
-              type="button"
-              onClick={() => setSelected(null)}
-              className="md:hidden flex items-center gap-1 min-h-12 px-3 text-[17px] font-medium text-[#007A8A] border-b border-[#e2e8f0] bg-white sticky top-0 z-10"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
-              All clients
-            </button>
-          )}
-          <div className="flex-1 min-h-0">
-            <DetailPanel
-              client={selected}
-              onFlag={flagClient}
-              onSaveNotes={saveNotes}
+        {/* Subscriptions ending soon */}
+        <div className={`${selected ? 'hidden md:block' : ''} empty:hidden`}>
+          <RenewalsPanel />
+        </div>
+
+        {/* Recorded calls: notes ready to review / calls to file */}
+        <div className={`${selected ? 'hidden md:block' : ''} empty:hidden`}>
+          <CallNotesInbox clients={clients} />
+        </div>
+
+        {/* Main split view. Phones show one pane at a time: the list, or the
+            selected client full-screen with a back button. */}
+        <div className="flex gap-4 items-start">
+
+          <div
+            className={`${selected ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-shrink-0 flex-col bg-white rounded-3xl overflow-hidden md:sticky md:top-4 md:max-h-[calc(100vh-2rem)]`}
+            style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}
+          >
+            <div className="px-4 pt-4 pb-1 flex items-center gap-2">
+              <Icon name="users" size={18} />
+              <span className="text-[17px] font-bold">Clients</span>
+            </div>
+            <ClientList
+              clients={clients}
+              selectedId={selected?.id || null}
+              onSelect={(c) => { setSelected(c); window.scrollTo(0, 0) }}
+              onStatusChange={setClientStatus}
             />
           </div>
-        </div>
 
+          <div
+            className={`${selected ? 'flex' : 'hidden md:flex'} flex-1 min-w-0 flex-col bg-white rounded-3xl overflow-hidden md:sticky md:top-4 md:h-[calc(100vh-2rem)]`}
+            style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}
+          >
+            {selected && (
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                className="md:hidden flex items-center gap-1 min-h-12 px-3 text-[17px] font-medium text-[#007A8A] border-b border-[#E5E7EB] bg-white sticky top-0 z-10"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+                All clients
+              </button>
+            )}
+            <div className="flex-1 min-h-0">
+              <DetailPanel
+                client={selected}
+                onFlag={flagClient}
+                onSaveNotes={saveNotes}
+              />
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   )

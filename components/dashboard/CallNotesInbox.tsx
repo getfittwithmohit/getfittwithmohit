@@ -1,5 +1,6 @@
 'use client'
 
+import { Icon } from '@/components/ui/Icon'
 import { useEffect, useState } from 'react'
 import { toast } from '@/lib/ui/feedback'
 import type { CallDraft } from '@/components/coach/CallDrafts'
@@ -59,14 +60,14 @@ export function CallNotesInbox({ clients }: { clients: { id: string; full_name: 
   const sorted = [...clients].sort((a, b) => a.full_name.localeCompare(b.full_name))
 
   return (
-    <div className="bg-white border-b border-[#e2e8f0] px-4 md:px-6 py-3 flex flex-col gap-2">
-      <p className="text-xs font-medium text-[#64748b] uppercase tracking-wide m-0">🎙 Call notes</p>
+    <div className="bg-white rounded-3xl px-4 md:px-5 py-4 flex flex-col gap-2" style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}>
+      <p className="text-[17px] font-bold text-[#0f172a] m-0 flex items-center gap-2"><Icon name="mic" size={18} />Call notes</p>
 
       {ready.map((d) => (
         <a
           key={d.id}
           href={`/coach/dashboard/client/${d.client_id}?tab=calls`}
-          className="flex items-center justify-between gap-3 rounded-xl border border-[#e2e8f0] px-3 py-2.5 hover:bg-[#f8fafc]"
+          className="flex items-center justify-between gap-3 rounded-2xl bg-[#F7F9FB] px-4 py-3 hover:bg-[#F2F4F7]"
         >
           <span className="min-w-0">
             <span className="block text-sm font-medium text-[#0f172a] truncate">
@@ -87,7 +88,7 @@ export function CallNotesInbox({ clients }: { clients: { id: string; full_name: 
       ))}
 
       {unmatched.map((d) => (
-        <div key={d.id} className="rounded-xl border border-dashed border-[#cbd5e1] px-3 py-2.5 flex flex-col gap-2">
+        <div key={d.id} className="rounded-2xl border border-dashed border-[#cbd5e1] px-4 py-3 flex flex-col gap-2">
           <div className="min-w-0">
             <p className="text-sm font-medium text-[#0f172a] m-0 truncate">{d.meeting_title || 'Recorded call'} · {dayLabel(d.meeting_at)}</p>
             <p className="text-xs text-[#94a3b8] m-0 truncate">

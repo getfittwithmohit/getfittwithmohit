@@ -151,10 +151,10 @@ export function RenewalsPanel() {
   if (!error && clients.length === 0) return null
 
   return (
-    <div className="px-6 pt-4">
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden">
-        <div className="px-5 py-3 border-b border-[#e2e8f0] flex items-center justify-between">
-          <p className="text-sm font-semibold text-[#0f172a]">
+    <div>
+      <div className="bg-white rounded-3xl overflow-hidden" style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}>
+        <div className="px-5 pt-4 pb-2 flex items-center justify-between">
+          <p className="m-0 text-[17px] font-bold text-[#0f172a]">
             🔔 Renewals · {clients.length} ending within {RENEWAL_WINDOW_DAYS} days
           </p>
         </div>

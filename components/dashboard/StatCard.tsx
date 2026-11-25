@@ -7,18 +7,18 @@ interface StatCardProps {
 
 export function StatCard({ label, value, sub, color = '#0f172a' }: StatCardProps) {
   return (
-    <div className="bg-[#f8fafc] rounded-xl p-4 text-center border border-[#e2e8f0]">
+    <div className="bg-[#F7F9FB] rounded-2xl px-3 py-3.5">
       <div
-        className="text-xl font-medium mb-0.5"
+        className="text-[24px] leading-none font-extrabold tracking-tight mb-1.5"
         style={{ color }}
       >
         {value}
       </div>
-      <div className="text-xs text-[#94a3b8] uppercase tracking-wide">
+      <div className="text-[13px] font-medium text-[#64748b]">
         {label}
       </div>
       {sub && (
-        <div className="text-xs text-[#64748b] mt-0.5">{sub}</div>
+        <div className="text-xs text-[#94a3b8] mt-0.5">{sub}</div>
       )}
     </div>
   )
