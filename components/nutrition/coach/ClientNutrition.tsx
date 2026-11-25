@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react'
 import { getFoods } from '@/lib/supabase/queries/foods'
 import {
-  archivePlan, createPlan, getBlueprintTargets, getClientContext, getClientPlan, getTemplates, type NutritionPlan,
+  archivePlan, createPlan, getBlueprintStatus, getClientContext, getClientPlan, getTemplates, type NutritionPlan,
 } from '@/lib/supabase/queries/nutritionPlans'
 import { describeItem, emptyOption, newId, scaleDoc, LEVEL_LABEL, type ClientContext, type Level, type PlanDoc, type PlanItem, type PlanTargets } from '@/lib/nutrition/plan'
 import type { Food, Nutrients } from '@/lib/nutrition/foods'
+import type { BlueprintStatus } from '@/lib/nutrition/blueprintStatus'
 import { PlanEditor } from './PlanEditor'
 import { confirmDialog, toast } from '@/lib/ui/feedback'
 import { compressImage } from '@/lib/photos/progressPhotos'
@@ -57,6 +58,17 @@ const field = 'w-full px-3 py-2 text-sm border border-[#e2e8f0] rounded-lg bg-wh
 
 const FALLBACK_TARGETS: PlanTargets = { kcal: 1800, protein_g: 100, carbs_g: 200, fat_g: 60, fibre_g: 30, water_l: 3 }
 
+function targetsNote(s: BlueprintStatus | null, first: string): string {
+  if (!s) return 'Starting targets — edit them in the plan'
+  switch (s.kind) {
+    case 'blueprint': return 'Targets from the Fat Loss Blueprint'
+    case 'maintenance': return `${first} is ${s.weightKg} kg — at or below ideal weight (${s.idealWeightKg} kg), so no fat-loss deficit. Maintenance starting targets — edit them in the plan`
+    case 'no-height': return `No Blueprint yet — ${first}’s height isn’t saved. Set it on the Profile tab and press Save. Starting targets for now`
+    case 'bad-height': return `No Blueprint yet — saved height (${s.heightInches} in) looks wrong. Fix it on the Profile tab. Starting targets for now`
+    case 'no-weight': return `No Blueprint yet — ${first}’s weight isn’t saved. Add it on the Profile tab. Starting targets for now`
+  }
+}
+
 export function ClientNutrition({ clientId, clientName }: { clientId: string; clientName: string }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -64,7 +76,8 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
   const [plan, setPlan] = useState<NutritionPlan | null>(null)
   const [ctx, setCtx] = useState<ClientContext | null>(null)
   const [templates, setTemplates] = useState<NutritionPlan[]>([])
-  const [bp, setBp] = useState<PlanTargets | null>(null)
+  const [bpStatus, setBpStatus] = useState<BlueprintStatus | null>(null)
+  const bp: PlanTargets | null = bpStatus && 'targets' in bpStatus ? bpStatus.targets : null
   const [templateId, setTemplateId] = useState('')
   const [level, setLevel] = useState<Level>(1)
   const [busy, setBusy] = useState(false)
@@ -100,10 +113,10 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([getFoods(), getClientPlan(clientId), getClientContext(clientId), getTemplates(), getBlueprintTargets(clientId)])
+    Promise.all([getFoods(), getClientPlan(clientId), getClientContext(clientId), getTemplates(), getBlueprintStatus(clientId)])
       .then(([f, p, c, t, b]) => {
         if (cancelled) return
-        setFoods(f); setPlan(p); setCtx(c); setTemplates(t); setBp(b)
+        setFoods(f); setPlan(p); setCtx(c); setTemplates(t); setBpStatus(b)
         const d = (c.diet || '').toLowerCase()
         const match = t.find((x) => (x.diet || '').toLowerCase() === d) ||
           t.find((x) => d.includes('non') ? x.diet === 'Non-vegetarian' : d.includes('egg') ? x.diet === 'Eggetarian' : d.includes('vegan') ? x.diet === 'Vegan' : d.includes('jain') ? x.diet === 'Jain' : x.diet === 'Vegetarian')
@@ -284,7 +297,7 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
         </div>
 
         <div className="rounded-xl bg-[#f8fafc] border border-[#e2e8f0] p-3">
-          <p className="text-xs text-[#64748b] m-0 mb-1">{bp ? 'Targets from the Fat Loss Blueprint' : 'No Blueprint yet (height or weight missing) — starting targets, edit them in the plan'}</p>
+          <p className="text-xs text-[#64748b] m-0 mb-1">{targetsNote(bpStatus, first)}</p>
           <p className="text-sm font-semibold text-[#0f172a] m-0">{t.kcal} kcal · {t.protein_g} g protein · {t.carbs_g} g carbs · {t.fat_g} g fat</p>
         </div>
 
