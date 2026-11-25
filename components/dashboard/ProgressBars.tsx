@@ -9,11 +9,11 @@ function ProgressBarRow({ label, value, max = 100, color }: ProgressBarRowProps)
   const pct = Math.min(Math.round((value / max) * 100), 100)
   return (
     <div className="mb-3">
-      <div className="flex justify-between text-xs mb-1.5">
-        <span className="text-[#64748b]">{label}</span>
-        <span className="font-medium text-[#0f172a]">{pct}%</span>
+      <div className="flex justify-between text-[15px] mb-1.5">
+        <span className="text-[#475569]">{label}</span>
+        <span className="font-bold text-[#0f172a]">{pct}%</span>
       </div>
-      <div className="w-full h-1.5 bg-[#e2e8f0] rounded-full overflow-hidden">
+      <div className="w-full h-2 bg-[#EEF1F4] rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-500"
           style={{ width: `${pct}%`, background: color }}
