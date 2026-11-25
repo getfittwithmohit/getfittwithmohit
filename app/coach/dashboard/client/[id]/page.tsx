@@ -111,8 +111,9 @@ export default function ClientProgressPage() {
   // Edit form state
   const [editData, setEditData] = useState<any>(null)
   const [bodyMetrics, setBodyMetrics] = useState<any>(null)
-  const [heightFeet, setHeightFeet] = useState<number>(5)
-  const [heightInch, setHeightInch] = useState<number>(6)
+  // null = no height saved yet — never pre-fill a fake height (it looked saved when it wasn't)
+  const [heightFeet, setHeightFeet] = useState<number | null>(null)
+  const [heightInch, setHeightInch] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
 
@@ -332,10 +333,10 @@ export default function ClientProgressPage() {
         })
         .eq('id', clientId)
 
-      const totalHeightInches = feetInchesToTotal(heightFeet, heightInch)
+      const totalHeightInches = heightFeet != null ? feetInchesToTotal(heightFeet, heightInch ?? 0) : null
 
       if (client?.body_metrics?.[0]?.id) {
-        await supabase
+        const { error: bmErr } = await supabase
           .from('body_metrics')
           .update({
             weight_kg: parseFloat(bodyMetrics.weight_kg) || null,
@@ -347,8 +348,9 @@ export default function ClientProgressPage() {
             primary_goal: bodyMetrics.primary_goal || null,
           })
           .eq('id', client.body_metrics[0].id)
+        if (bmErr) throw bmErr
       } else {
-        await supabase
+        const { error: bmErr } = await supabase
           .from('body_metrics')
           .insert({
             client_id: clientId,
@@ -360,6 +362,7 @@ export default function ClientProgressPage() {
             target_weight_kg: parseFloat(bodyMetrics.target_weight_kg) || null,
             primary_goal: bodyMetrics.primary_goal || null,
           })
+        if (bmErr) throw bmErr
       }
 
       setBodyMetrics((prev: any) => ({ ...prev, height_inches: totalHeightInches }))
@@ -830,10 +833,15 @@ export default function ClientProgressPage() {
                   <div>
                     <label className="text-xs text-[#94a3b8] mb-1 block">Feet</label>
                     <select
-                      value={heightFeet}
-                      onChange={(e) => setHeightFeet(parseInt(e.target.value))}
+                      value={heightFeet ?? ''}
+                      onChange={(e) => {
+                        const v = e.target.value === '' ? null : parseInt(e.target.value)
+                        setHeightFeet(v)
+                        if (v != null && heightInch == null) setHeightInch(0)
+                      }}
                       className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
                     >
+                      <option value="">— ft</option>
                       {FEET_OPTIONS.map((f) => (
                         <option key={f} value={f}>{f} ft</option>
                       ))}
@@ -842,19 +850,27 @@ export default function ClientProgressPage() {
                   <div>
                     <label className="text-xs text-[#94a3b8] mb-1 block">Inches</label>
                     <select
-                      value={heightInch}
-                      onChange={(e) => setHeightInch(parseInt(e.target.value))}
-                      className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                      value={heightInch ?? ''}
+                      disabled={heightFeet == null}
+                      onChange={(e) => setHeightInch(e.target.value === '' ? null : parseInt(e.target.value))}
+                      className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors disabled:bg-[#f8fafc]"
                     >
+                      <option value="">— in</option>
                       {INCH_OPTIONS.map((i) => (
                         <option key={i} value={i}>{i} in</option>
                       ))}
                     </select>
                   </div>
                 </div>
-                <p className="text-xs text-[#94a3b8] mt-1.5">
-                  {heightFeet}' {heightInch}" — {feetInchesToTotal(heightFeet, heightInch)} inches total
-                </p>
+                {heightFeet != null ? (
+                  <p className="text-xs text-[#94a3b8] mt-1.5">
+                    {heightFeet}' {heightInch ?? 0}" — {feetInchesToTotal(heightFeet, heightInch ?? 0)} inches total
+                  </p>
+                ) : (
+                  <p className="text-xs text-[#d97706] mt-1.5">
+                    Height not set — pick feet and inches, then Save. The nutrition Blueprint needs it.
+                  </p>
+                )}
               </div>
 
               {field('Waist (inches)', 'waist_inches', 'number', 'metrics')}

@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase/client'
-import { generateBlueprint, isHeightPlausible } from '@/lib/utils/blueprint'
+import { blueprintStatusFrom, type BlueprintStatus } from '@/lib/nutrition/blueprintStatus'
 import type { ClientContext, PlanDoc, PlanTargets } from '@/lib/nutrition/plan'
 
 // Nutrition plans (supabase/nutrition_plans.sql) — coach only (RLS).
@@ -97,24 +97,18 @@ export async function getClientContext(clientId: string): Promise<ClientContext>
   }
 }
 
-// Starting targets from the Fat Loss Blueprint (latest weight, height, gender).
-export async function getBlueprintTargets(clientId: string): Promise<PlanTargets | null> {
+// Starting targets for the coach Nutrition tab, with the reason when there's no Blueprint.
+export async function getBlueprintStatus(clientId: string): Promise<BlueprintStatus> {
   const [c, bm, wk] = await Promise.all([
     supabase.from('clients').select('gender').eq('id', clientId).maybeSingle(),
-    supabase.from('body_metrics').select('height_inches, weight_kg').eq('client_id', clientId).order('recorded_at', { ascending: true }).limit(1).maybeSingle(),
+    supabase.from('body_metrics').select('height_inches, weight_kg').eq('client_id', clientId).order('recorded_at', { ascending: true }),
     supabase.from('weekly_checkins').select('weight_kg').eq('client_id', clientId).not('weight_kg', 'is', null).order('week_number', { ascending: false }).limit(1).maybeSingle(),
   ])
-  const height = Number(bm.data?.height_inches)
-  const weight = Number(wk.data?.weight_kg ?? bm.data?.weight_kg)
-  if (!height || !weight || !isHeightPlausible(height)) return null
-  const bp = generateBlueprint(weight, height, c.data?.gender ?? null)
-  if (bp.notApplicable) return null
-  return {
-    kcal: Math.max(1200, bp.calories),
-    protein_g: bp.proteinG,
-    carbs_g: bp.carbsG,
-    fat_g: bp.fatsG,
-    fibre_g: bp.fiberG,
-    water_l: 3,
-  }
+  if (bm.error) throw bm.error
+  return blueprintStatusFrom(bm.data || [], wk.data?.weight_kg, c.data?.gender ?? null)
+}
+
+export async function getBlueprintTargets(clientId: string): Promise<PlanTargets | null> {
+  const s = await getBlueprintStatus(clientId)
+  return s.kind === 'blueprint' ? s.targets : null
 }

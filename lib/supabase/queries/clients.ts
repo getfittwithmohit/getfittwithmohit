@@ -240,6 +240,9 @@ export async function getClientProgress(clientId: string) {
       .from('clients')
       .select('*, body_metrics(*)')
       .eq('id', clientId)
+      // Oldest body_metrics row first — the same row the Nutrition Blueprint reads,
+      // so the Profile tab always edits what the Blueprint uses.
+      .order('recorded_at', { referencedTable: 'body_metrics', ascending: true })
       .single(),
 
     supabase

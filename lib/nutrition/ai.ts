@@ -4,7 +4,7 @@
 // number in a plan still comes from the library, never from the model.
 
 import { createClient } from '@supabase/supabase-js'
-import { generateBlueprint, isHeightPlausible } from '@/lib/utils/blueprint'
+import { blueprintStatusFrom } from './blueprintStatus'
 import { defaultMeasure, nutrientsFor, type Food } from './foods'
 import { dayTotals, newId, optionTotals, type Level, type PlanDoc, type PlanItem, type PlanTargets } from './plan'
 
@@ -50,24 +50,19 @@ export async function loadClientFacts(clientId: string): Promise<{ facts: Client
     one(admin.from('nutrition').select('*').eq('client_id', clientId).maybeSingle()),
     one(admin.from('lifestyle').select('day_in_life').eq('client_id', clientId).maybeSingle()),
     one(admin.from('medical_history').select('conditions').eq('client_id', clientId).maybeSingle()),
-    one(admin.from('body_metrics').select('height_inches, weight_kg, primary_goal').eq('client_id', clientId).order('recorded_at', { ascending: true }).limit(1).maybeSingle()),
+    one(admin.from('body_metrics').select('height_inches, weight_kg, primary_goal').eq('client_id', clientId).order('recorded_at', { ascending: true })),
     one(admin.from('weekly_checkins').select('weight_kg').eq('client_id', clientId).not('weight_kg', 'is', null).order('week_number', { ascending: false }).limit(1).maybeSingle()),
     one(admin.from('review_calls').select('week_number, discussed, changes, next_focus').eq('client_id', clientId).eq('status', 'completed').order('week_number', { ascending: false }).limit(1).maybeSingle()),
   ])
   const c = client as { full_name?: string; gender?: string } | null
   const n = nutrition as Record<string, unknown> | null
-  const m = metrics as { height_inches?: number; weight_kg?: number; primary_goal?: string } | null
+  const metricRows = (metrics as { height_inches?: number; weight_kg?: number; primary_goal?: string }[] | null) || []
+  const m = metricRows[0] ?? null
   const cl = call as { week_number: number; discussed: string | null; changes: string | null; next_focus: string | null } | null
 
-  let targets: PlanTargets | null = null
-  const height = num(m?.height_inches)
-  const weight = num((weekly as { weight_kg?: number } | null)?.weight_kg ?? m?.weight_kg)
-  if (height && weight && isHeightPlausible(height)) {
-    const bp = generateBlueprint(weight, height, c?.gender ?? null)
-    if (!bp.notApplicable) {
-      targets = { kcal: Math.max(1200, bp.calories), protein_g: bp.proteinG, carbs_g: bp.carbsG, fat_g: bp.fatsG, fibre_g: bp.fiberG, water_l: 3 }
-    }
-  }
+  // Same rule as the coach Nutrition tab (blueprint, or maintenance if already at/below ideal).
+  const status = blueprintStatusFrom(metricRows, (weekly as { weight_kg?: number } | null)?.weight_kg, c?.gender ?? null)
+  const targets: PlanTargets | null = status.kind === 'blueprint' || status.kind === 'maintenance' ? status.targets : null
   return {
     targets,
     facts: {
