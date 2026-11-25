@@ -4,6 +4,7 @@ import "./globals.css";
 import { FeedbackHost } from "@/lib/ui/feedback";
 import { TabBar } from "@/components/nav/TabBar";
 import { RouterBridge } from "@/components/nav/RouterBridge";
+import { FeelHost } from "@/components/nav/FeelHost";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,6 +53,7 @@ export default function RootLayout({
         {children}
         <TabBar />
         <RouterBridge />
+        <FeelHost />
         <FeedbackHost />
       </body>
     </html>

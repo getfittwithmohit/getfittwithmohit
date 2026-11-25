@@ -15,6 +15,12 @@ const TABS: Tab[] = [
   { label: 'Me', href: '/me', icon: 'user', owns: (p) => p.startsWith('/me') || p.startsWith('/home/') || p.startsWith('/leaderboard') },
 ]
 
+// Index of the main tab screen a path is (0–3), or -1 for anything else.
+const TAB_ROOTS = ['/home', '/train', '/learn', '/me']
+export function tabIndex(pathname: string) {
+  return TAB_ROOTS.indexOf(pathname)
+}
+
 // Screens that show the tab bar. Focused flows (a live workout, the ritual,
 // forms with their own bottom buttons, the audio player) keep the full screen.
 const SHOW_ON = [

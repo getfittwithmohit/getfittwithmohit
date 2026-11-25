@@ -117,5 +117,23 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
 }
 
 export function Skeleton({ h = 64 }: { h?: number }) {
-  return <div className="rounded-2xl bg-white/70 animate-pulse" style={{ height: h }} />
+  return <div className="rounded-2xl gfm-shimmer" style={{ height: h }} />
+}
+
+// First paint of a tab screen while auth/client load: the real title plus
+// shimmering placeholders shaped like the content, instead of a spinner.
+export function ScreenSkeleton({ title, blocks = [88, 220, 64, 64] }: { title: string; blocks?: number[] }) {
+  return (
+    <Screen>
+      <div className="flex items-end justify-between gap-3 px-1 pb-1">
+        <div className="flex flex-col gap-1.5 min-w-0">
+          <span className="h-3.5 w-28 rounded-md gfm-shimmer" />
+          <h1 className="m-0 text-[34px] leading-tight font-extrabold tracking-tight">{title}</h1>
+        </div>
+        <span className="w-10 h-10 rounded-full gfm-shimmer mb-1" />
+      </div>
+      {blocks.map((h, i) => <Skeleton key={i} h={h} />)}
+      <span className="sr-only" role="status">Loading</span>
+    </Screen>
+  )
 }

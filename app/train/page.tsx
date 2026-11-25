@@ -4,11 +4,10 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useClient } from '@/hooks/useClient'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
-import { PageLoader } from '@/components/ui/PageLoader'
 import { getCached, setCached } from '@/lib/ui/cache'
 import { Icon } from '@/components/ui/Icon'
 import { WorkoutCard } from '@/components/home/WorkoutCard'
-import { Badge, Card, Group, LargeTitle, Row, Screen, SectionTitle, Skeleton, T } from '@/components/ui/ios'
+import { Badge, Card, Group, LargeTitle, Row, Screen, SectionTitle, Skeleton, T, ScreenSkeleton } from '@/components/ui/ios'
 import { getActivePlan, getLogs } from '@/lib/supabase/queries/workouts'
 import { isoWeekday, todaysSession } from '@/lib/utils/workouts'
 import { addDaysIST, istDate, todayIST } from '@/lib/utils/istDate'
@@ -49,7 +48,7 @@ export default function TrainPage() {
     return () => { cancelled = true }
   }, [checking, loading, client])
 
-  if (checking || loading) return <PageLoader />
+  if (checking || loading) return <ScreenSkeleton title="Train" blocks={[110, 200, 72]} />
 
   const today = todayIST()
   const weekStart = addDaysIST(today, -(isoWeekday(today) - 1))
