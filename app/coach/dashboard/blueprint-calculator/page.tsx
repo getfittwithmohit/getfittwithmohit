@@ -1,5 +1,6 @@
 'use client'
 
+import { CoachShell } from '@/components/layout/CoachShell'
 import { toast } from '@/lib/ui/feedback'
 import { useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
@@ -8,7 +9,6 @@ import { generateBlueprint, feetInchesToTotal } from '@/lib/utils/blueprint'
 import { BlueprintCard } from '@/components/blueprint/BlueprintCard'
 import { calcWHtR } from '@/lib/utils/whtr'
 import { WHtRCard } from '@/components/blueprint/WHtRCard'
-import { go } from '@/lib/ui/navigate'
 
 const FEET_OPTIONS = [3, 4, 5, 6, 7]
 const INCH_OPTIONS = Array.from({ length: 12 }, (_, i) => i)
@@ -51,41 +51,19 @@ export default function BlueprintCalculatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
-
-      {/* Header */}
-      <div className="bg-[#1a1f3a] px-6 py-5">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => go('/coach/dashboard')}
-              className="text-white/40 hover:text-white/70 text-xs transition-colors"
-            >
-              ← Dashboard
-            </button>
-          </div>
-          <div className="text-right">
-            <p className="text-[#00D4E8] text-xs font-medium tracking-wide">GETFITTWITHMOHIT</p>
-            <p className="text-white/40 text-xs">Transform to Inspire</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-2xl mx-auto px-4 py-6">
-
-        <h1 className="text-xl font-semibold text-[#0f172a] mb-1">
-          Fat Loss Blueprint Calculator
-        </h1>
-        <p className="text-sm text-[#64748b] mb-6">
-          Quick macro calculator for clients or prospects — no account needed.
-        </p>
+    <CoachShell
+      title="Fat Loss Blueprint Calculator"
+      subtitle="Quick macro calculator for clients or prospects — no account needed."
+      width="max-w-2xl"
+    >
+      <div>
 
         {/* Input form */}
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 mb-6">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-6 mb-6">
           <div className="flex flex-col gap-4">
 
             <div>
-              <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+              <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">
                 Name <span className="text-[#94a3b8]">(optional)</span>
               </label>
               <input
@@ -93,12 +71,12 @@ export default function BlueprintCalculatorPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Prospect or client name"
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
               />
             </div>
 
             <div>
-              <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+              <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">
                 Current weight (kg)
               </label>
               <input
@@ -106,21 +84,21 @@ export default function BlueprintCalculatorPage() {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 placeholder="e.g. 80"
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
               />
             </div>
 
             <div>
-              <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+              <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">
                 Height
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-[#94a3b8] mb-1 block">Feet</label>
+                  <label className="text-[13px] font-medium text-[#64748b] mb-1 block">Feet</label>
                   <select
                     value={heightFeet}
                     onChange={(e) => setHeightFeet(parseInt(e.target.value))}
-                    className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                    className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
                   >
                     {FEET_OPTIONS.map((f) => (
                       <option key={f} value={f}>{f} ft</option>
@@ -128,11 +106,11 @@ export default function BlueprintCalculatorPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-[#94a3b8] mb-1 block">Inches</label>
+                  <label className="text-[13px] font-medium text-[#64748b] mb-1 block">Inches</label>
                   <select
                     value={heightInch}
                     onChange={(e) => setHeightInch(parseInt(e.target.value))}
-                    className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                    className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
                   >
                     {INCH_OPTIONS.map((i) => (
                       <option key={i} value={i}>{i} in</option>
@@ -146,7 +124,7 @@ export default function BlueprintCalculatorPage() {
             </div>
 
             <div>
-              <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+              <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">
                 Waist circumference (inches) <span className="text-[#94a3b8]">(optional)</span>
               </label>
               <input
@@ -154,12 +132,12 @@ export default function BlueprintCalculatorPage() {
                 value={waist}
                 onChange={(e) => setWaist(e.target.value)}
                 placeholder="e.g. 36"
-                className="w-full px-3 py-2.5 border border-[#e2e8f0] rounded-lg text-sm focus:outline-none focus:border-[#00D4E8] transition-colors"
+                className="w-full px-3.5 py-2.5 bg-[#F2F4F7] border border-transparent rounded-xl text-[15px] focus:outline-none focus:bg-white focus:border-[#00D4E8] focus:ring-4 focus:ring-[#00D4E8]/15 transition-colors"
               />
             </div>
 
             <div>
-              <label className="text-xs font-medium text-[#64748b] mb-1.5 block">
+              <label className="text-[13px] font-semibold text-[#475569] mb-1.5 block">
                 Gender
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -218,6 +196,6 @@ export default function BlueprintCalculatorPage() {
         )}
 
       </div>
-    </div>
+    </CoachShell>
   )
 }

@@ -69,7 +69,7 @@ export function IdeaInsights() {
   }).sort((a, b) => (b.lastOpen || '').localeCompare(a.lastOpen || ''))
 
   const stat = (title: string, value: string, note: string) => (
-    <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col gap-1">
+    <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 flex flex-col gap-1">
       <p className="text-xs text-[#64748b]">{title}</p>
       <p className="text-3xl font-bold text-[#0f172a]">{value}</p>
       <p className="text-xs text-[#94a3b8]">{note}</p>
@@ -93,7 +93,7 @@ export function IdeaInsights() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4">
           <p className="text-sm font-semibold text-[#0f172a] mb-3">Most saved ideas</p>
           {topSaved.length === 0 && <p className="text-sm text-[#94a3b8]">No saves yet.</p>}
           <ul className="flex flex-col gap-2">
@@ -118,7 +118,7 @@ export function IdeaInsights() {
           )}
         </div>
 
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 overflow-x-auto">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 overflow-x-auto">
           <p className="text-sm font-semibold text-[#0f172a] mb-3">Clients this week</p>
           <table className="w-full text-sm">
             <thead>

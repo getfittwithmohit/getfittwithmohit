@@ -220,7 +220,7 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
     const pt = draft.plan.targets
     return (
       <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-4">
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 flex flex-col gap-3">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5 flex flex-col gap-3">
           <p className="text-base font-semibold text-[#0f172a] m-0">{first}: now vs the new plan</p>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl bg-[#fef2f2] p-3">
@@ -252,7 +252,7 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
           )}
         </div>
 
-        <details className="bg-white border border-[#e2e8f0] rounded-2xl p-4">
+        <details className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4">
           <summary className="text-sm font-semibold text-[#0f172a] cursor-pointer">How the app read {first}’s food log</summary>
           <div className="flex flex-col gap-2 mt-3">
             {draft.current.meals.map((m, i) => (
@@ -286,7 +286,7 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-4">
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 flex flex-col gap-4">
+      <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5 flex flex-col gap-4">
         <div>
           <p className="text-base font-semibold text-[#0f172a] m-0">Create {first}’s nutrition plan</p>
           <p className="text-sm text-[#64748b] m-0 mt-1">

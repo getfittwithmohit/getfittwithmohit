@@ -1,5 +1,6 @@
 'use client'
 
+import { CoachShell } from '@/components/layout/CoachShell'
 import { confirmDialog } from '@/lib/ui/feedback'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
@@ -10,7 +11,6 @@ import { PEAK_TOPICS, TOPIC_LABEL, type PeakTopic } from '@/lib/constants/peakId
 import { IdeaEditor } from '@/components/peak/coach/IdeaEditor'
 import { IdeaWriter } from '@/components/peak/coach/IdeaWriter'
 import { IdeaInsights } from '@/components/peak/coach/IdeaInsights'
-import { go } from '@/lib/ui/navigate'
 
 type Tab = 'review' | 'library' | 'write' | 'insights'
 
@@ -65,41 +65,26 @@ export default function CoachIdeasPage() {
   const approvedCount = (ideas || []).filter((i) => i.status === 'approved').length
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
-      <div className="bg-[#1a1f3a] px-6 py-4">
-        <div className="max-w-6xl mx-auto">
-          <button onClick={() => (go('/coach/dashboard'))} className="text-white/40 hover:text-white/70 text-xs transition-colors mb-1">
-            ← Dashboard
-          </button>
-          <h1 className="text-white text-lg font-medium">PEAK Ideas</h1>
-          <p className="text-white/40 text-xs">One idea a day, one small action. {approvedCount} live ideas.</p>
-        </div>
-      </div>
-
-      <div className="bg-white border-b border-[#e2e8f0]">
-        <div className="max-w-6xl mx-auto px-4 flex gap-1 overflow-x-auto">
-          {([
-            { key: 'review', label: `📝 Review${drafts.length ? ` (${drafts.length})` : ''}` },
-            { key: 'library', label: '📚 Live ideas' },
-            { key: 'write', label: '✨ Write new' },
-            { key: 'insights', label: '📈 Insights' },
-          ] as const).map((t) => (
-            <button key={t.key} onClick={() => { setTab(t.key); setNotice(null) }}
-              className={`px-4 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${tab === t.key ? 'border-[#00D4E8] text-[#0f172a]' : 'border-transparent text-[#94a3b8] hover:text-[#64748b]'}`}>
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 py-6 flex flex-col gap-4">
+    <CoachShell
+      title="PEAK Ideas"
+      subtitle={`One idea a day, one small action. ${approvedCount} live ideas.`}
+      tabs={[
+        { key: 'review', label: `Review${drafts.length ? ` (${drafts.length})` : ''}` },
+        { key: 'library', label: 'Live ideas' },
+        { key: 'write', label: 'Write new' },
+        { key: 'insights', label: 'Insights' },
+      ]}
+      activeTab={tab}
+      onTab={(k) => { setTab(k as typeof tab); setNotice(null) }}
+    >
+      <div className="py-2 flex flex-col gap-4">
         {error && <p className="text-sm text-red-600">{error}</p>}
         {notice && <p className="text-sm rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-3">{notice}</p>}
 
         {tab === 'review' && (
           !ideas ? <p className="text-sm text-[#64748b]">Loading…</p> :
           drafts.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6">
+            <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-6">
               <p className="font-semibold text-[#0f172a]">Nothing to review</p>
               <p className="text-sm text-[#64748b] mt-1">Use <b>Write new</b> to get a fresh batch. Aim to stay at least two weeks ahead of your clients.</p>
             </div>
@@ -139,6 +124,6 @@ export default function CoachIdeasPage() {
 
         {tab === 'insights' && <IdeaInsights />}
       </div>
-    </div>
+    </CoachShell>
   )
 }

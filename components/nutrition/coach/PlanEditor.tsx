@@ -161,7 +161,7 @@ export function PlanEditor({
   return (
     <div className="flex flex-col gap-4">
       {/* Header */}
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col gap-3">
+      <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 flex flex-col gap-3">
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wide m-0">{title || (isTemplate ? 'Template' : 'Nutrition plan')}</p>
           <span className={`text-[11px] ${saveState === 'error' ? 'text-[#b91c1c]' : 'text-[#94a3b8]'}`}>
@@ -192,7 +192,7 @@ export function PlanEditor({
       <AskAI doc={doc} foods={byslug} clientId={plan.client_id} diet={ctx?.diet ?? plan.diet} onApply={setDoc} />
 
       {/* Targets + day */}
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col gap-3">
+      <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 flex flex-col gap-3">
         <p className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wide m-0">Daily targets</p>
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {([['kcal', 'kcal'], ['protein_g', 'Protein g'], ['carbs_g', 'Carbs g'], ['fat_g', 'Fat g'], ['fibre_g', 'Fibre g'], ['water_l', 'Water L']] as const).map(([k, l]) => (
@@ -224,7 +224,7 @@ export function PlanEditor({
       )}
 
       {/* Rules */}
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col gap-2">
+      <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 flex flex-col gap-2">
         <p className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wide m-0">Rules for this client</p>
         {doc.rules.map((r, i) => (
           <div key={i} className="flex gap-2 items-center">
@@ -237,7 +237,7 @@ export function PlanEditor({
 
       {/* Meals */}
       {doc.meals.map((m, mi) => (
-        <div key={m.id} className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col gap-3">
+        <div key={m.id} className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <input value={m.name} onChange={(e) => updMeal(m.id, { name: e.target.value })} className={`${input} font-semibold`} aria-label="Meal name" />
             <input value={m.time} onChange={(e) => updMeal(m.id, { time: e.target.value })} className="w-24 px-2 py-2 text-sm border border-[#e2e8f0] rounded-lg" aria-label="Time" placeholder="8:30 am" />
@@ -336,7 +336,7 @@ export function PlanEditor({
       </button>
 
       {/* Publish */}
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col gap-3">
+      <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 flex flex-col gap-3">
         {!isTemplate && (
           <label className="flex flex-col gap-1"><span className={small}>Note to the client about this version (shown as “What’s new”)</span>
             <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="e.g. Lighter dinners this week — your sleep will thank you." className={input} />

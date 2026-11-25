@@ -161,7 +161,7 @@ export function AudioManager() {
       </datalist>
 
       {/* Upload */}
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5">
+      <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5">
         <p className="text-sm font-medium text-[#0f172a] mb-3">Upload audio</p>
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
@@ -201,8 +201,8 @@ export function AudioManager() {
           .sort((a, b) => (a.collection || '').localeCompare(b.collection || '') || a.sort_order - b.sort_order)
         if (!items.length) return null
         return (
-          <div key={category.value} className="bg-white border border-[#e2e8f0] rounded-2xl p-5">
-            <p className="text-xs font-medium text-[#94a3b8] uppercase tracking-wide mb-3">
+          <div key={category.value} className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5">
+            <p className="text-xs font-bold text-[#475569] uppercase tracking-[0.12em] mb-3">
               {category.emoji} {category.label} · {items.length}
             </p>
             <div className="flex flex-col divide-y divide-[#f1f5f9]">

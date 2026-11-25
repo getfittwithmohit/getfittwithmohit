@@ -87,7 +87,7 @@ export function PlansList() {
             </button>
           </div>
         </div>
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden">
           {templates.length ? templates.map((p) => <Row key={p.id} p={p} />) : (
             <p className="text-sm text-[#94a3b8] text-center py-8">No templates yet — create your first above.</p>
           )}
@@ -105,7 +105,7 @@ export function PlansList() {
             Show archived
           </label>
         </div>
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden">
           {clientPlans.length ? clientPlans.map((p) => <Row key={p.id} p={p} />) : (
             <p className="text-sm text-[#94a3b8] text-center py-8">No client plans yet.</p>
           )}

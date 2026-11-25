@@ -54,7 +54,7 @@ export function IdeaWriter({ onCreated }: { onCreated: (n: number) => void }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 max-w-2xl flex flex-col gap-5">
+    <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-6 max-w-2xl flex flex-col gap-5">
       <div>
         <h2 className="text-lg font-semibold text-[#0f172a]">Write new ideas</h2>
         <p className="text-sm text-[#64748b] mt-1">

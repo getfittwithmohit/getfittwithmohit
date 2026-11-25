@@ -210,7 +210,7 @@ export function FoodLibrary() {
           <button onClick={() => open('ingredient')} className="flex-1 h-9 rounded-lg border border-[#1a1f3a] text-[#1a1f3a] text-sm font-medium">+ Ingredient</button>
         </div>
         <p className="text-xs text-[#94a3b8] m-0">{list.length} of {foods.length} foods</p>
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden divide-y divide-[#f1f5f9]">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden divide-y divide-[#f1f5f9]">
           {list.length === 0 && <p className="text-sm text-[#94a3b8] text-center py-10 m-0">No foods match.</p>}
           {list.map((f) => {
             const m = defaultMeasure(f)
@@ -238,7 +238,7 @@ export function FoodLibrary() {
 
       {/* ── Editor ── */}
       {selected ? (
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 md:p-5 flex flex-col gap-4 md:sticky md:top-4 self-start w-full min-w-0">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 md:p-5 flex flex-col gap-4 md:sticky md:top-4 self-start w-full min-w-0">
           <div className="flex items-center justify-between gap-3">
             <button onClick={() => setSelected(null)} className="text-xs text-[#64748b] md:hidden">← All foods</button>
             <p className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wide m-0">
