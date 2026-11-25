@@ -68,7 +68,7 @@ export function TemplatesTab() {
       <p className="text-sm text-[#64748b] m-0">
         Starting points for new plans. Giving a template to a client scales every portion to their calories; changing a template never changes plans already made from it.
       </p>
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden divide-y divide-[#f1f5f9]">
+      <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden divide-y divide-[#f1f5f9]">
         {templates.map((t) => {
           const d = t.published || t.draft
           return (

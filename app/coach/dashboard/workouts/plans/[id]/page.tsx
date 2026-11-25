@@ -125,19 +125,20 @@ export default function PlanBuilderPage() {
   const nextLabel = String.fromCharCode(65 + plan.plan_sessions.length)
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-16">
-      <div className="bg-[#1a1f3a] px-6 py-4">
-        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+    <div className="min-h-screen bg-[#F2F4F7] pb-16">
+      <div className="max-w-6xl mx-auto px-3 md:px-4 pt-3 md:pt-6">
+        <div className="rounded-3xl bg-[#1a1f3a] p-5 md:px-6 flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
-            <button onClick={() => go('/coach/dashboard/workouts')} className="text-white/40 hover:text-white/70 text-xs mb-1">
-              ← Plans
+            <button onClick={() => go('/coach/dashboard/workouts')} className="text-[#00D4E8] hover:text-white text-sm font-semibold min-h-9 mb-1 inline-flex items-center gap-0.5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+              Plans
             </button>
             <input
               defaultValue={plan.name}
               key={plan.name}
               aria-label="Plan name"
               onBlur={(e) => e.target.value.trim() && e.target.value !== plan.name && run(() => updatePlan(plan.id, { name: e.target.value.trim() }))}
-              className="block bg-transparent text-white text-lg font-medium focus:outline-none border-b border-transparent focus:border-white/30 w-full"
+              className="block bg-transparent text-white text-[24px] leading-tight font-extrabold tracking-tight focus:outline-none border-b border-transparent focus:border-white/30 w-full"
             />
             <p className="text-white/40 text-xs mt-0.5">
               {isTemplate ? 'Template' : `${clientName || 'Client'}’s plan`} · {plan.status === 'archived' ? 'Archived' : 'Active'}
@@ -229,7 +230,7 @@ export default function PlanBuilderPage() {
             </div>
 
             {session && (
-              <div className="bg-white border border-[#e2e8f0] rounded-2xl">
+              <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)]">
                 <div className="p-4 flex flex-wrap gap-3 items-end border-b border-[#e2e8f0]">
                   <label className="flex flex-col gap-1.5 w-16">
                     <span className={label}>Label</span>
@@ -347,7 +348,7 @@ export default function PlanBuilderPage() {
                     className="w-full h-10 px-3 text-sm border border-dashed border-[#cbd5e1] rounded-lg focus:outline-none focus:border-[#00D4E8]"
                   />
                   {results.length > 0 && (
-                    <div className="absolute left-3 right-3 bottom-full mb-1 bg-white border border-[#e2e8f0] rounded-xl shadow-lg overflow-hidden z-10">
+                    <div className="absolute left-3 right-3 bottom-full mb-1 bg-white rounded-2xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] shadow-lg overflow-hidden z-10">
                       {results.map((ex) => (
                         <button
                           key={ex.id}
@@ -380,7 +381,7 @@ export default function PlanBuilderPage() {
 
           {/* Settings */}
           <div className="flex-[1_1_300px] min-w-0 flex flex-col gap-3">
-            <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col gap-3">
+            <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 flex flex-col gap-3">
               <p className="text-sm font-semibold">Schedule</p>
               <div className="flex gap-1 bg-[#f1f5f9] rounded-lg p-1">
                 {(['rolling', 'weekdays'] as const).map((t) => (
@@ -405,7 +406,7 @@ export default function PlanBuilderPage() {
               </label>
             </div>
 
-            <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col gap-2">
+            <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 flex flex-col gap-2">
               <p className="text-sm font-semibold">Progression</p>
               <label className="flex items-start gap-2 text-sm text-[#334155] leading-relaxed">
                 <input type="checkbox" className="mt-1 accent-[#00a3b5]" checked={plan.progression_enabled}
@@ -415,7 +416,7 @@ export default function PlanBuilderPage() {
             </div>
 
             {!isTemplate && (
-              <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col gap-3">
+              <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 flex flex-col gap-3">
                 <p className="text-sm font-semibold">Block</p>
                 <label className="flex items-center justify-between gap-3 text-sm">
                   <span className="text-[#475569]">Starts</span>

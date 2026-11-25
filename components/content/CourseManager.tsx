@@ -162,7 +162,7 @@ export function CourseManager() {
       )}
 
       {/* New course */}
-      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5">
+      <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5">
         <p className="text-sm font-medium text-[#0f172a] mb-3">New course</p>
         <div className="flex flex-col gap-3">
           <Input label="Title" placeholder="e.g. Identity Reset — 21 Days" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
@@ -185,7 +185,7 @@ export function CourseManager() {
         const isOpen = openCourseId === course.id
         const isEditing = editingCourse?.id === course.id
         return (
-          <div key={course.id} className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden">
+          <div key={course.id} className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden">
             {/* Course header */}
             <div className="p-5 flex items-start justify-between gap-4">
               <button className="text-left flex-1 min-w-0" onClick={() => setOpenCourseId(isOpen ? null : course.id)}>
@@ -210,7 +210,7 @@ export function CourseManager() {
               <div className="border-t border-[#e2e8f0] p-5 bg-[#f8fafc] flex flex-col gap-4">
                 {/* Course details */}
                 {isEditing ? (
-                  <div className="bg-white border border-[#e2e8f0] rounded-xl p-4 flex flex-col gap-3">
+                  <div className="bg-white rounded-2xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4 flex flex-col gap-3">
                     <Input label="Title" value={editingCourse.title} onChange={(e) => setEditingCourse({ ...editingCourse, title: e.target.value })} />
                     <div className="flex flex-col gap-1.5">
                       <label className={labelClass}>Description</label>
@@ -263,7 +263,7 @@ export function CourseManager() {
                   }
                   const docs = lesson.lesson_documents || []
                   return (
-                    <div key={lesson.id} className="bg-white border border-[#e2e8f0] rounded-xl p-4">
+                    <div key={lesson.id} className="bg-white rounded-2xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <p className="text-sm font-medium text-[#0f172a]">

@@ -156,7 +156,7 @@ export function LibraryManager() {
           </button>
         )}
 
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-x-auto">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-x-auto">
           <table className="w-full min-w-[560px] text-sm">
             <thead>
               <tr className="text-left text-[11px] uppercase tracking-wide text-[#64748b] border-b border-[#e2e8f0]">
@@ -192,7 +192,7 @@ export function LibraryManager() {
       </div>
 
       {/* Editor */}
-      <div className="flex-[1_1_340px] min-w-0 bg-white border border-[#e2e8f0] rounded-2xl p-5 flex flex-col gap-4 lg:sticky lg:top-4">
+      <div className="flex-[1_1_340px] min-w-0 bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] p-5 flex flex-col gap-4 lg:sticky lg:top-4">
         {selectedId === null ? (
           <p className="text-sm text-[#94a3b8] text-center py-10">Select an exercise to edit it, or add a new one.</p>
         ) : (

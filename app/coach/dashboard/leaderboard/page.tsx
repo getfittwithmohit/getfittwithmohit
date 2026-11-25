@@ -1,5 +1,6 @@
 'use client'
 
+import { CoachShell } from '@/components/layout/CoachShell'
 import { useEffect, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -61,26 +62,17 @@ export default function CoachLeaderboardPage() {
   if (checking || loading) return <PageLoader />
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-12">
-      <div className="bg-[#1a1f3a] px-6 py-4">
-        <div className="max-w-2xl mx-auto">
-          <button
-            onClick={() => go('/coach/dashboard')}
-            className="text-white/40 hover:text-white/70 text-xs transition-colors mb-1"
-          >
-            ← Dashboard
-          </button>
-          <h1 className="text-white text-lg font-medium">Leaderboard</h1>
-          <p className="text-white/40 text-xs mt-0.5">Clients see first name + last initial. Hidden clients never appear to others.</p>
-        </div>
-      </div>
-
-      <div className="max-w-2xl mx-auto px-4 py-5">
+    <CoachShell
+      title="Leaderboard"
+      subtitle="Clients see first name + last initial. Hidden clients never appear to others."
+      width="max-w-2xl"
+    >
+      <div>
         {error && (
           <div className="bg-red-50 border border-red-200 text-[#ef4444] text-sm rounded-xl px-4 py-3 mb-4">{error}</div>
         )}
 
-        <div className="flex bg-white border border-[#e2e8f0] rounded-xl p-1 mb-4">
+        <div className="flex bg-[#E4E8EE] rounded-xl p-1 mb-4">
           {([
             { key: 'week', label: 'This week' },
             { key: 'last_week', label: 'Last week' },
@@ -89,8 +81,8 @@ export default function CoachLeaderboardPage() {
             <button
               key={t.key}
               onClick={() => setPeriod(t.key)}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
-                period === t.key ? 'bg-[#1a1f3a] text-white' : 'text-[#64748b]'
+              className={`flex-1 min-h-10 rounded-lg text-[15px] font-semibold transition-colors ${
+                period === t.key ? 'bg-white text-[#0f172a] shadow-sm' : 'text-[#64748b]'
               }`}
             >
               {t.label}
@@ -105,7 +97,7 @@ export default function CoachLeaderboardPage() {
           </p>
         )}
 
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-hidden divide-y divide-[#f1f5f9]">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden divide-y divide-[#f1f5f9]">
           {rows.length === 0 && <p className="text-sm text-[#94a3b8] text-center py-10">No active clients</p>}
           {rows.map((row) => (
             <div key={row.client_id} className={`flex items-center gap-3 px-4 py-3 ${row.is_hidden ? 'opacity-50' : ''}`}>
@@ -132,6 +124,6 @@ export default function CoachLeaderboardPage() {
           ))}
         </div>
       </div>
-    </div>
+    </CoachShell>
   )
 }

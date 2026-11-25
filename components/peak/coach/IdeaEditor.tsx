@@ -54,7 +54,7 @@ export function IdeaEditor({ idea, onChanged, defaultOpen = false }: { idea: Pea
   const color = topicColor(draft.topic)
 
   return (
-    <div className="bg-white rounded-2xl border border-[#e2e8f0] overflow-hidden">
+    <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-hidden">
       <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="w-full text-left flex items-stretch">
         <span className="w-2 shrink-0" style={{ background: color }} />
         <span className="flex-1 p-4 flex flex-col gap-1">

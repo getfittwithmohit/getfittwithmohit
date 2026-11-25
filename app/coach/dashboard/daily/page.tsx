@@ -1,5 +1,7 @@
 'use client'
 
+import { CoachShell, HeaderButton } from '@/components/layout/CoachShell'
+import { Icon } from '@/components/ui/Icon'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
@@ -99,33 +101,13 @@ export default function CoachDailyPage() {
     .filter((c) => !c.last || daysBetween(c.last, today) >= 2)
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-12">
-
-      {/* Header */}
-      <div className="bg-[#1a1f3a] px-6 py-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div>
-            <button
-              onClick={() => go('/coach/dashboard')}
-              className="text-white/40 hover:text-white/70 text-xs transition-colors mb-1"
-            >
-              ← Dashboard
-            </button>
-            <h1 className="text-white text-lg font-medium">Daily Check-ins</h1>
-            <p className="text-white/40 text-xs mt-0.5">
-              {submitted.length} of {clients.length} active clients checked in · {formatDayLabel(date)}
-            </p>
-          </div>
-          <button
-            onClick={() => go('/coach/dashboard/leaderboard')}
-            className="text-white/60 hover:text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/10 hover:border-white/20"
-          >
-            🏆 Leaderboard
-          </button>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 py-6 flex flex-col gap-5">
+    <CoachShell
+      title="Daily check-ins"
+      subtitle={`${submitted.length} of ${clients.length} active clients checked in · ${formatDayLabel(date)}`}
+      right={<HeaderButton onClick={() => go('/coach/dashboard/leaderboard')}><Icon name="trophy" size={16} />Leaderboard</HeaderButton>}
+      width="max-w-4xl"
+    >
+      <div className="flex flex-col gap-5">
         {error && (
           <div className="bg-red-50 border border-red-200 text-[#ef4444] text-sm rounded-xl px-4 py-3">{error}</div>
         )}
@@ -206,7 +188,7 @@ export default function CoachDailyPage() {
         </div>
 
         {/* Day table */}
-        <div className="bg-white border border-[#e2e8f0] rounded-2xl overflow-x-auto">
+        <div className="bg-white rounded-3xl shadow-[0_0_0_1px_rgba(15,23,42,0.05)] overflow-x-auto">
           <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="text-[10px] text-[#94a3b8] uppercase tracking-wide text-left border-b border-[#e2e8f0]">
@@ -264,6 +246,6 @@ export default function CoachDailyPage() {
         </div>
         <p className="text-xs text-[#94a3b8]">Red = below target. Hover a workout or nutrition score to see the client&apos;s note; click a row for their 30-day history.</p>
       </div>
-    </div>
+    </CoachShell>
   )
 }
