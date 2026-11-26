@@ -8,15 +8,21 @@ import { Icon, type IconName } from '@/components/ui/Icon'
 
 type Tab = { label: string; href: string; icon: IconName; owns: (p: string) => boolean }
 
+// Everything food lives under Eat (the plan and recipes keep their /me URLs)
+function isEat(p: string) {
+  return p.startsWith('/eat') || p.startsWith('/me/nutrition') || p.startsWith('/me/recipes') || p.startsWith('/plate')
+}
+
 const TABS: Tab[] = [
   { label: 'Today', href: '/home', icon: 'sun', owns: (p) => p === '/home' },
-  { label: 'Train', href: '/train', icon: 'dumbbell', owns: (p) => p.startsWith('/train') || p.startsWith('/workout/plan') || p.startsWith('/plate') },
+  { label: 'Train', href: '/train', icon: 'dumbbell', owns: (p) => p.startsWith('/train') || p.startsWith('/workout/plan') },
+  { label: 'Eat', href: '/eat', icon: 'plate', owns: isEat },
   { label: 'Learn', href: '/learn', icon: 'book', owns: (p) => p.startsWith('/learn') || p.startsWith('/courses') || p.startsWith('/ideas') || p.startsWith('/audios') },
-  { label: 'Me', href: '/me', icon: 'user', owns: (p) => p.startsWith('/me') || p.startsWith('/home/') || p.startsWith('/leaderboard') },
+  { label: 'Me', href: '/me', icon: 'user', owns: (p) => (p.startsWith('/me') && !isEat(p)) || p.startsWith('/home/') || p.startsWith('/leaderboard') },
 ]
 
-// Index of the main tab screen a path is (0–3), or -1 for anything else.
-const TAB_ROOTS = ['/home', '/train', '/learn', '/me']
+// Index of the main tab screen a path is (0–4), or -1 for anything else.
+const TAB_ROOTS = ['/home', '/train', '/eat', '/learn', '/me']
 export function tabIndex(pathname: string) {
   return TAB_ROOTS.indexOf(pathname)
 }
@@ -25,7 +31,7 @@ export function tabIndex(pathname: string) {
 // forms with their own bottom buttons, the audio player) keep the full screen.
 const SHOW_ON = [
   /^\/home(\/progress|\/report)?$/,
-  /^\/(train|learn|me)$/,
+  /^\/(train|eat|learn|me)$/,
   /^\/me\/(photos|nutrition|recipes)$/,
   /^\/workout\/plan$/,
   /^\/plate$/,
