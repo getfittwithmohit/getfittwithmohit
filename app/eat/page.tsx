@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { Card, LargeTitle, Screen, ScreenSkeleton, SectionTitle, Skeleton, T } from '@/components/ui/ios'
 import { Icon, type IconName } from '@/components/ui/Icon'
-import { OptionCard } from '@/components/eat/OptionCard'
+import { MealOptions } from '@/components/eat/MealOptions'
 import { useNutrition } from '@/components/eat/useNutrition'
 import { currentMealIndex, nowMinutes } from '@/lib/nutrition/meals'
 import type { Level } from '@/lib/nutrition/plan'
@@ -56,7 +56,7 @@ export default function EatPage() {
           <div className="min-w-0">
             <p className="m-0 text-xs font-bold tracking-[0.12em]" style={{ color: T.cyan }}>YOUR DAILY TARGET</p>
             <p className="m-0 mt-1 text-[22px] font-extrabold leading-tight">{doc.targets.protein_g} g protein{level === 3 ? <span className="text-base font-semibold text-white/60"> · {doc.targets.kcal} kcal</span> : null}</p>
-            {doc.targets.water_l ? <p className="m-0 mt-0.5 text-sm text-white/60">{doc.targets.water_l} L water</p> : null}
+            {meals.length > 1 && <p className="m-0 mt-0.5 text-sm text-white/60">About {Math.round(doc.targets.protein_g / meals.length / 5) * 5} g at every meal</p>}
           </div>
         </div>
       )}
@@ -66,8 +66,8 @@ export default function EatPage() {
           <SectionTitle action={next.time ? <span className="text-[15px]" style={{ color: T.ter }}>{next.time}</span> : undefined}>
             {dayDone ? `Tomorrow · ${next.name}` : `Next · ${next.name}`}
           </SectionTitle>
-          {next.options.length > 1 && <p className="m-0 -mt-1 px-1 text-[15px]" style={{ color: T.ter }}>Pick any one.</p>}
-          {next.options.map((o, i) => <OptionCard key={o.id} option={o} index={i} foods={foods} level={level} recipeFor={recipeFor} compact />)}
+          {next.options.length > 1 && <p className="m-0 -mt-1 px-1 text-[15px]" style={{ color: T.ter }}>{next.options.length} options · pick any one</p>}
+          <MealOptions key={next.id} options={next.options} foods={foods} level={level} recipeFor={recipeFor} />
 
           {meals.length > 1 && (
             <>
@@ -88,7 +88,7 @@ export default function EatPage() {
                       {isOpen && (
                         <div className="px-3 pb-3 flex flex-col gap-2 gfm-page" style={{ background: '#F7F9FB' }}>
                           <div className="h-1" />
-                          {m.options.map((o, j) => <OptionCard key={o.id} option={o} index={j} foods={foods} level={level} recipeFor={recipeFor} compact />)}
+                          <MealOptions options={m.options} foods={foods} level={level} recipeFor={recipeFor} />
                         </div>
                       )}
                     </div>
@@ -101,8 +101,8 @@ export default function EatPage() {
       )}
 
       <div className="grid grid-cols-2 gap-2.5">
-        <Tile href="/plate" icon="camera" tint="#FEF3C7" color="#B45309" title="Snap a meal" sub="Eating out? Get a score" />
-        <Tile href="/me/recipes" icon="book" tint="#FDF1E3" color="#B45309" title="Recipe book" sub={recipeCount ? 'Cook your plate' : 'Sized for your family'} />
+        <Tile href="/plate" icon="camera" tint="#FEF3C7" color="#B45309" title="Snap a meal" sub="Eating out? Score it" />
+        <Tile href="/me/recipes" icon="book" tint="#E7F6EC" color="#15803D" title="Recipe book" sub={recipeCount ? 'Cook your plate' : 'Sized for your family'} />
       </div>
       {doc && (
         <Link href="/me/nutrition" className="flex items-center gap-3 bg-white rounded-2xl p-4" style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}>
