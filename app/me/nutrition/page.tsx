@@ -44,9 +44,9 @@ export default function MyNutritionPage() {
     [data]
   )
 
-  const recipesFor = useMemo(() => {
-    const m = new Map<string, NonNullable<Payload['recipes']>>()
-    for (const r of data?.recipes || []) m.set(r.dish_food, [...(m.get(r.dish_food) || []), r])
+  const recipeFor = useMemo(() => {
+    const m = new Map<string, NonNullable<Payload['recipes']>[number]>()
+    for (const r of data?.recipes || []) if (!m.has(r.dish_food)) m.set(r.dish_food, r)
     return m
   }, [data])
 
@@ -147,11 +147,35 @@ export default function MyNutritionPage() {
                       {o.items.map((it, j) => <li key={j}>{describeItem(it, foods.get(it.food), level).replace(' · ', ' — ')}</li>)}
                     </ul>
                     {o.why && <p className="m-0 text-[15px] leading-snug" style={{ color: T.teal }}>{o.why}</p>}
-                    {[...new Set(o.items.map((it) => it.food))].flatMap((slug) => recipesFor.get(slug) || []).map((r) => (
-                      <Link key={r.id} href={`/me/recipes/${r.id}`} className="mt-1 flex items-center justify-center gap-2 min-h-12 rounded-2xl text-[15px] font-bold" style={{ background: T.cyan, color: T.navy }}>
-                        <Icon name="plate" size={18} />How to cook it · {r.minutes} min
-                      </Link>
-                    ))}
+                    {(() => {
+                      // One "How to cook" per dish on this option, named so it's clear which
+                      const cook = [...new Set(o.items.map((it) => it.food))]
+                        .map((slug) => ({ slug, r: recipeFor.get(slug) }))
+                        .filter((x): x is { slug: string; r: NonNullable<Payload['recipes']>[number] } => !!x.r)
+                      const dishName = (slug: string) => (foods.get(slug)?.name || slug).split(',')[0].replace(/\s*\(.*?\)\s*/g, ' ').trim()
+                      if (cook.length === 0) return null
+                      if (cook.length === 1) {
+                        const { slug, r } = cook[0]
+                        return (
+                          <Link href={`/me/recipes/${r.id}`} className="mt-1 flex items-center justify-center gap-2 min-h-12 px-4 rounded-2xl text-[15px] font-bold text-center" style={{ background: T.cyan, color: T.navy }}>
+                            <Icon name="plate" size={18} />How to cook {dishName(slug).toLowerCase()} · {r.minutes} min
+                          </Link>
+                        )
+                      }
+                      return (
+                        <div className="mt-1 rounded-2xl overflow-hidden" style={{ background: '#E6F7F9' }}>
+                          <p className="m-0 px-4 pt-3 pb-1 text-xs font-bold tracking-[0.12em]" style={{ color: T.teal }}>HOW TO COOK</p>
+                          {cook.map(({ slug, r }) => (
+                            <Link key={r.id} href={`/me/recipes/${r.id}`} className="flex items-center gap-3 px-4 min-h-12 text-[15px] font-semibold" style={{ color: T.navy, borderTop: '1px solid rgba(0,122,138,0.12)' }}>
+                              <Icon name="plate" size={18} />
+                              <span className="flex-1">{dishName(slug)}</span>
+                              <span className="text-[13px] font-medium" style={{ color: T.teal }}>{r.minutes} min</span>
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
+                            </Link>
+                          ))}
+                        </div>
+                      )
+                    })()}
                     {o.tip && <p className="m-0 text-sm" style={{ color: T.ter }}>Tip: {o.tip}</p>}
                   </Card>
                 )
