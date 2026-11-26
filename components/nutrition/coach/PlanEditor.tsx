@@ -137,6 +137,8 @@ export function PlanEditor({
     setPublishing(true)
     try {
       const p = await publishPlan({ ...plan, name }, doc, note.trim())
+      // Recipe Autopilot: write recipes for any new dishes on this plate (background)
+      fetch('/api/coach/recipes/autopilot', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'kick' }), keepalive: true }).catch(() => {})
       setPlan(p)
       setNote('')
       setVersions(null)

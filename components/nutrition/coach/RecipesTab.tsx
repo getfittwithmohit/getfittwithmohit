@@ -11,6 +11,7 @@ import { getFoods } from '@/lib/supabase/queries/foods'
 import { deleteRecipe, getRecipes, setRecipeStatus, updateRecipe } from '@/lib/supabase/queries/recipes'
 import { confirmDialog, toast } from '@/lib/ui/feedback'
 import { Icon } from '@/components/ui/Icon'
+import { AutopilotCard } from './AutopilotCard'
 
 type Filter = Recipe['status']
 const r0 = (n: number) => Math.round(n)
@@ -191,6 +192,13 @@ function RecipeEditor({ recipe, foods, bySlug, onSaved, onDeleted }: {
           </div>
           <span className="px-3 py-1.5 rounded-full bg-[#F0FDF4] text-[#15803D] text-[13px] font-bold whitespace-nowrap">Macros from your food library</span>
         </div>
+        {d.review && (
+          <div className={`rounded-2xl px-4 py-3 text-[15px] ${d.review.verdict === 'publish' ? 'bg-[#F0FDF4] text-[#15803D]' : 'bg-[#FFFBEB] text-[#92400E]'}`}>
+            <b>AI reviewer:</b> {d.review.reason}
+            {d.review.notes?.length ? <span className="block text-sm opacity-80 mt-0.5">Changed: {d.review.notes.join(' · ')}</span> : null}
+          </div>
+        )}
+        {(d.likes || d.dislikes) ? <p className="m-0 text-sm text-[#475569]">Clients: 👍 {d.likes || 0} would cook again · 👎 {d.dislikes || 0} wouldn’t</p> : null}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <label className="flex flex-col gap-1"><span className="text-[13px] font-semibold text-[#475569]">Main protein</span>
             <select value={d.protein_key} onChange={(e) => set({ protein_key: e.target.value as ProteinKey })} className={field}>
@@ -354,6 +362,7 @@ export function RecipesTab() {
       .then(([r, f]) => { setRecipes(r); setFoods(f) })
       .catch((e) => setError((e as Error).message))
   }, [])
+  const reload = () => { getRecipes().then(setRecipes).catch(() => {}) }
 
   const bySlug = useMemo(() => new Map(foods.map((f) => [f.slug, f])), [foods])
   const counts = { draft: 0, approved: 0, rejected: 0 }
@@ -366,13 +375,14 @@ export function RecipesTab() {
 
   return (
     <div className="flex flex-col gap-3">
+      <AutopilotCard onChanged={reload} />
       <div className={`${card} p-4 md:px-5 flex items-center justify-between gap-3 flex-wrap`}>
         <div className="flex gap-1.5 flex-wrap">
-          {([['draft', 'To review'], ['approved', 'Approved'], ['rejected', 'Rejected']] as const).map(([k, l]) => (
+          {([['draft', 'Waiting for you'], ['approved', 'Live'], ['rejected', 'Rejected']] as const).map(([k, l]) => (
             <button key={k} onClick={() => setFilter(k)} className={chip(filter === k)}>{l} <span className="opacity-60">{counts[k]}</span></button>
           ))}
         </div>
-        <button onClick={() => setShowGen((v) => !v)} className={`${primary} inline-flex items-center gap-2`}><Icon name="sparkle" size={17} />{showGen ? 'Close' : 'Draft new recipes'}</button>
+        <button onClick={() => setShowGen((v) => !v)} className={`${ghost} inline-flex items-center gap-2`}><Icon name="sparkle" size={17} />{showGen ? 'Close' : 'Write specific recipes'}</button>
       </div>
 
       {showGen && <Generator onDone={(added) => { setRecipes((p) => [...added, ...(p || [])]); setFilter('draft'); setSelectedId(added[0]?.id || null); setShowGen(false) }} />}
@@ -381,8 +391,8 @@ export function RecipesTab() {
         <div className={`${card} p-2 flex flex-col gap-0.5 ${selected ? 'hidden md:flex' : ''}`}>
           {list.length === 0 && (
             <div className="px-4 py-10 text-center">
-              <p className="m-0 text-[17px] font-semibold">{filter === 'draft' ? 'Nothing to review' : filter === 'approved' ? 'No approved recipes yet' : 'Nothing rejected'}</p>
-              {filter === 'draft' && <p className="m-0 mt-1 text-[15px] text-[#64748b]">Tap “Draft new recipes” to get the first batch.</p>}
+              <p className="m-0 text-[17px] font-semibold">{filter === 'draft' ? 'Nothing waiting for you' : filter === 'approved' ? 'No live recipes yet' : 'Nothing rejected'}</p>
+              {filter === 'draft' && <p className="m-0 mt-1 text-[15px] text-[#64748b]">Autopilot only sends you recipes that need your judgement.</p>}
             </div>
           )}
           {list.map((r) => {
@@ -390,7 +400,8 @@ export function RecipesTab() {
             return (
               <button key={r.id} onClick={() => setSelectedId(r.id)} className={`text-left px-3 py-2.5 rounded-2xl transition-colors ${r.id === selectedId ? 'bg-[#E6F7F9]' : 'hover:bg-[#F7F9FB]'}`}>
                 <div className="text-[15px] font-semibold">{r.title}</div>
-                <div className="text-[13px] text-[#64748b] mt-0.5">{PROTEIN_LABEL[r.protein_key]} · {r.meal_types.map(cap).join(', ') || '—'} · {r.minutes} min · {r0(t.protein)} g P</div>
+                <div className="text-[13px] text-[#64748b] mt-0.5">{PROTEIN_LABEL[r.protein_key]} · {r.meal_types.map(cap).join(', ') || '—'} · {r.minutes} min · {r0(t.protein)} g P{(r.likes || r.dislikes) ? ` · 👍 ${r.likes || 0} 👎 ${r.dislikes || 0}` : ''}</div>
+                {r.status === 'draft' && r.review?.reason && <div className="text-[13px] text-[#B45309] mt-1 leading-snug">{r.review.reason}</div>}
               </button>
             )
           })}

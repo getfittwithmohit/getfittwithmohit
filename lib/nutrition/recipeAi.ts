@@ -6,8 +6,8 @@
 import { callClaude, MODEL } from './ai'
 import { nutrientsFor, type Food } from './foods'
 import {
-  MEAL_TYPES, PROTEIN_KEYS, RECIPE_TAGS, dietOf,
-  type MealType, type ProteinKey, type Recipe, type RecipeExtra, type RecipeIngredient, type RecipeTranslation,
+  MEAL_TYPES, PROTEIN_KEYS, RECIPE_TAGS, dietOf, portionTotals,
+  type MealType, type ProteinKey, type Recipe, type RecipeExtra, type RecipeIngredient, type RecipeReview, type RecipeTranslation,
 } from './recipes'
 
 const STR = { type: 'string' }
@@ -35,6 +35,8 @@ const recipeSchema = (ingredientSlugs: string[], dishSlugs: string[]) => obj({
 type RawRecipe = Omit<Recipe, 'id' | 'diet' | 'jain_ok' | 'status' | 'dish_food' | 'tip' | 'portion_label'> & {
   dish_food: string; tip: string; portion_label: string
 }
+
+const RULES_REMINDER = `RULES: weekday recipes ≤ 20 min total (else tag sunday_prep); protein ≥ 20 g per portion for breakfast/lunch/dinner, ≥ 10 g for snacks; oil/ghee ≤ 5 g per portion; common Indian kitchen equipment only.`
 
 const VOICE = `You are Coach Mohit Mehral's recipe writer — the standard of the world's best nutrition coaches, applied to Indian home cooking. Mohit is an ISSA-certified nutritionist and transformation coach in Mumbai. His clients are busy professionals and their families; anyone in the home might cook (the client, a spouse, a parent or a hired cook).
 
@@ -119,6 +121,8 @@ export async function draftRecipes(args: {
   meals: MealType[]
   notes: string
   existingTitles: string[]
+  /** Write exactly one recipe per dish (Autopilot plate coverage) instead of a free batch */
+  dishes?: string[]
 }): Promise<Omit<Recipe, 'id' | 'status'>[]> {
   const { ingredients, dishes } = pools(args.foods)
   const bySlug = new Map(args.foods.map((f) => [f.slug, f]))
@@ -126,12 +130,17 @@ export async function draftRecipes(args: {
   const proteins = args.proteins.length ? args.proteins : [...PROTEIN_KEYS]
   const meals = args.meals.length ? args.meals : ['breakfast', 'lunch', 'dinner', 'snack']
 
-  const prompt = `${VOICE}
-
-TASK: Write ${args.count} new recipes for the GFM recipe book.
+  const dishTask = args.dishes?.length
+    ? `TASK: Clients have these dishes on their meal plans and need to know how to cook them. Write exactly ONE recipe per dish below, in this order, and set dish_food to that dish's slug. Make each recipe produce that dish as clients would expect it, made the GFM way (protein-first, ≤ 1 tsp oil per portion). If a dish is naturally low in protein (e.g. poha, upma, dosa), build it so the portion still meets the protein rule — e.g. add paneer, soya, curd, egg or dal — and say so in the title only if it changes the dish name.
+${args.dishes.map((slug) => `- ${slug} | ${bySlug.get(slug)?.name || slug}`).join('\n')}`
+    : `TASK: Write ${args.count} new recipes for the GFM recipe book.
 - Spread them across these main proteins: ${proteins.join(', ')} (as evenly as the count allows).
 - Spread them across these meals: ${meals.join(', ')}. A recipe may suit more than one meal.
-- Variety: different cooking styles (bhurji, curry, tikka, chilla, salad, wrap, khichdi, stir-fry…) and regions (Maharashtrian, Punjabi, South Indian, Gujarati, coastal). Mostly weekday recipes; at most 1 in 5 tagged "sunday_prep".
+- Variety: different cooking styles (bhurji, curry, tikka, chilla, salad, wrap, khichdi, stir-fry…) and regions (Maharashtrian, Punjabi, South Indian, Gujarati, coastal). Mostly weekday recipes; at most 1 in 5 tagged "sunday_prep".`
+
+  const prompt = `${VOICE}
+
+${dishTask}
 - Do NOT repeat any of these existing recipes: ${args.existingTitles.length ? args.existingTitles.join('; ') : '(none yet)'}.
 ${args.notes.trim() ? `\nCOACH'S NOTES (follow these):\n"""\n${args.notes.slice(0, 3000)}\n"""\n` : ''}
 Keep every text field short. No padding.
@@ -144,6 +153,74 @@ ${ingredientCatalog(ingredients)}`
 
   const out = await callClaude<{ recipes: RawRecipe[] }>(prompt, schema, 24000)
   return (out.recipes || []).map((r) => normaliseRecipe(r, bySlug))
+}
+
+// ── The reviewer (Autopilot) ────────────────────────────────────────────────
+// A second pass in a different role: a senior Indian home chef + sports
+// nutritionist checks every draft the way Coach Mohit would, fixes what it
+// can, and says whether it's fit to publish without him.
+
+export async function reviewRecipes(args: { foods: Food[]; drafts: Omit<Recipe, 'id' | 'status'>[] }): Promise<{ recipe: Omit<Recipe, 'id' | 'status'>; review: RecipeReview }[]> {
+  if (!args.drafts.length) return []
+  const { ingredients, dishes } = pools(args.foods)
+  const bySlug = new Map(args.foods.map((f) => [f.slug, f]))
+  const slugs = Array.from(new Set([...ingredients.map((f) => f.slug), ...args.drafts.flatMap((d) => [...d.ingredients.map((i) => i.food), ...d.swaps.map((s) => s.food)])])).filter((s) => bySlug.has(s))
+  const schema = obj({
+    reviews: arr(obj({
+      index: NUM,
+      verdict: { type: 'string', enum: ['publish', 'needs_coach'] },
+      reason: STR,
+      notes: arr(STR),
+      recipe: recipeSchema(slugs, dishes.map((f) => f.slug)),
+    })),
+  })
+  const withNumbers = args.drafts.map((d, i) => {
+    const t = portionTotals(d.ingredients, bySlug)
+    const { ai_model: _m, diet: _d, jain_ok: _j, ...rest } = d
+    void _m; void _d; void _j
+    return `#${i} (calculated per portion: ${Math.round(t.kcal)} kcal, P ${Math.round(t.protein)} g, C ${Math.round(t.carbs)} g, F ${Math.round(t.fat)} g)\n${JSON.stringify(rest)}`
+  }).join('\n\n')
+
+  const prompt = `You are the final reviewer for Coach Mohit Mehral's recipe book: a senior Indian home chef AND a sports nutritionist. Recipes you pass go straight to his fat-loss clients and their families without Mohit seeing them first, so review as strictly as he would.
+
+For EACH draft below, check:
+1. Would an Indian family genuinely cook and enjoy this? Authentic flavours, sensible method, right order of tadka/masala, realistic for a weekday.
+2. Is it right for fat loss? Protein-first, ≤ 1 tsp oil per portion, no cream/butter/frying/sugar, sensible portion (main meals usually 300–450 kcal).
+3. Are the steps clear for a cook who has never made it? Doneness cues, heat levels, no quantities repeated in steps.
+4. Do the swaps genuinely work with this masala and method? Is the "where calories hide" tip specific and true?
+5. Grams are RAW weights for ONE portion. Use the calculated numbers given.
+
+Then FIX everything you can and return the full corrected recipe (same JSON shape, same rules as the writer: only catalog foods, exactly one is_protein, steps ≤ 22 words, tip ≤ 24 words, written as Mohit, no mention of AI).
+
+verdict:
+- "publish" when the corrected recipe is something you'd confidently give a client today.
+- "needs_coach" ONLY when it needs Mohit's judgement: you can't reach the protein rule without changing the dish into something else, it's an unusual or risky combination, it touches allergies or medical conditions, or it could offend a regional or religious food custom.
+reason: one short line for Mohit (e.g. "Good to go — fixed oil and step order." or "Protein only 16 g without changing the dish — add a curd side?").
+notes: what you changed, max 3 short lines.
+
+${RULES_REMINDER}
+
+DISHES (for dish_food):
+${dishes.map((d) => `${d.slug} | ${d.name}`).join('\n')}
+
+CATALOG of counted ingredients (slug | name (local) | category | per 100 g | diet):
+${ingredientCatalog(args.foods.filter((f) => slugs.includes(f.slug)))}
+
+DRAFTS:
+${withNumbers}`
+
+  const out = await callClaude<{ reviews: { index: number; verdict: 'publish' | 'needs_coach'; reason: string; notes: string[]; recipe: RawRecipe }[] }>(prompt, schema, 24000)
+  return args.drafts.map((draft, i) => {
+    const r = (out.reviews || []).find((x) => Number(x.index) === i)
+    if (!r) return { recipe: draft, review: { verdict: 'needs_coach' as const, reason: 'The reviewer skipped this one — please check it.' } }
+    const fixed = normaliseRecipe(r.recipe, bySlug)
+    // Keep the plate link the writer was asked for
+    if (draft.dish_food && !fixed.dish_food) fixed.dish_food = draft.dish_food
+    return {
+      recipe: fixed.ingredients.length ? fixed : draft,
+      review: { verdict: r.verdict === 'publish' ? 'publish' : 'needs_coach', reason: (r.reason || '').trim().slice(0, 200), notes: (r.notes || []).slice(0, 3) },
+    }
+  })
 }
 
 export async function editRecipe(args: { foods: Food[]; recipe: Recipe; instruction: string }): Promise<{ recipe: Omit<Recipe, 'id' | 'status'>; summary: string[] }> {
