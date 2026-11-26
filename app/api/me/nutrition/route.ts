@@ -35,13 +35,21 @@ export async function GET() {
     ? await admin.from('foods').select('slug, name, local_name, kcal, protein_g, carbs_g, fat_g, fibre_g, measures, diet').in('slug', slugs)
     : { data: [] }
 
-  // Approved recipes that teach a dish on this plan ("How to cook it")
-  const { data: recipes } = slugs.length
-    ? await admin.from('recipes').select('id, title, dish_food, minutes').eq('status', 'approved').in('dish_food', slugs)
+  // Approved recipes that teach a dish on this plan ("How to cook it").
+  // One per dish: if several are linked, the clients' favourite (then the
+  // first approved) wins.
+  const { data: linked } = slugs.length
+    ? await admin.from('recipes').select('id, title, dish_food, minutes, likes, dislikes, approved_at').eq('status', 'approved').in('dish_food', slugs)
     : { data: [] }
+  const best = new Map<string, { id: string; title: string; dish_food: string; minutes: number }>()
+  const score = (r: { likes?: number | null; dislikes?: number | null }) => (r.likes || 0) - (r.dislikes || 0)
+  for (const r of [...(linked || [])].sort((a, b) => score(b) - score(a) || String(a.approved_at).localeCompare(String(b.approved_at)))) {
+    if (!best.has(r.dish_food)) best.set(r.dish_food, { id: r.id, title: r.title, dish_food: r.dish_food, minutes: r.minutes })
+  }
+  const recipes = [...best.values()]
 
   return NextResponse.json({
-    recipes: recipes || [],
+    recipes,
     plan: { name: plan.name, doc: plan.published, version: plan.version, published_at: plan.published_at, change_note: plan.change_note },
     foods: foods || [],
   })

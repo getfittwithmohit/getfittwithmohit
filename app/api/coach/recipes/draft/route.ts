@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     const [foods, existing] = await Promise.all([
       loadFoods(),
-      admin.from('recipes').select('title').neq('status', 'rejected'),
+      admin.from('recipes').select('title, dish_food').neq('status', 'rejected'),
     ])
     if (existing.error) {
       if (existing.error.code === '42P01' || existing.error.code === 'PGRST205') {
@@ -27,10 +27,17 @@ export async function POST(req: NextRequest) {
       throw new Error(existing.error.message)
     }
 
-    const drafts = await draftRecipes({
+    const drafted = await draftRecipes({
       foods, count, proteins, meals,
       notes: String(body.notes || ''),
       existingTitles: (existing.data || []).map((r) => r.title as string),
+    })
+    // A dish links to one recipe only
+    const taken = new Set((existing.data || []).map((r) => r.dish_food as string | null).filter(Boolean))
+    const drafts = drafted.map((d) => {
+      if (!d.dish_food || taken.has(d.dish_food)) return { ...d, dish_food: null }
+      taken.add(d.dish_food)
+      return d
     })
     if (!drafts.length) return NextResponse.json({ error: 'No recipes came back. Please try again.' }, { status: 502 })
 

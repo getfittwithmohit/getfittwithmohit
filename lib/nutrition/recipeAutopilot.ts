@@ -109,6 +109,13 @@ export async function runAutopilot(): Promise<RunSummary & { done: boolean }> {
     kind = 'book'
     const need = bookGaps.reduce((s, p) => s + (BOOK_PER_PROTEIN - count[p]), 0)
     drafts = await draftRecipes({ foods, count: Math.min(BATCH, need), proteins: bookGaps.slice(0, 3), meals: [], notes: '', existingTitles })
+    // A dish links to one recipe only: unlink book recipes whose dish is taken
+    const taken = new Set(haveDish)
+    drafts = drafts.map((d) => {
+      if (!d.dish_food || taken.has(d.dish_food)) return { ...d, dish_food: null }
+      taken.add(d.dish_food)
+      return d
+    })
   } else if (unloved.length) {
     kind = 'rewrite'
     rewrite = unloved.slice(0, 2)
