@@ -8,6 +8,7 @@ import {
 import { describeItem, emptyOption, newId, scaleDoc, LEVEL_LABEL, type ClientContext, type Level, type PlanDoc, type PlanItem, type PlanTargets } from '@/lib/nutrition/plan'
 import type { Food, Nutrients } from '@/lib/nutrition/foods'
 import type { BlueprintStatus } from '@/lib/nutrition/blueprintStatus'
+import { EatingWeek } from '@/components/nutrition/coach/EatingWeek'
 import { PlanEditor } from './PlanEditor'
 import { confirmDialog, toast } from '@/lib/ui/feedback'
 import { compressImage } from '@/lib/photos/progressPhotos'
@@ -206,6 +207,7 @@ export function ClientNutrition({ clientId, clientName }: { clientId: string; cl
   if (plan) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-4">
+        {plan.published && <EatingWeek clientId={clientId} doc={plan.published} first={first} />}
         <PlanEditor key={plan.id} plan={plan} foods={foods} ctx={ctx} onPublished={setPlan} />
         <button onClick={replace} className="self-center text-xs text-[#94a3b8]">Start a new plan instead</button>
       </div>

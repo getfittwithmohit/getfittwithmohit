@@ -9,6 +9,15 @@ import { compressImage } from '@/lib/utils/compressImage'
 import { EMPTY_TOTALS, mealTypeForNow, type MealLog, type PlateTotals } from '@/lib/utils/plate'
 import { MEAL_TYPES, type MealType, type PlateTargets } from '@/lib/validation/plate'
 import { go } from '@/lib/ui/navigate'
+import { dropCached } from '@/lib/ui/cache'
+
+function mealTypeFromName(name: string): MealType {
+  const n = name.toLowerCase()
+  if (n.includes('breakfast')) return 'breakfast'
+  if (n.includes('lunch')) return 'lunch'
+  if (n.includes('dinner')) return 'dinner'
+  return 'snack'
+}
 
 // PEAK Plate — snap (or type) a meal, see calories, macros, what's unhealthy,
 // a score out of 10 and how to make it better. Coach and clients can both use it.
@@ -47,7 +56,15 @@ export default function PeakPlatePage() {
   const [today, setToday] = useState<TodayData | null>(null)
   const [loadError, setLoadError] = useState('')
 
-  const [mealType, setMealType] = useState<MealType>(mealTypeForNow())
+  // Opened from the Eat tab's "Something else → Snap it": the saved snap
+  // also ticks that plan meal, then the client goes back to Eat.
+  const [forMeal] = useState<{ id: string; date: string; name: string } | null>(() => {
+    if (typeof window === 'undefined') return null
+    const q = new URLSearchParams(window.location.search)
+    const id = q.get('meal'), date = q.get('date')
+    return id && date ? { id, date, name: q.get('name') || 'this meal' } : null
+  })
+  const [mealType, setMealType] = useState<MealType>(() => (forMeal ? mealTypeFromName(forMeal.name) : mealTypeForNow()))
   const [note, setNote] = useState('')
   const [typing, setTyping] = useState(false)
   const [description, setDescription] = useState('')
@@ -176,6 +193,14 @@ export default function PeakPlatePage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Could not save')
+      if (forMeal && data.meal?.id) {
+        const t = await fetch('/api/me/meals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ date: forMeal.date, meal_id: forMeal.id, status: 'else', plate_log_id: data.meal.id }),
+        }).catch(() => null)
+        if (t?.ok) { dropCached(`ticks:${forMeal.date}`); go('/eat'); return }
+      }
       resetScan()
       await loadToday()
     } catch (e) {
@@ -225,7 +250,7 @@ export default function PeakPlatePage() {
             {scan ? 'My plate' : today?.isCoach ? 'Dashboard' : 'Eat'}
           </button>
           <h2 className="text-white text-2xl font-bold">PEAK Plate</h2>
-          <p className="text-white/60 text-sm mt-1">Snap your meal. Know if it&apos;s PEAK — in seconds.</p>
+          <p className="text-white/60 text-sm mt-1">{forMeal ? `Snap what you had for ${forMeal.name}. It counts towards today’s protein.` : <>Snap your meal. Know if it&apos;s PEAK — in seconds.</>}</p>
         </div>
       </div>
 

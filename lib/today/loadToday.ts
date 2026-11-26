@@ -7,6 +7,10 @@ import { addDaysIST, istDate, todayIST } from '@/lib/utils/istDate'
 import type { IconName } from '@/components/ui/Icon'
 import { photosDue } from '@/lib/photos/progressPhotos'
 import type { PlanSession, WorkoutLog, WorkoutPlan } from '@/lib/types/workouts'
+import type { PlanDoc, PlanMeal } from '@/lib/nutrition/plan'
+import { nextOpenMeal, summarise, type MealTick } from '@/lib/nutrition/ticks'
+import { currentMealIndex, nowMinutes } from '@/lib/nutrition/meals'
+import { shortTitle } from '@/components/eat/MealOptions'
 
 // Everything the Today screen needs, read in parallel. Each source fails on
 // its own: a slow or broken one hides its step, never the whole screen.
@@ -56,7 +60,7 @@ export async function loadToday(client: { id: string; current_week: number; phas
   const today = todayIST()
   const yesterday = addDaysIST(today, -1)
 
-  const [ritualRow, streakRow, idea, plan, logs, checkins, xp, meals, setup] = await Promise.all([
+  const [ritualRow, streakRow, idea, plan, logs, checkins, xp, meals, setup, eat] = await Promise.all([
     settle(Promise.resolve(supabase.from('daily_rituals').select('completed_at').eq('client_id', client.id).eq('date', today).maybeSingle()).then((r) => r.data)),
     settle(Promise.resolve(supabase.from('ritual_streaks').select('current_streak, last_completed_date').eq('client_id', client.id).maybeSingle()).then((r) => r.data)),
     settle(getTodayIdea(client.id)),
@@ -66,6 +70,7 @@ export async function loadToday(client: { id: string; current_week: number; phas
     settle(getClientXp(client.id)),
     settle(fetch('/api/plate/today').then((r) => (r.ok ? r.json() : null)) as Promise<{ meals: { calories: number | null }[] } | null>),
     settle(loadSetupItems(client)),
+    settle(loadEat(today)),
   ])
 
   const steps: TodayStep[] = []
@@ -96,7 +101,8 @@ export async function loadToday(client: { id: string; current_week: number; phas
 
   const mealList = meals?.meals || []
   const kcal = Math.round(mealList.reduce((s, m) => s + (m.calories || 0), 0))
-  steps.push({
+  if (eat) steps.push(eatStep(eat))
+  else steps.push({
     key: 'meals', icon: 'camera', when: 'Nutrition',
     title: 'PEAK Plate',
     meta: mealList.length ? `${mealList.length} meal${mealList.length === 1 ? '' : 's'} logged · ${kcal} kcal` : 'Snap a meal · calories, macros, swaps',
@@ -124,6 +130,32 @@ export async function loadToday(client: { id: string; current_week: number; phas
     streak,
     xpToday,
     highFive: recentFive ? recentFive.session_name : null,
+  }
+}
+
+// The client's plan + today's ticks, for the "Next meal" step. Null without a plan.
+async function loadEat(today: string): Promise<{ meals: PlanMeal[]; target: number; ticks: MealTick[] } | null> {
+  const [n, m] = await Promise.all([
+    fetch('/api/me/nutrition').then((r) => (r.ok ? r.json() : null)) as Promise<{ plan: { doc: PlanDoc } | null } | null>,
+    fetch(`/api/me/meals?date=${today}`).then((r) => (r.ok ? r.json() : null)) as Promise<{ ticks: MealTick[] } | null>,
+  ])
+  const doc = n?.plan?.doc
+  if (!doc?.meals?.length) return null
+  return { meals: doc.meals, target: doc.targets.protein_g, ticks: m?.ticks || [] }
+}
+
+function eatStep({ meals, target, ticks }: { meals: PlanMeal[]; target: number; ticks: MealTick[] }): TodayStep {
+  const s = summarise(meals, ticks)
+  const idx = nextOpenMeal(meals, currentMealIndex(meals, nowMinutes()), new Set(ticks.map((t) => t.meal_id)))
+  const next = idx >= 0 ? meals[idx] : null
+  const protein = `${s.protein}/${target} g protein`
+  return {
+    key: 'meals', icon: 'plate', when: 'Nutrition',
+    title: next ? `Next: ${next.name}` : 'Meals for today',
+    meta: next ? [next.time, next.options.map((o) => shortTitle(o.title)).join(' or '), s.ticked ? protein : ''].filter(Boolean).join(' · ') : protein,
+    doneNote: `All meals logged · ${protein}`,
+    cta: next ? 'Open Eat' : 'Catch up', href: '/eat',
+    done: s.ticked >= meals.length, optional: true,
   }
 }
 

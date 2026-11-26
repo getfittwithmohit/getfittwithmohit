@@ -14,10 +14,13 @@ export function shortTitle(title: string) {
 }
 
 // A meal's options as small tabs with one card open, so the day fits on a screen
-export function MealOptions({ options, foods, level, recipeFor }: {
+export function MealOptions({ options, foods, level, recipeFor, pick: picked, onPick }: {
   options: PlanOption[]; foods: Map<string, Food>; level: Level; recipeFor: Map<string, RecipeLink>
+  pick?: number; onPick?: (i: number) => void
 }) {
-  const [pick, setPick] = useState(0)
+  const [own, setOwn] = useState(0)
+  const pick = picked ?? own
+  const setPick = (j: number) => { setOwn(j); onPick?.(j) }
   const i = Math.min(pick, options.length - 1)
   if (!options.length) return null
   if (options.length === 1) return <OptionCard option={options[0]} index={0} foods={foods} level={level} recipeFor={recipeFor} compact />
