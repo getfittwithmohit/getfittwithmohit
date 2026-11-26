@@ -18,6 +18,28 @@ import {
 } from '@/lib/supabase/queries/dailyCheckin'
 import { addDaysIST, formatDayLabel, istDate, todayIST } from '@/lib/utils/istDate'
 import { getLogs } from '@/lib/supabase/queries/workouts'
+import { checkinScore, summarise, type MealTick } from '@/lib/nutrition/ticks'
+import type { PlanDoc } from '@/lib/nutrition/plan'
+
+// A suggested nutrition score from today's meal ticks in the Eat tab.
+// Null when there's no plan or under half the day is ticked.
+async function mealTickScore(today: string): Promise<{ score: number; note: string } | null> {
+  try {
+    const [n, m] = await Promise.all([
+      fetch('/api/me/nutrition').then((r) => (r.ok ? r.json() : null)) as Promise<{ plan: { doc: PlanDoc } | null } | null>,
+      fetch(`/api/me/meals?date=${today}`).then((r) => (r.ok ? r.json() : null)) as Promise<{ ticks: MealTick[] } | null>,
+    ])
+    const meals = n?.plan?.doc?.meals
+    if (!meals || !m) return null
+    const score = checkinScore(meals, m.ticks)
+    if (score === null) return null
+    const s = summarise(meals, m.ticks)
+    const parts = [s.ate && `${s.ate} on plan`, s.else && `${s.else} other`, s.skipped && `${s.skipped} skipped`].filter(Boolean)
+    return { score, note: `Filled from your meals today: ${parts.join(', ')}. Change it if it feels off.` }
+  } catch {
+    return null
+  }
+}
 import { go } from '@/lib/ui/navigate'
 
 type Draft = {
@@ -124,6 +146,7 @@ export default function DailyCheckinPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [tickNote, setTickNote] = useState<string | null>(null)
   const [justSaved, setJustSaved] = useState<{ onTime: boolean; coachNotified: boolean | null } | null>(null)
 
   const byDate = useMemo(() => new Map(history.map((c) => [c.checkin_date, c])), [history])
@@ -135,10 +158,11 @@ export default function DailyCheckinPage() {
     async function load() {
       try {
         if (!client) throw new Error('We could not find your client profile. Please sign out and sign in again.')
-        const [rows, xpRows, workoutLogs] = await Promise.all([
+        const [rows, xpRows, workoutLogs, eaten] = await Promise.all([
           getDailyCheckins(client.id, addDaysIST(today, -60)),
           getClientXp(client.id),
           getLogs(client.id, 5).catch(() => []),
+          mealTickScore(today),
         ])
         setHistory(rows)
         setXp(xpRows)
@@ -154,8 +178,11 @@ export default function DailyCheckinPage() {
         } else if (todays) {
           setDraft(fromSaved(todays))
           setEditing(false)
-        } else if (trainedToday) {
-          setDraft({ ...EMPTY, workout_status: 'done' })
+        } else if (trainedToday || eaten) {
+          // Workout finished in the app → "done"; meals ticked in Eat → a
+          // suggested nutrition score the client can still change
+          setDraft({ ...EMPTY, workout_status: trainedToday ? 'done' : null, nutrition_score: eaten?.score ?? null })
+          if (eaten) setTickNote(eaten.note)
         }
       } catch (err) {
         setError((err as Error).message)
@@ -406,7 +433,8 @@ export default function DailyCheckinPage() {
           </Question>
 
           <Question n={2} icon="leaf" title="Nutrition adherence" hint="1 = off plan · 10 = spot on" done={draft.nutrition_score !== null} error={fieldErrors.nutrition_score}>
-            <Scale value={draft.nutrition_score} onChange={(v) => set('nutrition_score', v)} />
+            <Scale value={draft.nutrition_score} onChange={(v) => { setTickNote(null); set('nutrition_score', v) }} />
+            {tickNote && date === today && <p className="m-0 mt-2 text-sm" style={{ color: T.teal }}>{tickNote}</p>}
             {draft.nutrition_score !== null && draft.nutrition_score < DAILY_TARGETS.nutrition && (
               <TextLine
                 placeholder="One line — what threw it off? (optional)"

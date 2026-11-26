@@ -1,22 +1,30 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { Card, LargeTitle, Screen, ScreenSkeleton, SectionTitle, Skeleton, T } from '@/components/ui/ios'
 import { Icon, type IconName } from '@/components/ui/Icon'
 import { MealOptions } from '@/components/eat/MealOptions'
+import { CatchUp, ProteinRing, StatusChip, TickActions, TickedSummary } from '@/components/eat/Ticking'
 import { useNutrition } from '@/components/eat/useNutrition'
+import { useMealTicks } from '@/components/eat/useMealTicks'
 import { currentMealIndex, nowMinutes } from '@/lib/nutrition/meals'
-import type { Level } from '@/lib/nutrition/plan'
+import { nextOpenMeal, proteinHint, summarise, type TickStatus } from '@/lib/nutrition/ticks'
+import { celebrate } from '@/lib/ui/feel'
+import { optionTotals, type Level, type PlanMeal } from '@/lib/nutrition/plan'
 
-// Client: the Eat tab — the next meal front and centre, the rest of the day,
-// then snapping a meal, the recipe book and the plan.
+const EVENING = 19 * 60
+
+// Client: the Eat tab. Protein ring, the next meal with one-tap ticking, the
+// rest of the day, an evening catch-up, then snap / recipes / plan.
 export default function EatPage() {
   const { checking } = useAuthGuard()
   const { data, failed, foods, recipeFor } = useNutrition()
+  const { date, ticks, tick, undo } = useMealTicks(foods)
   const [now, setNow] = useState(() => nowMinutes())
   const [open, setOpen] = useState<string | null>(null)
+  const [picks, setPicks] = useState<Record<string, number>>({})
 
   // Move on to the next meal as the day goes by
   useEffect(() => {
@@ -24,23 +32,51 @@ export default function EatPage() {
     return () => clearInterval(t)
   }, [])
 
-  if (checking) return <ScreenSkeleton title="Eat" blocks={[96, 260, 120, 96]} />
-
-  const date = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })
   const doc = data?.plan?.doc
+  const meals = useMemo(() => doc?.meals || [], [doc])
+  const target = doc?.targets.protein_g || 0
+  const summary = useMemo(() => summarise(meals, ticks || []), [meals, ticks])
+
+  // Confetti once on the day the ring fills
+  const prev = useRef<number | null>(null)
+  useEffect(() => {
+    if (!ticks || !target) return
+    const was = prev.current
+    prev.current = summary.protein
+    if (was === null || was >= target || summary.protein < target) return
+    try {
+      const k = `gfm:protein-hit:${date}`
+      if (localStorage.getItem(k)) return
+      localStorage.setItem(k, '1')
+    } catch { /* storage off: celebrate anyway */ }
+    celebrate()
+  }, [summary.protein, target, ticks, date])
+
+  if (checking) return <ScreenSkeleton title="Eat" blocks={[110, 260, 120, 96]} />
+
+  const dateLabel = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })
   const level = (doc?.level || 1) as Level
-  const meals = doc?.meals || []
-  const idx = currentMealIndex(meals, now)
-  const dayDone = idx === -1 && meals.length > 0
-  const nextIdx = dayDone ? 0 : idx
-  const next = meals[nextIdx]
+  const byMeal = new Map((ticks || []).map((t) => [t.meal_id, t]))
+  const clockIdx = currentMealIndex(meals, now)
+  const nextIdx = ticks ? nextOpenMeal(meals, clockIdx, new Set(byMeal.keys())) : clockIdx
+  const next = nextIdx >= 0 ? meals[nextIdx] : undefined
+  const isPast = (i: number) => clockIdx === -1 || i < clockIdx
+  const pickFor = (m: PlanMeal) => Math.min(picks[m.id] ?? 0, Math.max(0, m.options.length - 1))
+  const ahead = meals.filter((m, i) => !byMeal.has(m.id) && !isPast(i))
+  const mealsLeft = ahead.length
+  const plannedLeft = ahead.reduce((t, m) => (m.options.length ? t + optionTotals(m.options[pickFor(m)], foods).protein : t), 0)
+  const missing = meals.filter((m, i) => !byMeal.has(m.id) && i !== nextIdx && isPast(i))
+  const catchUp = ticks && (now >= EVENING || clockIdx === -1) ? missing : []
+  const allDone = !!ticks && meals.length > 0 && meals.every((m) => byMeal.has(m.id))
   const recipeCount = data?.recipes?.length ?? 0
+  const setPick = (m: PlanMeal) => (i: number) => setPicks((p) => ({ ...p, [m.id]: i }))
+  const onTick = (m: PlanMeal) => (status: TickStatus, i?: number) => { tick(m, status, i ?? pickFor(m)); setOpen(null) }
 
   return (
     <Screen>
-      <LargeTitle eyebrow={date} title="Eat" />
+      <LargeTitle eyebrow={dateLabel} title="Eat" />
 
-      {!data && !failed && <><Skeleton h={96} /><Skeleton h={260} /></>}
+      {!data && !failed && <><Skeleton h={110} /><Skeleton h={260} /></>}
       {failed && !data && <Card><p className="m-0 text-[15px]" style={{ color: T.sec }}>Couldn’t load your plan. Check your connection and try again.</p></Card>}
 
       {data && !doc && (
@@ -51,52 +87,67 @@ export default function EatPage() {
       )}
 
       {doc && (
-        <div className="rounded-3xl p-5 flex items-center gap-4" style={{ background: T.navy, color: '#fff' }}>
-          <span className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(0,212,232,0.15)', color: T.cyan }}><Icon name="target" size={26} /></span>
-          <div className="min-w-0">
-            <p className="m-0 text-xs font-bold tracking-[0.12em]" style={{ color: T.cyan }}>YOUR DAILY TARGET</p>
-            <p className="m-0 mt-1 text-[22px] font-extrabold leading-tight">{doc.targets.protein_g} g protein{level === 3 ? <span className="text-base font-semibold text-white/60"> · {doc.targets.kcal} kcal</span> : null}</p>
-            {meals.length > 1 && <p className="m-0 mt-0.5 text-sm text-white/60">About {Math.round(doc.targets.protein_g / meals.length / 5) * 5} g at every meal</p>}
-          </div>
-        </div>
+        <ProteinRing target={target} summary={summary} kcalTarget={level === 3 ? doc.targets.kcal : undefined} hint={proteinHint(target, summary, mealsLeft, plannedLeft)} />
       )}
+
+      {catchUp.length > 0 && <CatchUp meals={catchUp} onTick={(m, s, i) => tick(m, s, i ?? 0)} />}
 
       {next && (
         <>
           <SectionTitle action={next.time ? <span className="text-[15px]" style={{ color: T.ter }}>{next.time}</span> : undefined}>
-            {dayDone ? `Tomorrow · ${next.name}` : `Next · ${next.name}`}
+            {`Next · ${next.name}`}
           </SectionTitle>
           {next.options.length > 1 && <p className="m-0 -mt-1 px-1 text-[15px]" style={{ color: T.ter }}>{next.options.length} options · pick any one</p>}
-          <MealOptions key={next.id} options={next.options} foods={foods} level={level} recipeFor={recipeFor} />
+          <MealOptions key={next.id} options={next.options} foods={foods} level={level} recipeFor={recipeFor} pick={pickFor(next)} onPick={setPick(next)} />
+          {ticks && <TickActions key={`a-${next.id}`} meal={next} optionIndex={pickFor(next)} date={date} onTick={onTick(next)} />}
+        </>
+      )}
 
-          {meals.length > 1 && (
-            <>
-              <SectionTitle>{dayDone ? 'Tomorrow’s plate' : 'Rest of today'}</SectionTitle>
-              <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}>
-                {meals.map((m, i) => ({ m, i })).filter((x) => x.i !== nextIdx).map(({ m, i }, k) => {
-                  const isOpen = open === m.id
-                  const past = !dayDone && i < nextIdx
-                  return (
-                    <div key={m.id} style={{ borderTop: k === 0 ? undefined : `1px solid ${T.line}` }}>
-                      <button onClick={() => setOpen(isOpen ? null : m.id)} aria-expanded={isOpen} className="w-full flex items-center gap-3 px-4 min-h-14 text-left">
-                        <span className="flex-1 min-w-0">
-                          <span className="block text-base font-semibold" style={{ color: past ? T.ter : T.ink }}>{m.name}</span>
-                          <span className="block text-[13px]" style={{ color: T.ter }}>{[m.time, `${m.options.length} option${m.options.length === 1 ? '' : 's'}`].filter(Boolean).join(' · ')}</span>
-                        </span>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform .2s' }}><path d="M9 18l6-6-6-6" /></svg>
-                      </button>
-                      {isOpen && (
-                        <div className="px-3 pb-3 flex flex-col gap-2 gfm-page" style={{ background: '#F7F9FB' }}>
-                          <div className="h-1" />
-                          <MealOptions options={m.options} foods={foods} level={level} recipeFor={recipeFor} />
-                        </div>
+      {allDone && (
+        <Card>
+          <p className="m-0 text-base font-semibold">Every meal logged today 🙌</p>
+          <p className="m-0 mt-1 text-[15px]" style={{ color: T.sec }}>That’s what consistency looks like. See you at breakfast.</p>
+        </Card>
+      )}
+
+      {meals.length > (next ? 1 : 0) && (
+        <>
+          <SectionTitle>Your day</SectionTitle>
+          <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}>
+            {meals.map((m, i) => ({ m, i })).filter((x) => x.i !== nextIdx).map(({ m, i }, k) => {
+              const isOpen = open === m.id
+              const t = byMeal.get(m.id)
+              const past = isPast(i)
+              const sub = t
+                ? [m.time, t.status === 'skipped' ? '' : t.option_title].filter(Boolean).join(' · ')
+                : [m.time, `${m.options.length} option${m.options.length === 1 ? '' : 's'}`].filter(Boolean).join(' · ')
+              return (
+                <div key={m.id} style={{ borderTop: k === 0 ? undefined : `1px solid ${T.line}` }}>
+                  <button onClick={() => setOpen(isOpen ? null : m.id)} aria-expanded={isOpen} className="w-full flex items-center gap-3 px-4 min-h-14 text-left">
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-base font-semibold" style={{ color: t || past ? T.sec : T.ink }}>{m.name}</span>
+                      {sub && <span className="block text-[13px] truncate" style={{ color: T.ter }}>{sub}</span>}
+                    </span>
+                    {t ? <StatusChip status={t.status} /> : past && ticks ? <StatusChip status="missing" /> : null}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform .2s', flexShrink: 0 }}><path d="M9 18l6-6-6-6" /></svg>
+                  </button>
+                  {isOpen && (
+                    <div className="px-3 pb-3 flex flex-col gap-2 gfm-page" style={{ background: '#F7F9FB' }}>
+                      <div className="h-1" />
+                      {t ? (
+                        <TickedSummary tick={t} onUndo={() => undo(m.id)} />
+                      ) : (
+                        <>
+                          <MealOptions options={m.options} foods={foods} level={level} recipeFor={recipeFor} pick={pickFor(m)} onPick={setPick(m)} />
+                          {ticks && <TickActions meal={m} optionIndex={pickFor(m)} date={date} onTick={onTick(m)} />}
+                        </>
                       )}
                     </div>
-                  )
-                })}
-              </div>
-            </>
-          )}
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </>
       )}
 
