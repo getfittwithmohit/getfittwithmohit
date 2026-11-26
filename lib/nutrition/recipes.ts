@@ -166,3 +166,80 @@ export const emptyRecipe = (): Omit<Recipe, 'id'> => ({
   equipment: [], tags: ['weekday'], portion_label: null, ingredients: [], extras: [], steps: [], tip: null, swaps: [],
   dish_food: null, status: 'draft',
 })
+
+// ── Client side helpers ─────────────────────────────────────────────────────
+
+// Does a food fit the client's diet (onboarding wording: Vegetarian,
+// Eggetarian, Non-vegetarian, Jain, Vegan)? Unknown diet: everything fits.
+export function fitsDiet(food: Pick<Food, 'diet' | 'is_vegan' | 'is_jain_ok'>, diet: string | null): boolean {
+  const d = (diet || '').toLowerCase()
+  if (!d) return true
+  if (d.includes('vegan')) return food.is_vegan
+  if (d.includes('jain')) return food.is_jain_ok
+  if (d.includes('egg')) return food.diet !== 'nonveg'
+  if (d.includes('non')) return true
+  if (d.includes('veg')) return food.diet === 'veg'
+  return true
+}
+
+export type ShareLang = 'en' | 'hi' | 'mr'
+
+export interface RecipeTranslation {
+  at: string // the recipe's updated_at it was made from
+  title: string
+  names: Record<string, string> // food slug → name
+  extras: RecipeExtra[]
+  steps: string[]
+  tip: string
+}
+
+const LABELS: Record<ShareLang, { forN: (n: number) => string; ing: string; method: string; tip: string; sign: string }> = {
+  en: { forN: (n) => `for ${n} ${n === 1 ? 'person' : 'people'}`, ing: 'Ingredients', method: 'Method', tip: 'Coach tip', sign: 'GFM 1:1 · Coach Mohit' },
+  hi: { forN: (n) => `${n} ${n === 1 ? 'व्यक्ति' : 'लोगों'} के लिए`, ing: 'सामग्री', method: 'बनाने का तरीका', tip: 'कोच की सलाह', sign: 'GFM 1:1 · कोच मोहित' },
+  mr: { forN: (n) => `${n} ${n === 1 ? 'व्यक्तीसाठी' : 'जणांसाठी'}`, ing: 'साहित्य', method: 'कृती', tip: 'कोचचा सल्ला', sign: 'GFM 1:1 · कोच मोहित' },
+}
+
+// Units in amounts made by potAmount ("480 g", "4 tsp", "6 eggs", "1.2 kg").
+const UNITS: Record<Exclude<ShareLang, 'en'>, [RegExp, string][]> = {
+  hi: [[/\begg whites?\b/, 'अंडे की सफ़ेदी'], [/\beggs?\b/, 'अंडे'], [/\bkg\b/, 'किलो'], [/\btsp\b/, 'छोटे चम्मच'], [/\bg\b/, 'ग्राम']],
+  mr: [[/\begg whites?\b/, 'अंड्याचा पांढरा भाग'], [/\beggs?\b/, 'अंडी'], [/\bkg\b/, 'किलो'], [/\btsp\b/, 'छोटे चमचे'], [/\bg\b/, 'ग्रॅम']],
+}
+
+export function localizeAmount(amount: string, lang: ShareLang): string {
+  if (lang === 'en') return amount
+  return UNITS[lang].reduce((s, [re, to]) => s.replace(re, to), amount)
+}
+
+// The WhatsApp message for whoever is cooking: family-pot amounts, steps, tip.
+export function shareText(args: {
+  lang: ShareLang
+  title: string
+  people: number
+  ingredients: { name: string; amount: string; prep?: string }[]
+  extras: RecipeExtra[]
+  steps: string[]
+  tip: string | null
+}): string {
+  const L = LABELS[args.lang]
+  const lines = [
+    `*${args.title}* — ${L.forN(args.people)}`,
+    '',
+    `*${L.ing}*`,
+    ...args.ingredients.map((i) => `• ${i.name}${i.prep ? ` (${i.prep})` : ''}: ${localizeAmount(i.amount, args.lang)}`),
+    ...args.extras.map((x) => `• ${x.name}: ${x.amount}`),
+    '',
+    `*${L.method}*`,
+    ...args.steps.map((s, i) => `${i + 1}. ${s}`),
+  ]
+  if (args.tip) lines.push('', `*${L.tip}:* ${args.tip}`)
+  lines.push('', `_${L.sign}_`)
+  return lines.join('\n')
+}
+
+// Extras are written for one portion; for the pot, keep them as written when
+// they're "to taste"-style, otherwise say "per person".
+export function potExtra(x: RecipeExtra, people: number, lang: ShareLang = 'en'): RecipeExtra {
+  if (people === 1 || !/\d|½|¼|¾/.test(x.amount)) return x
+  const per = lang === 'hi' ? 'प्रति व्यक्ति' : lang === 'mr' ? 'प्रत्येकी' : 'per person'
+  return { ...x, amount: `${x.amount} ${per}` }
+}
