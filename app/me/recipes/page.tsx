@@ -7,6 +7,7 @@ import { Card, LargeTitle, Screen, ScreenSkeleton, Skeleton, T } from '@/compone
 import { Icon } from '@/components/ui/Icon'
 import { getCached, setCached } from '@/lib/ui/cache'
 import { normaliseFoods, PROTEIN_TINT, recipeFits } from '@/components/recipes/shared'
+import { BackToEat } from '@/components/eat/OptionCard'
 import { MEAL_TYPES, PROTEIN_LABEL, portionTotals, type MealType, type ProteinKey, type Recipe } from '@/lib/nutrition/recipes'
 import type { Food } from '@/lib/nutrition/foods'
 
@@ -41,6 +42,7 @@ export default function RecipeBookPage() {
 
   return (
     <Screen>
+      <BackToEat />
       <LargeTitle eyebrow="Cook it your way" title="Recipes" />
 
       {!book && !failed && <><Skeleton h={44} /><Skeleton h={96} /><Skeleton h={96} /><Skeleton h={96} /></>}

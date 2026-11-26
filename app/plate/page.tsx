@@ -211,7 +211,7 @@ export default function PeakPlatePage() {
   if (checking || (!today && !loadError)) return <PageLoader />
 
   const noScansLeft = today ? today.scansLeft <= 0 : false
-  const backHref = today?.isCoach ? '/coach/dashboard' : '/home'
+  const backHref = today?.isCoach ? '/coach/dashboard' : '/eat'
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
@@ -222,7 +222,7 @@ export default function PeakPlatePage() {
             className="text-white/60 hover:text-white text-[15px] flex items-center gap-1 min-h-11 -ml-1 transition-colors mb-1"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
-            {scan ? 'My plate' : today?.isCoach ? 'Dashboard' : 'Today'}
+            {scan ? 'My plate' : today?.isCoach ? 'Dashboard' : 'Eat'}
           </button>
           <h2 className="text-white text-2xl font-bold">PEAK Plate</h2>
           <p className="text-white/60 text-sm mt-1">Snap your meal. Know if it&apos;s PEAK — in seconds.</p>

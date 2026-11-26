@@ -1,54 +1,23 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import { PageLoader } from '@/components/ui/PageLoader'
 import { Card, LargeTitle, Screen, SectionTitle, Skeleton, T } from '@/components/ui/ios'
-import { describeItem, optionTotals, PLATE_RULES, type Level, type PlanDoc } from '@/lib/nutrition/plan'
-import type { Food } from '@/lib/nutrition/foods'
-import Link from 'next/link'
-import { Icon } from '@/components/ui/Icon'
-
-interface Payload {
-  recipes?: { id: string; title: string; dish_food: string; minutes: number }[]
-  plan: { name: string; doc: PlanDoc; version: number; published_at: string | null; change_note: string | null } | null
-  foods: Food[]
-}
+import { PLATE_RULES, type Level } from '@/lib/nutrition/plan'
+import { useNutrition } from '@/components/eat/useNutrition'
+import { BackToEat, OptionCard } from '@/components/eat/OptionCard'
 
 const LEVEL_NAME: Record<Level, string> = { 1: 'Habits', 2: 'Portions', 3: 'Numbers' }
-const r0 = (n: number) => Math.round(n)
 
 // Client: the nutrition plan Coach Mohit published, shown at the client's level.
+// Lives under the Eat tab.
 export default function MyNutritionPage() {
   const { checking } = useAuthGuard()
-  const [data, setData] = useState<Payload | null>(null)
-  const [failed, setFailed] = useState(false)
-  const [recent, setRecent] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    fetch('/api/me/nutrition')
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((d: Payload) => {
-        if (cancelled) return
-        setData(d)
-        const at = d.plan?.published_at
-        setRecent(!!at && Date.now() - new Date(at).getTime() < 14 * 24 * 3600 * 1000)
-      })
-      .catch(() => { if (!cancelled) setFailed(true) })
-    return () => { cancelled = true }
-  }, [])
-
-  const foods = useMemo(
-    () => new Map((data?.foods || []).map((f) => [f.slug, { ...f, kcal: +f.kcal, protein_g: +f.protein_g, carbs_g: +f.carbs_g, fat_g: +f.fat_g, fibre_g: +f.fibre_g } as Food])),
-    [data]
-  )
-
-  const recipeFor = useMemo(() => {
-    const m = new Map<string, NonNullable<Payload['recipes']>[number]>()
-    for (const r of data?.recipes || []) if (!m.has(r.dish_food)) m.set(r.dish_food, r)
-    return m
-  }, [data])
+  const { data, failed, foods, recipeFor } = useNutrition()
+  const [now] = useState(() => Date.now())
+  const at = data?.plan?.published_at
+  const recent = !!at && now - new Date(at).getTime() < 14 * 24 * 3600 * 1000
 
   if (checking) return <PageLoader />
 
@@ -58,7 +27,8 @@ export default function MyNutritionPage() {
 
   return (
     <Screen>
-      <LargeTitle eyebrow="From Coach Mohit" title="My nutrition plan" />
+      <BackToEat />
+      <LargeTitle eyebrow="From Coach Mohit" title="Your plan & rules" />
 
       {!data && !failed && <><Skeleton h={120} /><Skeleton h={220} /></>}
       {failed && <Card><p className="m-0 text-[15px]" style={{ color: T.sec }}>Couldn’t load your plan. Check your connection and try again.</p></Card>}
@@ -107,14 +77,6 @@ export default function MyNutritionPage() {
             {doc.targets.water_l ? <p className="m-0 text-[15px]" style={{ color: T.sec }}>Water: {doc.targets.water_l} litres a day.</p> : null}
           </Card>
 
-          <Link href="/me/recipes" className="flex items-center gap-3 bg-white rounded-2xl p-4" style={{ boxShadow: '0 0 0 1px rgba(15,23,42,0.04)' }}>
-            <span className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#FDF1E3', color: '#B45309' }}><Icon name="book" size={22} /></span>
-            <span className="flex-1 min-w-0">
-              <span className="block text-base font-semibold" style={{ color: T.ink }}>Recipe book</span>
-              <span className="block text-[13px]" style={{ color: T.ter }}>Sized for your portion and your family</span>
-            </span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
-          </Link>
 
           {doc.rules.filter(Boolean).length > 0 && (
             <>
@@ -130,56 +92,7 @@ export default function MyNutritionPage() {
           {doc.meals.map((m) => (
             <div key={m.id} className="flex flex-col gap-2">
               <SectionTitle action={m.time ? <span className="text-[15px]" style={{ color: T.ter }}>{m.time}</span> : undefined}>{m.name}</SectionTitle>
-              {m.options.map((o, i) => {
-                const tot = optionTotals(o, foods)
-                return (
-                  <Card key={o.id} className="flex flex-col gap-2">
-                    <div className="flex items-start justify-between gap-3">
-                      <p className="m-0 text-base font-semibold leading-snug">
-                        {m.options.length > 1 && <span className="text-xs font-bold mr-1.5" style={{ color: T.teal }}>OPTION {i + 1}</span>}
-                        <span className="block">{o.title}</span>
-                      </p>
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap" style={{ background: '#F1F5F9', color: T.sec }}>
-                        {r0(tot.protein)} g protein{level === 3 ? ` · ${r0(tot.kcal)} kcal` : ''}
-                      </span>
-                    </div>
-                    <ul className="m-0 pl-5 list-disc flex flex-col gap-0.5 text-[15px]">
-                      {o.items.map((it, j) => <li key={j}>{describeItem(it, foods.get(it.food), level).replace(' · ', ' — ')}</li>)}
-                    </ul>
-                    {o.why && <p className="m-0 text-[15px] leading-snug" style={{ color: T.teal }}>{o.why}</p>}
-                    {(() => {
-                      // One "How to cook" per dish on this option, named so it's clear which
-                      const cook = [...new Set(o.items.map((it) => it.food))]
-                        .map((slug) => ({ slug, r: recipeFor.get(slug) }))
-                        .filter((x): x is { slug: string; r: NonNullable<Payload['recipes']>[number] } => !!x.r)
-                      const dishName = (slug: string) => (foods.get(slug)?.name || slug).split(',')[0].replace(/\s*\(.*?\)\s*/g, ' ').trim()
-                      if (cook.length === 0) return null
-                      if (cook.length === 1) {
-                        const { slug, r } = cook[0]
-                        return (
-                          <Link href={`/me/recipes/${r.id}`} className="mt-1 flex items-center justify-center gap-2 min-h-12 px-4 rounded-2xl text-[15px] font-bold text-center" style={{ background: T.cyan, color: T.navy }}>
-                            <Icon name="plate" size={18} />How to cook {dishName(slug).toLowerCase()} · {r.minutes} min
-                          </Link>
-                        )
-                      }
-                      return (
-                        <div className="mt-1 rounded-2xl overflow-hidden" style={{ background: '#E6F7F9' }}>
-                          <p className="m-0 px-4 pt-3 pb-1 text-xs font-bold tracking-[0.12em]" style={{ color: T.teal }}>HOW TO COOK</p>
-                          {cook.map(({ slug, r }) => (
-                            <Link key={r.id} href={`/me/recipes/${r.id}`} className="flex items-center gap-3 px-4 min-h-12 text-[15px] font-semibold" style={{ color: T.navy, borderTop: '1px solid rgba(0,122,138,0.12)' }}>
-                              <Icon name="plate" size={18} />
-                              <span className="flex-1">{dishName(slug)}</span>
-                              <span className="text-[13px] font-medium" style={{ color: T.teal }}>{r.minutes} min</span>
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6" /></svg>
-                            </Link>
-                          ))}
-                        </div>
-                      )
-                    })()}
-                    {o.tip && <p className="m-0 text-sm" style={{ color: T.ter }}>Tip: {o.tip}</p>}
-                  </Card>
-                )
-              })}
+              {m.options.map((o, i) => <OptionCard key={o.id} option={o} index={i} foods={foods} level={level} recipeFor={recipeFor} />)}
             </div>
           ))}
 

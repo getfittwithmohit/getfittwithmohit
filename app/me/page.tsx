@@ -99,11 +99,6 @@ export default function MePage() {
         </Card>
       )}
 
-      <SectionTitle>My plans</SectionTitle>
-      <Group>
-        <Row icon="heart" tint="green" title="My nutrition plan" subtitle="Your meals, options and protein target" href="/me/nutrition" last />
-      </Group>
-
       <SectionTitle>Progress</SectionTitle>
       <Group>
         <Row icon="clipboard" title="Weekly check-in" subtitle="Weight, measurements, how the week went" href="/checkin" trailing={weeklyDue ? <Badge>{weeklyDue}</Badge> : undefined} />
